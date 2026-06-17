@@ -1,0 +1,36 @@
+name: Collect Social Media Data
+
+on:
+  schedule:
+    - cron: '0 * * * *'  # Her saat basi
+  workflow_dispatch:      # Manuel de calistirilabilir
+
+permissions:
+  contents: write
+
+jobs:
+  collect:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.13'
+
+      - name: Install dependencies
+        run: pip install httpx curl_cffi
+
+      - name: Create youtube config
+        run: echo '{"api_key":"${{ secrets.YOUTUBE_API_KEY }}"}' > youtube_config.json
+
+      - name: Generate data
+        run: python generate_data.py
+
+      - name: Commit and push
+        run: |
+          git config user.name "github-actions"
+          git config user.email "actions@github.com"
+          git add data/
+          git diff --quiet && git diff --staged --quiet || git commit -m "Auto-update: data collection $(date -u '+%Y-%m-%d %H:%M UTC')"
+          git push

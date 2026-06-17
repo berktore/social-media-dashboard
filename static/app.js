@@ -2,29 +2,13 @@ let allTweets = [];
 let filteredTweets = [];
 let twitterProfile = null;
 
-fetch('/api/status').then(r => r.json()).then(data => { if (data.logged_in) showDashboard(); });
-
-function loginWithCookies() {
-    const authToken = document.getElementById('auth-token').value;
-    const ct0 = document.getElementById('ct0').value;
-    if (!authToken || !ct0) {
-        document.getElementById('login-error').textContent = 'Lutfen her iki degeri de girin.';
-        document.getElementById('login-error').classList.remove('hidden');
-        return;
-    }
-    fetch('/api/login', { method: 'POST', headers: {'Content-Type': 'application/json'}, body: JSON.stringify({auth_token: authToken, ct0: ct0}) })
-    .then(r => r.json()).then(data => { if (data.success) showDashboard(); else { document.getElementById('login-error').textContent = 'Hata: ' + data.error; document.getElementById('login-error').classList.remove('hidden'); } });
-}
-
 function showDashboard() {
-    document.getElementById('login-modal').style.display = 'none';
-    document.getElementById('dashboard').classList.remove('hidden');
     switchTab('overview');
     loadOverview();
     loadTwitterData();
 }
 
-function logout() { window.location.href = '/logout'; }
+showDashboard();
 
 function switchTab(tabName) {
     document.querySelectorAll('.tab-content').forEach(t => t.classList.add('hidden'));
@@ -66,7 +50,7 @@ function loadOverview() {
     statusEl.textContent = 'Yukleniyor...';
     statusEl.className = 'text-label-sm font-label-sm text-on-surface-variant bg-surface-container px-md py-xs rounded-full border border-outline-variant/30';
 
-    fetch('/api/overview')
+    fetch('data/overview.json')
     .then(r => r.json()).then(data => {
         statusEl.textContent = 'Guncel';
         statusEl.className = 'text-label-sm font-label-sm text-primary bg-primary/10 px-md py-xs rounded-full border border-primary/20';
@@ -355,7 +339,7 @@ function loadTwitterProfile(username) {
     document.getElementById('best-tweets-grid').innerHTML = '<div class="col-span-3 flex items-center justify-center py-8"><div class="loading-spinner"></div></div>';
     document.getElementById('tweets-table-body').innerHTML = '<tr><td colspan="7" class="px-4 py-8 text-center"><div class="loading-spinner mx-auto"></div></td></tr>';
 
-    fetch(`/api/user/${username}`)
+    fetch('data/twitter-profile.json')
     .then(r => r.json()).then(data => {
         if (data.error) { document.getElementById('twitter-status').textContent = 'Hata'; return; }
         twitterProfile = data;
@@ -396,7 +380,7 @@ function loadTwitterProfile(username) {
                 <span class="font-headline-lg text-headline-lg text-on-surface">${fmt(data.tweets_count)}</span>
             </div>`;
 
-        return fetch(`/api/user/${username}/tweets?count=100`);
+        return fetch('data/twitter-tweets.json');
     }).then(r => r.json()).then(data => {
         if (data.error) return;
         allTweets = data;
@@ -601,7 +585,7 @@ function loadTikTokData() {
     });
     document.getElementById('tiktok-videos-table').innerHTML = '<tr><td colspan="7" class="px-4 py-8 text-center"><div class="loading-spinner mx-auto"></div></td></tr>';
 
-    fetch(`/api/tiktok/${username}/analytics?${params.toString()}`)
+    fetch('data/tiktok-analytics.json')
     .then(r => r.json()).then(data => {
         if (data.error) {
             statusEl.textContent = 'Hata';
@@ -922,9 +906,24 @@ function searchYouTube() {
     }
 
     document.getElementById('youtube-status').textContent = 'Aranıyor...';
-    fetch(`/api/youtube/search?q=${encodeURIComponent(query)}`)
-    .then(r => r.json()).then(data => {
-        if (data.error || !data.length) {
+    fetch('data/youtube-search-cache.json')
+    .then(r => r.json()).then(cache => {
+        const data = [];
+        const q = query.toLowerCase();
+        for (const [key, results] of Object.entries(cache)) {
+            if (key.includes(q)) {
+                data.push(...results);
+            }
+        }
+        // Also search by title
+        for (const [key, results] of Object.entries(cache)) {
+            for (const ch of results) {
+                if (ch.title && ch.title.toLowerCase().includes(q) && !data.find(d => d.id === ch.id)) {
+                    data.push(ch);
+                }
+            }
+        }
+        if (!data.length) {
             document.getElementById('youtube-status').textContent = 'Sonuc yok';
             return;
         }
@@ -964,7 +963,7 @@ function loadYouTubeData(channelId) {
     });
     document.getElementById('yt-videos-table').innerHTML = '<tr><td colspan="6" class="px-4 py-8 text-center"><div class="loading-spinner mx-auto"></div></td></tr>';
 
-    fetch(`/api/youtube/channel/${channelId}/analytics?days=${youtubeDays}`)
+    fetch('data/youtube-analytics.json')
     .then(r => r.json()).then(data => {
         if (data.error) {
             statusEl.textContent = 'Hata';
@@ -1226,12 +1225,20 @@ function searchCompetitor() {
     document.getElementById('competitor-results-title').textContent = `"${query}" icin sonuclar`;
     document.getElementById('competitor-platform-cards').innerHTML = '<div class="col-span-5 flex items-center justify-center py-8"><div class="loading-spinner"></div></div>';
 
-    fetch(`/api/competitor/search?q=${encodeURIComponent(query)}`)
-    .then(r => r.json()).then(data => {
-        competitorData = data;
-        statusEl.textContent = `${Object.keys(data.platforms).length} platform bulundu`;
+    fetch('data/competitors.json')
+    .then(r => r.json()).then(cache => {
+        const q = query.toLowerCase();
+        let platforms = {};
+        for (const [tag, data] of Object.entries(cache)) {
+            if (tag.includes(q)) {
+                platforms = {...platforms, ...data.platforms};
+            }
+        }
+        const result = { query, platforms };
+        competitorData = result;
+        statusEl.textContent = `${Object.keys(platforms).length} platform bulundu`;
         statusEl.className = 'text-label-sm font-label-sm text-primary bg-primary/10 px-md py-xs rounded-full border border-primary/20';
-        renderCompetitorResults(data);
+        renderCompetitorResults(result);
     }).catch(() => {
         statusEl.textContent = 'Hata';
         statusEl.className = 'text-label-sm font-label-sm text-error bg-error/10 px-md py-xs rounded-full border border-error/20';
@@ -1325,11 +1332,12 @@ function openCompetitorDetail(platform, id) {
     document.getElementById('competitor-table-header').innerHTML = '';
     document.getElementById('competitor-table-body').innerHTML = '<tr><td colspan="6" class="px-4 py-8 text-center"><div class="loading-spinner mx-auto"></div></td></tr>';
 
-    fetch(`/api/competitor/${platform}/${id}`)
-    .then(r => r.json()).then(data => {
-        if (data.error) {
-            document.getElementById('competitor-profile-cards').innerHTML = `<div class="col-span-12 text-center text-error py-8">${data.error}</div>`;
-            return;
+    // Statik surumde sadece onceden toplanmis veriler kullanilabilir
+    const detailPromise = platform === 'twitter' ? fetch('data/twitter-profile.json').then(r => r.json()).then(p => ({profile: p, tweets: [], analytics: {}}))
+        : platform === 'tiktok' ? fetch('data/tiktok-analytics.json').then(r => r.json())
+        : platform === 'youtube' ? fetch('data/youtube-analytics.json').then(r => r.json()).then(d => ({channel: d.channel, videos: d.all_videos || [], analytics: d.summary || {}}))
+        : Promise.reject('Desteklenmiyor');
+    detailPromise.then(data => {
         }
         if (platform === 'twitter') renderCompetitorTwitter(data);
         else if (platform === 'tiktok') renderCompetitorTikTok(data);
@@ -1532,13 +1540,23 @@ function searchInfluencer() {
     document.getElementById('influencer-results-title').textContent = `"${query}" icin sonuclar`;
     document.getElementById('influencer-cards').innerHTML = '<div class="col-span-3 flex items-center justify-center py-8"><div class="loading-spinner"></div></div>';
 
-    fetch(`/api/influencer/search?q=${encodeURIComponent(query)}`)
-    .then(r => r.json()).then(data => {
-        influencerData = data;
-        const count = data.influencers ? data.influencers.length : 0;
-        statusEl.textContent = `${count} influencer bulundu`;
+    fetch('data/influencers.json')
+    .then(r => r.json()).then(cache => {
+        const q = query.toLowerCase();
+        let influencers = [];
+        for (const [tag, data] of Object.entries(cache)) {
+            if (tag.includes(q) || q.includes(tag)) {
+                influencers = influencers.concat(data.influencers || []);
+            }
+        }
+        // deduplicate
+        const seen = new Set();
+        influencers = influencers.filter(x => { const k = x.username.toLowerCase(); if (seen.has(k)) return false; seen.add(k); return true; });
+        const result = { query, influencers };
+        influencerData = result;
+        statusEl.textContent = `${influencers.length} influencer bulundu`;
         statusEl.className = 'text-label-sm font-label-sm text-primary bg-primary/10 px-md py-xs rounded-full border border-primary/20';
-        renderInfluencerResults(data);
+        renderInfluencerResults(result);
     }).catch(() => {
         statusEl.textContent = 'Hata';
         statusEl.className = 'text-label-sm font-label-sm text-error bg-error/10 px-md py-xs rounded-full border border-error/20';

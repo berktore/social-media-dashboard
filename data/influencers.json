@@ -1,0 +1,242 @@
+{
+  "borsa": {
+    "query": "borsa",
+    "influencers": [
+      {
+        "username": "infoyatirim",
+        "name": "İnfo Yatırım Menkul Değerler",
+        "source": "twitter",
+        "platforms": {
+          "twitter": {
+            "username": "infoyatirim",
+            "followers": 100075
+          }
+        }
+      },
+      {
+        "username": "borsa_gunluk",
+        "name": "BORSA GÜNLÜK",
+        "source": "twitter",
+        "platforms": {
+          "twitter": {
+            "username": "borsa_gunluk",
+            "followers": 40
+          }
+        }
+      },
+      {
+        "username": "borsa_yatirimci",
+        "name": "Borsa Yatırımcısı",
+        "source": "twitter",
+        "platforms": {
+          "twitter": {
+            "username": "borsa_yatirimci",
+            "followers": 33
+          }
+        }
+      },
+      {
+        "username": "traborsa",
+        "name": "BORSA DOST 🥷🏿",
+        "source": "twitter",
+        "platforms": {
+          "twitter": {
+            "username": "traborsa",
+            "followers": 483
+          }
+        }
+      },
+      {
+        "username": "yatirimsepeti",
+        "name": "💰Yatırım Sepeti🛒",
+        "source": "tiktok",
+        "platforms": {
+          "tiktok": {
+            "username": "yatirimsepeti",
+            "followers": 6,
+            "nickname": "💰Yatırım Sepeti🛒"
+          }
+        }
+      },
+      {
+        "username": "borsayatirim",
+        "name": "Sıfırdan Borsa",
+        "source": "tiktok",
+        "platforms": {
+          "tiktok": {
+            "username": "borsayatirim",
+            "followers": 1,
+            "nickname": "Sıfırdan Borsa"
+          }
+        }
+      },
+      {
+        "username": "finansbank",
+        "name": "finansbank",
+        "source": "tiktok",
+        "platforms": {
+          "tiktok": {
+            "username": "finansbank",
+            "followers": 109,
+            "nickname": "finansbank"
+          }
+        }
+      }
+    ]
+  },
+  "yatirim": {
+    "query": "yatirim",
+    "influencers": [
+      {
+        "username": "infoyatirim",
+        "name": "İnfo Yatırım Menkul Değerler",
+        "source": "twitter",
+        "platforms": {
+          "twitter": {
+            "username": "infoyatirim",
+            "followers": 100075
+          }
+        }
+      },
+      {
+        "username": "yatirimsepeti",
+        "name": "💰Yatırım Sepeti🛒",
+        "source": "tiktok",
+        "platforms": {
+          "tiktok": {
+            "username": "yatirimsepeti",
+            "followers": 6,
+            "nickname": "💰Yatırım Sepeti🛒"
+          }
+        }
+      },
+      {
+        "username": "yatirimciadam",
+        "name": "Yatırımcı Adam",
+        "source": "tiktok",
+        "platforms": {
+          "tiktok": {
+            "username": "yatirimciadam",
+            "followers": 1147,
+            "nickname": "Yatırımcı Adam"
+          }
+        }
+      },
+      {
+        "username": "yatirimnedir",
+        "name": "YatırımNedir¿",
+        "source": "tiktok",
+        "platforms": {
+          "tiktok": {
+            "username": "yatirimnedir",
+            "followers": 840,
+            "nickname": "YatırımNedir¿"
+          }
+        }
+      },
+      {
+        "username": "finansbank",
+        "name": "finansbank",
+        "source": "tiktok",
+        "platforms": {
+          "tiktok": {
+            "username": "finansbank",
+            "followers": 109,
+            "nickname": "finansbank"
+          }
+        }
+      }
+    ]
+  },
+  "ekonomi": {
+    "query": "ekonomi",
+    "influencers": [
+      {
+        "username": "infoyatirim",
+        "name": "İnfo Yatırım Menkul Değerler",
+        "source": "twitter",
+        "platforms": {
+          "twitter": {
+            "username": "infoyatirim",
+            "followers": 100075
+          }
+        }
+      },
+      {
+        "username": "dunyaekonomi",
+        "name": "dunyaekonomi.com",
+        "source": "twitter",
+        "platforms": {
+          "twitter": {
+            "username": "dunyaekonomi",
+            "followers": 1066
+          }
+        }
+      },
+      {
+        "username": "piyasalar",
+        "name": "user052494",
+        "source": "tiktok",
+        "platforms": {
+          "tiktok": {
+            "username": "piyasalar",
+            "followers": 5,
+            "nickname": "user052494"
+          }
+        }
+      },
+      {
+        "username": "finansbank",
+        "name": "finansbank",
+        "source": "tiktok",
+        "platforms": {
+          "tiktok": {
+            "username": "finansbank",
+            "followers": 109,
+            "nickname": "finansbank"
+          }
+        }
+      }
+    ]
+  },
+  "finans": {
+    "query": "finans",
+    "influencers": [
+      {
+        "username": "infoyatirim",
+        "name": "İnfo Yatırım Menkul Değerler",
+        "source": "twitter",
+        "platforms": {
+          "twitter": {
+            "username": "infoyatirim",
+            "followers": 100075
+          }
+        }
+      },
+      {
+        "username": "finansbank",
+        "name": "finansbank",
+        "source": "tiktok",
+        "platforms": {
+          "tiktok": {
+            "username": "finansbank",
+            "followers": 109,
+            "nickname": "finansbank"
+          }
+        }
+      },
+      {
+        "username": "ziraatbankasi",
+        "name": "Ziraworld-consulting.com",
+        "source": "tiktok",
+        "platforms": {
+          "tiktok": {
+            "username": "ziraatbankasi",
+            "followers": 16,
+            "nickname": "Ziraworld-consulting.com"
+          }
+        }
+      }
+    ]
+  }
+}

@@ -1,0 +1,99 @@
+{
+  "borsa": {
+    "query": "borsa",
+    "platforms": {
+      "twitter_infoyatirim": {
+        "username": "infoyatirim",
+        "name": "İnfo Yatırım Menkul Değerler",
+        "followers": 100075,
+        "tweets": 26475,
+        "profile_image": "https://pbs.twimg.com/profile_images/1882372455110504448/-yCS9SZT_400x400.jpg"
+      },
+      "twitter_borsa_gunluk": {
+        "username": "borsa_gunluk",
+        "name": "BORSA GÜNLÜK",
+        "followers": 40,
+        "tweets": 14,
+        "profile_image": "https://pbs.twimg.com/profile_images/1312039351929524227/F6Eo8scc_400x400.jpg"
+      },
+      "tiktok_yatirimsepeti": {
+        "username": "yatirimsepeti",
+        "nickname": "💰Yatırım Sepeti🛒",
+        "followers": 6,
+        "avatar": "https://p16-common-sign.tiktokcdn.com/tos-alisg-avt-0068/b2158304a7f6867ace1ed033f0224bed~tplv-tiktokx-cropcenter:100:100.jpeg?dr=14579&refresh_token=1b3adba3&x-expires=1781856000&x-signature=Mkfffm%2Bo19sIyYm1eJUnU5IBa8I%3D&t=4d5b0474&ps=13740610&shp=a5d48078&shcp=81f88b70&idc=my"
+      }
+    }
+  },
+  "yatirim": {
+    "query": "yatirim",
+    "platforms": {
+      "twitter_infoyatirim": {
+        "username": "infoyatirim",
+        "name": "İnfo Yatırım Menkul Değerler",
+        "followers": 100075,
+        "tweets": 26475,
+        "profile_image": "https://pbs.twimg.com/profile_images/1882372455110504448/-yCS9SZT_400x400.jpg"
+      },
+      "tiktok_yatirimsepeti": {
+        "username": "yatirimsepeti",
+        "nickname": "💰Yatırım Sepeti🛒",
+        "followers": 6,
+        "avatar": "https://p16-common-sign.tiktokcdn.com/tos-alisg-avt-0068/b2158304a7f6867ace1ed033f0224bed~tplv-tiktokx-cropcenter:100:100.jpeg?dr=14579&refresh_token=1b3adba3&x-expires=1781856000&x-signature=Mkfffm%2Bo19sIyYm1eJUnU5IBa8I%3D&t=4d5b0474&ps=13740610&shp=a5d48078&shcp=81f88b70&idc=my"
+      },
+      "tiktok_yatirimciadam": {
+        "username": "yatirimciadam",
+        "nickname": "Yatırımcı Adam",
+        "followers": 1147,
+        "avatar": "https://p16-common-sign.tiktokcdn.com/tos-maliva-avt-0068/7352859731699957806~tplv-tiktokx-cropcenter:100:100.jpeg?dr=14579&refresh_token=4907904e&x-expires=1781856000&x-signature=zW6dkrTy63L6Ph9V0KCbo0SQYT0%3D&t=4d5b0474&ps=13740610&shp=a5d48078&shcp=81f88b70&idc=my"
+      },
+      "tiktok_yatirimnedir": {
+        "username": "yatirimnedir",
+        "nickname": "YatırımNedir¿",
+        "followers": 840,
+        "avatar": "https://p16-common-sign.tiktokcdn.com/tos-alisg-avt-0068/78b4e35bbc47f55e384e65e1f35dc7e3~tplv-tiktokx-cropcenter:100:100.jpeg?dr=14579&refresh_token=39d3e48d&x-expires=1781856000&x-signature=8Av%2BmoVe8bbMZYBnygRVdPtHwAM%3D&t=4d5b0474&ps=13740610&shp=a5d48078&shcp=81f88b70&idc=my"
+      }
+    }
+  },
+  "ekonomi": {
+    "query": "ekonomi",
+    "platforms": {
+      "twitter_infoyatirim": {
+        "username": "infoyatirim",
+        "name": "İnfo Yatırım Menkul Değerler",
+        "followers": 100075,
+        "tweets": 26475,
+        "profile_image": "https://pbs.twimg.com/profile_images/1882372455110504448/-yCS9SZT_400x400.jpg"
+      },
+      "tiktok_piyasalar": {
+        "username": "piyasalar",
+        "nickname": "user052494",
+        "followers": 5,
+        "avatar": "https://p16-common-sign.tiktokcdn.com/musically-maliva-obj/1594805258216454~tplv-tiktokx-cropcenter:100:100.jpeg?dr=14579&refresh_token=18b49adf&x-expires=1781856000&x-signature=L9z3yooK1d%2FgIEipTcDaAZ%2FKp70%3D&t=4d5b0474&ps=13740610&shp=a5d48078&shcp=81f88b70&idc=my"
+      }
+    }
+  },
+  "finans": {
+    "query": "finans",
+    "platforms": {
+      "twitter_infoyatirim": {
+        "username": "infoyatirim",
+        "name": "İnfo Yatırım Menkul Değerler",
+        "followers": 100075,
+        "tweets": 26475,
+        "profile_image": "https://pbs.twimg.com/profile_images/1882372455110504448/-yCS9SZT_400x400.jpg"
+      },
+      "tiktok_finansbank": {
+        "username": "finansbank",
+        "nickname": "finansbank",
+        "followers": 109,
+        "avatar": "https://p16-common-sign.tiktokcdn.com/tos-maliva-avt-0068/5388808747d0be7bc7f8b190f7a69519~tplv-tiktokx-cropcenter:100:100.jpeg?dr=14579&refresh_token=0e336569&x-expires=1781856000&x-signature=9%2BG4sLlEp9ydBbDmpgUaL70T%2BZw%3D&t=4d5b0474&ps=13740610&shp=a5d48078&shcp=81f88b70&idc=my"
+      },
+      "tiktok_ziraatbankasi": {
+        "username": "ziraatbankasi",
+        "nickname": "Ziraworld-consulting.com",
+        "followers": 16,
+        "avatar": "https://p16-common-sign.tiktokcdn.com/tos-maliva-avt-0068/4ab69ae659f4a3eceba6caa61582a3d0~tplv-tiktokx-cropcenter:100:100.jpeg?dr=14579&refresh_token=7cd089f2&x-expires=1781856000&x-signature=Gay41SK0fGpiO0ddm%2BqSkvqKrBw%3D&t=4d5b0474&ps=13740610&shp=a5d48078&shcp=81f88b70&idc=my"
+      }
+    }
+  }
+}

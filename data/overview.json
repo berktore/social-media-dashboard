@@ -1,0 +1,41 @@
+{
+  "twitter": {
+    "username": "infoyatirim",
+    "name": "İnfo Yatırım Menkul Değerler",
+    "followers": 100075,
+    "following": 8,
+    "tweets": 26475,
+    "follower_growth": -146,
+    "total_impressions": 35808,
+    "engagement_rate": 0.26,
+    "total_likes": 62,
+    "total_retweets": 16,
+    "total_replies": 16,
+    "profile_image": "https://pbs.twimg.com/profile_images/1882372455110504448/-yCS9SZT_400x400.jpg"
+  },
+  "tiktok": {
+    "username": "infoyatirim",
+    "nickname": "İnfo Yatırım Menkul Değerler",
+    "followers": 40500,
+    "hearts": 108300,
+    "videos": 432,
+    "follower_growth": 0,
+    "follower_growth_rate": 0.0,
+    "total_views": 2450704,
+    "engagement_rate": 0.14,
+    "total_likes": 3341,
+    "total_comments": 43,
+    "avatar": "https://p16-common-sign.tiktokcdn.com/tos-alisg-avt-0068/89a787a905bcfa5417233e79297ec9ae~tplv-tiktokx-cropcenter:100:100.jpeg?dr=14579&refresh_token=88739882&x-expires=1781856000&x-signature=MePLPLsSUQd7W6XxNGs%2BByxj8Dg%3D&t=4d5b0474&ps=13740610&shp=a5d48078&shcp=81f88b70&idc=my"
+  },
+  "youtube": {
+    "channel_id": "UC-Il4FpbUEatDuaefVzqh8Q",
+    "title": "İnfo Yatırım",
+    "subscribers": 270000,
+    "total_views": 72061671,
+    "total_videos": 14467,
+    "subscriber_growth": 0,
+    "subscriber_growth_rate": 0.0,
+    "engagement_rate": 4.29,
+    "thumbnail": "https://yt3.ggpht.com/aAgPqkn83NgqH6H-q6AgblX5NZeBH0d4badyf2RkGiNJBwmf3_t9-l2RkyKPQCCU7jLUDDDA0A=s800-c-k-c0x00ffffff-no-rj"
+  }
+}
