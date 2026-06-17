@@ -1,6 +1,7 @@
 import httpx
 import json
 import os
+import tempfile
 from datetime import datetime
 
 
@@ -10,7 +11,8 @@ class TwitterClient:
         self.ct0 = ct0
         self._logged_in = False
         self.client = None
-        self.history_file = "follower_history.json"
+        tmp = tempfile.gettempdir()
+        self.history_file = os.path.join(tmp, "follower_history.json")
 
         if auth_token and ct0:
             self._init_client()
@@ -68,8 +70,11 @@ class TwitterClient:
             history[username].append({'date': now, 'count': follower_count})
         # Son 365 gun sakla
         history[username] = history[username][-365:]
-        with open(self.history_file, 'w') as f:
-            json.dump(history, f, indent=2)
+        try:
+            with open(self.history_file, 'w') as f:
+                json.dump(history, f, indent=2)
+        except (OSError, IOError):
+            pass
         return history[username]
 
     def get_user_info(self, username):

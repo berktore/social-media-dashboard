@@ -2,6 +2,7 @@ import json
 import os
 import re
 import subprocess
+import tempfile
 from datetime import datetime
 
 try:
@@ -21,7 +22,8 @@ HEADERS = {
 
 class TikTokClient:
     def __init__(self):
-        self.history_file = "tiktok_history.json"
+        tmp = tempfile.gettempdir()
+        self.history_file = os.path.join(tmp, "tiktok_history.json")
 
     def _request(self, url, headers=None):
         h = {**HEADERS, **(headers or {})}
@@ -46,8 +48,11 @@ class TikTokClient:
         else:
             history[username].append({'date': now, **data})
         history[username] = history[username][-365:]
-        with open(self.history_file, 'w') as f:
-            json.dump(history, f, indent=2)
+        try:
+            with open(self.history_file, 'w') as f:
+                json.dump(history, f, indent=2)
+        except (OSError, IOError):
+            pass
         return history[username]
 
     def get_user_info(self, username, max_retries=4):

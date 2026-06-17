@@ -1,6 +1,7 @@
 import httpx
 import json
 import os
+import tempfile
 from datetime import datetime, timedelta
 
 
@@ -14,7 +15,8 @@ class YouTubeClient:
         self.api_key = api_key
         self.access_token = access_token
         self.client = httpx.Client(follow_redirects=True, timeout=30.0)
-        self.history_file = 'youtube_history.json'
+        tmp = tempfile.gettempdir()
+        self.history_file = os.path.join(tmp, 'youtube_history.json')
 
     def _api_get(self, url, params=None):
         if params is None:
@@ -54,8 +56,11 @@ class YouTubeClient:
         else:
             history[channel_id].append({'date': now, **data})
         history[channel_id] = history[channel_id][-365:]
-        with open(self.history_file, 'w') as f:
-            json.dump(history, f, indent=2)
+        try:
+            with open(self.history_file, 'w') as f:
+                json.dump(history, f, indent=2)
+        except (OSError, IOError):
+            pass
         return history[channel_id]
 
     def get_channel_info(self, channel_id):
