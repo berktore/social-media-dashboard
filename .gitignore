@@ -1,0 +1,10 @@
+__pycache__/
+*.pyc
+.env
+venv/
+.venv/
+cookies.json
+tiktok_history.json
+twitter_history.json
+*.txt.bak
+.DS_Store

@@ -1,0 +1,4 @@
+flask>=3.0
+httpx>=0.28
+curl_cffi>=0.15
+gunicorn>=20.0

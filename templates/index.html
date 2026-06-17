@@ -1,0 +1,764 @@
+<!DOCTYPE html>
+<html class="dark" lang="tr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>SocialNexus | Mission Control</title>
+    <script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&family=JetBrains+Mono:wght@500&display=swap" rel="stylesheet"/>
+    <link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&display=swap" rel="stylesheet"/>
+    <script>
+        tailwind.config = {
+            darkMode: "class",
+            theme: {
+                extend: {
+                    "colors": {
+                        "surface-container": "#122131",
+                        "surface-container-high": "#1c2b3c",
+                        "error-container": "#93000a",
+                        "inverse-primary": "#0054d6",
+                        "secondary-fixed-dim": "#bec6e0",
+                        "on-secondary-fixed-variant": "#3f465c",
+                        "on-secondary": "#283044",
+                        "outline": "#8c90a1",
+                        "surface-bright": "#2c3a4c",
+                        "on-tertiary": "#00354a",
+                        "primary": "#b3c5ff",
+                        "primary-fixed-dim": "#b3c5ff",
+                        "on-error": "#690005",
+                        "secondary-container": "#3f465c",
+                        "primary-fixed": "#dae1ff",
+                        "surface": "#051424",
+                        "on-primary-fixed": "#001849",
+                        "error": "#ffb4ab",
+                        "inverse-on-surface": "#233143",
+                        "on-primary-container": "#f8f7ff",
+                        "background": "#051424",
+                        "on-secondary-fixed": "#131b2e",
+                        "secondary": "#bec6e0",
+                        "primary-container": "#0066ff",
+                        "surface-container-highest": "#273647",
+                        "surface-container-lowest": "#010f1f",
+                        "tertiary-fixed-dim": "#7bd0ff",
+                        "on-tertiary-fixed-variant": "#004c69",
+                        "outline-variant": "#424656",
+                        "on-surface-variant": "#c2c6d8",
+                        "inverse-surface": "#d4e4fa",
+                        "tertiary-fixed": "#c4e7ff",
+                        "surface-dim": "#051424",
+                        "tertiary-container": "#007aa5",
+                        "on-error-container": "#ffdad6",
+                        "surface-variant": "#273647",
+                        "surface-tint": "#b3c5ff",
+                        "on-background": "#d4e4fa",
+                        "tertiary": "#7bd0ff",
+                        "on-tertiary-fixed": "#001e2c",
+                        "on-surface": "#d4e4fa",
+                        "on-primary-fixed-variant": "#003fa4",
+                        "secondary-fixed": "#dae2fd",
+                        "on-secondary-container": "#adb4ce",
+                        "on-tertiary-container": "#f1f8ff",
+                        "on-primary": "#002b75",
+                        "surface-container-low": "#0d1c2d"
+                    },
+                    "borderRadius": {
+                        "DEFAULT": "0.125rem",
+                        "lg": "0.25rem",
+                        "xl": "0.5rem",
+                        "full": "0.75rem"
+                    },
+                    "spacing": {
+                        "max-width": "1440px",
+                        "base": "4px",
+                        "gutter": "20px",
+                        "xs": "4px",
+                        "xl": "32px",
+                        "margin-desktop": "32px",
+                        "margin-mobile": "16px",
+                        "md": "16px",
+                        "lg": "24px",
+                        "sm": "8px"
+                    },
+                    "fontFamily": {
+                        "label-md": ["JetBrains Mono"],
+                        "body-lg": ["Inter"],
+                        "headline-lg": ["Inter"],
+                        "label-sm": ["JetBrains Mono"],
+                        "body-md": ["Inter"],
+                        "body-sm": ["Inter"],
+                        "headline-md": ["Inter"],
+                        "display-lg": ["Inter"],
+                        "headline-lg-mobile": ["Inter"],
+                        "headline-sm": ["Inter"]
+                    },
+                    "fontSize": {
+                        "label-md": ["12px", {"lineHeight": "16px", "letterSpacing": "0.05em", "fontWeight": "500"}],
+                        "body-lg": ["18px", {"lineHeight": "28px", "fontWeight": "400"}],
+                        "headline-lg": ["32px", {"lineHeight": "40px", "letterSpacing": "-0.01em", "fontWeight": "600"}],
+                        "label-sm": ["10px", {"lineHeight": "12px", "letterSpacing": "0.05em", "fontWeight": "500"}],
+                        "body-md": ["16px", {"lineHeight": "24px", "fontWeight": "400"}],
+                        "body-sm": ["14px", {"lineHeight": "20px", "fontWeight": "400"}],
+                        "headline-md": ["24px", {"lineHeight": "32px", "fontWeight": "600"}],
+                        "display-lg": ["48px", {"lineHeight": "56px", "letterSpacing": "-0.02em", "fontWeight": "700"}],
+                        "headline-lg-mobile": ["28px", {"lineHeight": "36px", "fontWeight": "600"}],
+                        "headline-sm": ["20px", {"lineHeight": "28px", "fontWeight": "500"}]
+                    }
+                },
+            },
+        }
+    </script>
+    <style>
+        body { background-color: #051424; color: #d4e4fa; }
+        .glass-card {
+            background: rgba(30, 41, 59, 0.7);
+            backdrop-filter: blur(12px);
+            border: 1px solid rgba(51, 65, 85, 0.5);
+        }
+        .material-symbols-outlined {
+            font-variation-settings: 'FILL' 0, 'wght' 400, 'GRAD' 0, 'opsz' 24;
+        }
+        .platform-instagram { border-top: 2px solid #E4405F; }
+        .platform-twitter { border-top: 2px solid #1DA1F2; }
+        .platform-youtube { border-top: 2px solid #FF0000; }
+        .platform-tiktok { border-top: 2px solid #00F2EA; }
+        .platform-linkedin { border-top: 2px solid #0A66C2; }
+        ::-webkit-scrollbar { width: 6px; }
+        ::-webkit-scrollbar-track { background: #051424; }
+        ::-webkit-scrollbar-thumb { background: #1c2b3c; border-radius: 10px; }
+        .nav-active {
+            background: rgba(0, 102, 255, 0.2);
+            color: #1DA1F2;
+            border-left: 4px solid #1DA1F2;
+            border-radius: 0 0.75rem 0.75rem 0;
+        }
+        .loading-spinner {
+            border: 3px solid rgba(29, 161, 242, 0.2);
+            border-top: 3px solid #1DA1F2;
+            border-radius: 50%;
+            width: 40px;
+            height: 40px;
+            animation: spin 1s linear infinite;
+        }
+        @keyframes spin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+    </style>
+</head>
+<body class="overflow-hidden">
+    <!-- Login Modal -->
+    <div id="login-modal" class="fixed inset-0 z-50 flex items-center justify-center bg-black/70 backdrop-blur-sm">
+        <div class="glass-card rounded-2xl p-8 w-full max-w-md mx-4">
+            <div class="flex items-center gap-3 mb-6">
+                <div class="w-12 h-12 bg-[#1DA1F2] flex items-center justify-center rounded-xl">
+                    <span class="material-symbols-outlined text-white" style="font-variation-settings: 'FILL' 1;">chat_bubble</span>
+                </div>
+                <div>
+                    <h2 class="font-headline-md text-headline-md font-bold text-on-surface">Twitter Giris</h2>
+                    <p class="font-body-sm text-on-surface-variant">Cookie ile hesabini bagla</p>
+                </div>
+            </div>
+            <div class="space-y-4">
+                <div>
+                    <label class="font-label-md text-label-md block mb-2 text-on-surface-variant">auth_token</label>
+                    <input type="text" id="auth-token" placeholder="auth_token degeri" class="w-full bg-surface-container-lowest border border-outline-variant rounded-xl text-body-sm px-4 py-3 focus:ring-[#1DA1F2] focus:border-[#1DA1F2] focus:outline-none"/>
+                </div>
+                <div>
+                    <label class="font-label-md text-label-md block mb-2 text-on-surface-variant">ct0</label>
+                    <input type="text" id="ct0" placeholder="ct0 degeri" class="w-full bg-surface-container-lowest border border-outline-variant rounded-xl text-body-sm px-4 py-3 focus:ring-[#1DA1F2] focus:border-[#1DA1F2] focus:outline-none"/>
+                </div>
+                <button onclick="loginWithCookies()" class="w-full py-3 bg-[#1DA1F2] text-white font-label-md rounded-xl hover:brightness-110 active:scale-[0.98] transition-all">
+                    Giris Yap
+                </button>
+                <div id="login-error" class="text-error text-body-sm hidden"></div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Main Dashboard -->
+    <div id="dashboard" class="hidden">
+        <!-- Top Navigation Bar -->
+        <header class="flex justify-between items-center h-16 px-margin-desktop sticky top-0 z-40 bg-surface-container/80 backdrop-blur-xl border-b border-outline-variant/30 shadow-sm">
+            <div class="flex items-center gap-8">
+                <span class="font-headline-md text-headline-md font-bold tracking-tighter text-on-surface">SocialNexus</span>
+                <div class="hidden md:flex items-center bg-surface-container-lowest px-4 py-2 rounded-full border border-outline-variant/20 w-80 group focus-within:border-[#1DA1F2] transition-all">
+                    <span class="material-symbols-outlined text-on-surface-variant mr-2">search</span>
+                    <input id="global-search" type="text" placeholder="Global search..." class="bg-transparent border-none focus:ring-0 text-body-sm w-full p-0 placeholder-on-surface-variant" onkeypress="if(event.key==='Enter')handleGlobalSearch()"/>
+                </div>
+            </div>
+            <div class="flex items-center gap-4">
+                <button class="material-symbols-outlined p-2 text-on-surface-variant hover:bg-surface-bright/50 transition-colors rounded-full cursor-pointer">notifications</button>
+                <button class="material-symbols-outlined p-2 text-on-surface-variant hover:bg-surface-bright/50 transition-colors rounded-full cursor-pointer">settings</button>
+                <div class="w-10 h-10 rounded-full overflow-hidden border border-outline-variant/30 ml-2">
+                    <img alt="User" class="w-full h-full object-cover" src="https://ui-avatars.com/api/?name=Admin&background=0066ff&color=fff"/>
+                </div>
+            </div>
+        </header>
+
+        <div class="flex h-[calc(100vh-64px)] overflow-hidden">
+            <!-- Side Navigation -->
+            <aside class="flex flex-col gap-1 pt-lg bg-surface-container-low border-r border-outline-variant/20 fixed left-0 top-16 h-[calc(100vh-64px)] w-[260px] z-30">
+                <div class="px-6 mb-8">
+                    <div class="flex items-center gap-3">
+                        <div class="w-10 h-10 bg-[#1DA1F2] flex items-center justify-center rounded-xl">
+                            <span class="material-symbols-outlined text-white" style="font-variation-settings: 'FILL' 1;">hub</span>
+                        </div>
+                        <div>
+                            <h2 class="font-headline-sm text-headline-sm font-black text-[#1DA1F2] leading-tight">Mission Control</h2>
+                            <p class="font-body-sm text-on-surface-variant">Global Operations</p>
+                        </div>
+                    </div>
+                </div>
+                <nav class="flex-1 px-2 space-y-1 overflow-y-auto">
+                    <a onclick="switchTab('overview')" class="nav-item flex items-center gap-4 py-3 px-4 transition-all font-label-md text-label-md cursor-pointer rounded-xl" data-tab="overview">
+                        <span class="material-symbols-outlined">dashboard</span>
+                        Overview
+                    </a>
+                    <a onclick="switchTab('instagram')" class="nav-item flex items-center gap-4 text-on-surface-variant hover:text-on-surface hover:bg-surface-container-highest/50 py-3 px-4 transition-all font-label-md text-label-md cursor-pointer rounded-xl" data-tab="instagram">
+                        <span class="material-symbols-outlined">camera_alt</span>
+                        Instagram
+                    </a>
+                    <a onclick="switchTab('twitter')" class="nav-item flex items-center gap-4 text-on-surface-variant hover:text-on-surface hover:bg-surface-container-highest/50 py-3 px-4 transition-all font-label-md text-label-md cursor-pointer rounded-xl" data-tab="twitter">
+                        <span class="material-symbols-outlined">chat_bubble</span>
+                        Twitter
+                    </a>
+                    <a onclick="switchTab('youtube')" class="nav-item flex items-center gap-4 text-on-surface-variant hover:text-on-surface hover:bg-surface-container-highest/50 py-3 px-4 transition-all font-label-md text-label-md cursor-pointer rounded-xl" data-tab="youtube">
+                        <span class="material-symbols-outlined">play_circle</span>
+                        YouTube
+                    </a>
+                    <a onclick="switchTab('tiktok')" class="nav-item flex items-center gap-4 text-on-surface-variant hover:text-on-surface hover:bg-surface-container-highest/50 py-3 px-4 transition-all font-label-md text-label-md cursor-pointer rounded-xl" data-tab="tiktok">
+                        <span class="material-symbols-outlined">video_library</span>
+                        TikTok
+                    </a>
+                    <a onclick="switchTab('linkedin')" class="nav-item flex items-center gap-4 text-on-surface-variant hover:text-on-surface hover:bg-surface-container-highest/50 py-3 px-4 transition-all font-label-md text-label-md cursor-pointer rounded-xl" data-tab="linkedin">
+                        <span class="material-symbols-outlined">corporate_fare</span>
+                        LinkedIn
+                    </a>
+                    <a onclick="switchTab('competitor')" class="nav-item flex items-center gap-4 text-on-surface-variant hover:text-on-surface hover:bg-surface-container-highest/50 py-3 px-4 transition-all font-label-md text-label-md cursor-pointer rounded-xl" data-tab="competitor">
+                        <span class="material-symbols-outlined">compare_arrows</span>
+                        Rakip Analizi
+                    </a>
+                    <a onclick="switchTab('influencer')" class="nav-item flex items-center gap-4 text-on-surface-variant hover:text-on-surface hover:bg-surface-container-highest/50 py-3 px-4 transition-all font-label-md text-label-md cursor-pointer rounded-xl" data-tab="influencer">
+                        <span class="material-symbols-outlined">person_search</span>
+                        Influencer Bulucu
+                    </a>
+                </nav>
+                <div class="p-6 border-t border-outline-variant/20">
+                    <button onclick="logout()" class="w-full bg-primary-container text-on-primary-container font-label-md text-label-md py-3 rounded-full hover:brightness-110 active:scale-95 transition-all mb-4">
+                        Connect Account
+                    </button>
+                    <div class="space-y-1">
+                        <a href="#" class="flex items-center gap-4 text-on-surface-variant hover:text-on-surface py-2 font-body-sm text-body-sm">
+                            <span class="material-symbols-outlined">help</span>
+                            Help Center
+                        </a>
+                        <a onclick="logout()" class="flex items-center gap-4 text-on-surface-variant hover:text-on-surface py-2 font-body-sm text-body-sm cursor-pointer">
+                            <span class="material-symbols-outlined text-error">logout</span>
+                            Cikis Yap
+                        </a>
+                    </div>
+                </div>
+            </aside>
+
+            <!-- Main Content Area -->
+            <main class="flex-1 ml-[260px] p-xl overflow-y-auto bg-background">
+                <div class="max-w-max-width mx-auto">
+
+                    <!-- OVERVIEW TAB -->
+                    <div id="tab-overview" class="tab-content">
+                        <header class="mb-xl flex justify-between items-end">
+                            <div>
+                                <h1 class="font-display-lg text-display-lg text-on-surface mb-2 tracking-tight">Ecosystem Intelligence</h1>
+                                <p class="font-body-md text-body-md text-on-surface-variant">Real-time performance metrics across all connected social infrastructure.</p>
+                            </div>
+                            <div class="flex gap-4 items-center">
+                                <button onclick="loadOverview()" class="flex items-center gap-2 px-4 py-2 bg-primary-container text-on-primary-container font-label-md text-label-md rounded-xl hover:brightness-110 active:scale-95 transition-all">
+                                    <span class="material-symbols-outlined text-[18px]">refresh</span> Yenile
+                                </button>
+                                <span class="text-label-sm font-label-sm text-on-surface-variant bg-surface-container px-md py-xs rounded-full border border-outline-variant/30" id="overview-status">Yukleniyor...</span>
+                            </div>
+                        </header>
+
+                        <!-- Core Metrics -->
+                        <div class="grid grid-cols-12 gap-gutter mb-xl" id="overview-core-metrics">
+                            <div class="col-span-12 flex items-center justify-center py-12"><div class="loading-spinner"></div></div>
+                        </div>
+
+                        <!-- Platform Cards -->
+                        <div class="grid grid-cols-1 md:grid-cols-4 gap-4 mb-xl" id="overview-platform-cards">
+                            <div class="col-span-4 flex items-center justify-center py-8"><div class="loading-spinner"></div></div>
+                        </div>
+
+                        <!-- Account Health Table -->
+                        <section class="glass-card rounded-xl overflow-hidden mb-xl">
+                            <div class="p-lg border-b border-outline-variant/30">
+                                <h2 class="font-headline-sm text-headline-sm text-on-surface">Account Health Index</h2>
+                            </div>
+                            <div class="overflow-x-auto">
+                                <table class="w-full text-left border-collapse">
+                                    <thead>
+                                        <tr class="bg-surface-container-highest/30">
+                                            <th class="px-6 py-4 font-label-sm text-label-sm text-on-surface-variant uppercase tracking-widest">Platform</th>
+                                            <th class="px-6 py-4 font-label-sm text-label-sm text-on-surface-variant uppercase tracking-widest">Profile</th>
+                                            <th class="px-6 py-4 font-label-sm text-label-sm text-on-surface-variant uppercase tracking-widest text-right">Takipci</th>
+                                            <th class="px-6 py-4 font-label-sm text-label-sm text-on-surface-variant uppercase tracking-widest text-right">Etkilesim</th>
+                                            <th class="px-6 py-4 font-label-sm text-label-sm text-on-surface-variant uppercase tracking-widest text-right">Durum</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody class="divide-y divide-outline-variant/20" id="overview-health-table">
+                                        <tr><td colspan="5" class="px-6 py-8 text-center"><div class="loading-spinner mx-auto"></div></td></tr>
+                                    </tbody>
+                                </table>
+                            </div>
+                        </section>
+                    </div>
+
+                    <!-- TWITTER TAB -->
+                    <div id="tab-twitter" class="tab-content hidden">
+                        <header class="mb-xl flex flex-col md:flex-row md:items-end justify-between gap-lg">
+                            <div>
+                                <h1 class="font-headline-lg text-headline-lg text-on-surface mb-2">Twitter Analytics</h1>
+                                <p class="font-body-md text-on-surface-variant">@infoyatirim hesabinin detayli analizi</p>
+                            </div>
+                            <div class="flex items-center gap-4">
+                                <!-- Date Range Picker -->
+                                <div class="flex items-center gap-2 bg-surface-container rounded-xl p-2 border border-outline-variant/30">
+                                    <input type="date" id="date-from" class="bg-transparent text-body-sm text-on-surface border-none focus:ring-0 cursor-pointer" onchange="filterTweetsByDate()"/>
+                                    <span class="text-on-surface-variant">-</span>
+                                    <input type="date" id="date-to" class="bg-transparent text-body-sm text-on-surface border-none focus:ring-0 cursor-pointer" onchange="filterTweetsByDate()"/>
+                                </div>
+                                <div class="flex bg-surface-container rounded-xl p-1 border border-outline-variant/30">
+                                    <button onclick="setDateRange('7')" class="date-btn px-3 py-1 text-label-sm rounded-lg text-on-surface-variant hover:text-on-surface transition-all" data-days="7">7G</button>
+                                    <button onclick="setDateRange('30')" class="date-btn px-3 py-1 text-label-sm rounded-lg text-on-surface-variant hover:text-on-surface transition-all" data-days="30">30G</button>
+                                    <button onclick="setDateRange('90')" class="date-btn px-3 py-1 text-label-sm rounded-lg text-on-surface-variant hover:text-on-surface transition-all" data-days="90">90G</button>
+                                    <button onclick="setDateRange('all')" class="date-btn px-3 py-1 text-label-sm rounded-lg bg-primary-container text-on-primary-container" data-days="all">Tumu</button>
+                                </div>
+                                <span class="text-label-sm font-label-sm text-on-surface-variant bg-surface-container px-md py-xs rounded-full border border-outline-variant/30" id="twitter-status">Baglanıyor...</span>
+                            </div>
+                        </header>
+
+                        <!-- Twitter Profile Cards -->
+                        <div class="grid grid-cols-12 gap-5 mb-8" id="twitter-profile-cards">
+                            <div class="col-span-12 flex items-center justify-center py-12">
+                                <div class="loading-spinner"></div>
+                            </div>
+                        </div>
+
+                        <!-- Twitter Analytics Metrics -->
+                        <div class="grid grid-cols-12 gap-5 mb-8" id="twitter-analytics-cards">
+                            <div class="col-span-12 flex items-center justify-center py-8">
+                                <div class="loading-spinner"></div>
+                            </div>
+                        </div>
+
+                        <!-- Content Type Analysis -->
+                        <section class="mb-xl">
+                            <h2 class="font-headline-md text-headline-md text-on-surface mb-lg">Icerik Turu Analizi</h2>
+                            <div class="grid grid-cols-2 md:grid-cols-4 gap-4" id="content-type-cards">
+                                <div class="glass-card rounded-xl p-4 text-center">
+                                    <div class="loading-spinner mx-auto"></div>
+                                </div>
+                            </div>
+                        </section>
+
+                        <!-- Best Tweets Section -->
+                        <section class="mb-xl">
+                            <h2 class="font-headline-md text-headline-md text-on-surface mb-lg">En Iyi Tweetler</h2>
+                            <div class="grid grid-cols-1 md:grid-cols-3 gap-5" id="best-tweets-grid">
+                                <div class="col-span-3 flex items-center justify-center py-8">
+                                    <div class="loading-spinner"></div>
+                                </div>
+                            </div>
+                        </section>
+
+                        <!-- All Tweets Table -->
+                        <section class="mb-xl">
+                            <div class="flex justify-between items-center mb-lg">
+                                <h2 class="font-headline-md text-headline-md text-on-surface">Tum Tweetler</h2>
+                                <span class="text-label-sm font-label-sm text-on-surface-variant" id="tweet-count-label">0 tweet</span>
+                            </div>
+                            <div class="glass-card rounded-xl overflow-hidden">
+                                <div class="overflow-x-auto">
+                                    <table class="w-full text-left border-collapse" id="tweets-table">
+                                        <thead>
+                                            <tr class="bg-surface-container-highest/30">
+                                                <th class="px-4 py-3 font-label-sm text-label-sm text-on-surface-variant uppercase tracking-widest">Icerik</th>
+                                                <th class="px-4 py-3 font-label-sm text-label-sm text-on-surface-variant uppercase tracking-widest">Tur</th>
+                                                <th class="px-4 py-3 font-label-sm text-label-sm text-on-surface-variant uppercase tracking-widest text-right">Gosterim</th>
+                                                <th class="px-4 py-3 font-label-sm text-label-sm text-on-surface-variant uppercase tracking-widest text-right">Begeni</th>
+                                                <th class="px-4 py-3 font-label-sm text-label-sm text-on-surface-variant uppercase tracking-widest text-right">RT</th>
+                                                <th class="px-4 py-3 font-label-sm text-label-sm text-on-surface-variant uppercase tracking-widest text-right">Yanit</th>
+                                                <th class="px-4 py-3 font-label-sm text-label-sm text-on-surface-variant uppercase tracking-widest text-right">Etkilesim</th>
+                                            </tr>
+                                        </thead>
+                                        <tbody class="divide-y divide-outline-variant/20" id="tweets-table-body">
+                                            <tr>
+                                                <td colspan="7" class="px-4 py-8 text-center text-on-surface-variant">
+                                                    <div class="loading-spinner mx-auto"></div>
+                                                </td>
+                                            </tr>
+                                        </tbody>
+                                    </table>
+                                </div>
+                            </div>
+                        </section>
+                    </div>
+
+                    <!-- MOCK TABS -->
+                    <div id="tab-instagram" class="tab-content hidden">
+                        <header class="mb-xl">
+                            <h1 class="font-display-lg text-display-lg text-on-surface mb-2">Instagram Analytics</h1>
+                            <p class="font-body-md text-on-surface-variant">Coming soon - Instagram entegrasyonu hazirlaniyor.</p>
+                        </header>
+                        <div class="glass-card rounded-xl p-12 text-center">
+                            <span class="material-symbols-outlined text-6xl text-on-surface-variant mb-4">camera_alt</span>
+                            <h3 class="font-headline-md text-headline-md text-on-surface mb-2">Yakinda</h3>
+                            <p class="text-on-surface-variant">Instagram API entegrasyonu tamamlaniyor.</p>
+                        </div>
+                    </div>
+                    <div id="tab-youtube" class="tab-content hidden">
+                        <header class="mb-xl flex flex-col md:flex-row md:items-end justify-between gap-lg">
+                            <div>
+                                <h1 class="font-headline-lg text-headline-lg text-on-surface mb-2">YouTube Analytics</h1>
+                                <p class="font-body-md text-on-surface-variant">YouTube kanalinin detayli analizi</p>
+                            </div>
+                            <div class="flex items-center gap-4">
+                                <div class="flex items-center bg-surface-container-lowest px-4 py-2 rounded-full border border-outline-variant/20 focus-within:border-[#FF0000] transition-all">
+                                    <span class="material-symbols-outlined text-on-surface-variant mr-2">search</span>
+                                    <input id="youtube-search-input" type="text" placeholder="Kanal ara..." class="bg-transparent border-none focus:ring-0 text-body-sm w-56 p-0 placeholder-on-surface-variant" onkeypress="if(event.key==='Enter')searchYouTube()"/>
+                                </div>
+                                <button onclick="searchYouTube()" class="px-4 py-2 bg-[#FF0000] text-white font-label-md text-label-md rounded-full hover:brightness-110 active:scale-95 transition-all">Ara</button>
+                                <div class="flex bg-surface-container rounded-xl p-1 border border-outline-variant/30">
+                                    <button onclick="setYouTubeDays(7)" class="yt-days-btn px-3 py-1 text-label-sm rounded-lg text-on-surface-variant hover:text-on-surface transition-all" data-days="7">7G</button>
+                                    <button onclick="setYouTubeDays(15)" class="yt-days-btn px-3 py-1 text-label-sm rounded-lg text-on-surface-variant hover:text-on-surface transition-all" data-days="15">15G</button>
+                                    <button onclick="setYouTubeDays(30)" class="yt-days-btn px-3 py-1 text-label-sm rounded-lg bg-[#FF0000] text-white" data-days="30">30G</button>
+                                </div>
+                                <span class="text-label-sm font-label-sm text-on-surface-variant bg-surface-container px-md py-xs rounded-full border border-outline-variant/30" id="youtube-status">Hazir</span>
+                            </div>
+                        </header>
+
+                        <!-- Channel Search Results -->
+                        <div id="youtube-search-results" class="hidden mb-8">
+                            <h2 class="font-headline-sm text-headline-sm text-on-surface mb-4">Arama Sonuclari</h2>
+                            <div class="grid grid-cols-1 md:grid-cols-3 gap-4" id="youtube-search-grid"></div>
+                        </div>
+
+                        <!-- Channel Profile -->
+                        <div class="grid grid-cols-12 gap-5 mb-8" id="youtube-profile-cards">
+                            <div class="col-span-12 flex items-center justify-center py-12"><div class="loading-spinner"></div></div>
+                        </div>
+
+                        <!-- Subscriber Growth -->
+                        <section class="mb-8 hidden" id="yt-sub-section">
+                            <h2 class="font-headline-md text-headline-md text-on-surface mb-lg">Abone Degisimi</h2>
+                            <div class="grid grid-cols-12 gap-5" id="yt-sub-growth"></div>
+                        </section>
+
+                        <!-- Watch Time & View Metrics -->
+                        <section class="mb-8 hidden" id="yt-metrics-section">
+                            <h2 class="font-headline-md text-headline-md text-on-surface mb-lg">Izlenme & Sure Metrikleri</h2>
+                            <div class="grid grid-cols-2 md:grid-cols-4 gap-4" id="yt-metrics"></div>
+                        </section>
+
+                        <!-- Video Rankings -->
+                        <section class="mb-8 hidden" id="yt-rankings-section">
+                            <h2 class="font-headline-md text-headline-md text-on-surface mb-lg">Video Performansi</h2>
+                            <div class="grid grid-cols-1 md:grid-cols-2 gap-5" id="yt-rankings"></div>
+                        </section>
+
+                        <!-- Duration Analysis -->
+                        <section class="mb-8 hidden" id="yt-duration-section">
+                            <h2 class="font-headline-md text-headline-md text-on-surface mb-lg">Sure Bazli Analiz</h2>
+                            <div class="grid grid-cols-3 gap-4" id="yt-duration"></div>
+                        </section>
+
+                        <!-- Top Tags -->
+                        <section class="mb-8 hidden" id="yt-tags-section">
+                            <h2 class="font-headline-md text-headline-md text-on-surface mb-lg">Populer Etiketler</h2>
+                            <div class="grid grid-cols-2 md:grid-cols-5 gap-4" id="yt-tags"></div>
+                        </section>
+
+                        <!-- All Videos Table -->
+                        <section class="mb-xl hidden" id="yt-table-section">
+                            <div class="flex justify-between items-center mb-lg">
+                                <h2 class="font-headline-md text-headline-md text-on-surface">Tum Videolar</h2>
+                                <span class="text-label-sm font-label-sm text-on-surface-variant" id="yt-video-count-label">0 video</span>
+                            </div>
+                            <div class="glass-card rounded-xl overflow-hidden">
+                                <div class="overflow-x-auto">
+                                    <table class="w-full text-left border-collapse">
+                                        <thead>
+                                            <tr class="bg-surface-container-highest/30">
+                                                <th class="px-4 py-3 font-label-sm text-label-sm text-on-surface-variant uppercase tracking-widest">Video</th>
+                                                <th class="px-4 py-3 font-label-sm text-label-sm text-on-surface-variant uppercase tracking-widest">Sure</th>
+                                                <th class="px-4 py-3 font-label-sm text-label-sm text-on-surface-variant uppercase tracking-widest text-right">Izlenme</th>
+                                                <th class="px-4 py-3 font-label-sm text-label-sm text-on-surface-variant uppercase tracking-widest text-right">Begeni</th>
+                                                <th class="px-4 py-3 font-label-sm text-label-sm text-on-surface-variant uppercase tracking-widest text-right">Yorum</th>
+                                                <th class="px-4 py-3 font-label-sm text-label-sm text-on-surface-variant uppercase tracking-widest text-right">Tarih</th>
+                                            </tr>
+                                        </thead>
+                                        <tbody class="divide-y divide-outline-variant/20" id="yt-videos-table">
+                                            <tr><td colspan="6" class="px-4 py-8 text-center text-on-surface-variant">Kanal secin</td></tr>
+                                        </tbody>
+                                    </table>
+                                </div>
+                            </div>
+                        </section>
+                    </div>
+                    <div id="tab-tiktok" class="tab-content hidden">
+                        <header class="mb-xl flex flex-col md:flex-row md:items-end justify-between gap-lg">
+                            <div>
+                                <h1 class="font-headline-lg text-headline-lg text-on-surface mb-2">TikTok Analytics</h1>
+                                <p class="font-body-md text-on-surface-variant">TikTok hesabinin detayli analizi</p>
+                            </div>
+                            <div class="flex items-center gap-4">
+                                <div class="flex items-center bg-surface-container-lowest px-4 py-2 rounded-full border border-outline-variant/20 focus-within:border-[#00F2EA] transition-all">
+                                    <span class="material-symbols-outlined text-on-surface-variant mr-2">person</span>
+                                    <input id="tiktok-username-input" type="text" placeholder="@kullaniciadi" value="infoyatirim" class="bg-transparent border-none focus:ring-0 text-body-sm w-48 p-0 placeholder-on-surface-variant" onkeypress="if(event.key==='Enter')loadTikTokData()"/>
+                                </div>
+                                <div class="flex items-center gap-2 bg-surface-container rounded-xl p-2 border border-outline-variant/30">
+                                    <input type="date" id="tiktok-date-from" class="bg-transparent text-body-sm text-on-surface border-none focus:ring-0 cursor-pointer" onchange="loadTikTokData()"/>
+                                    <span class="text-on-surface-variant">-</span>
+                                    <input type="date" id="tiktok-date-to" class="bg-transparent text-body-sm text-on-surface border-none focus:ring-0 cursor-pointer" onchange="loadTikTokData()"/>
+                                </div>
+                                <div class="flex bg-surface-container rounded-xl p-1 border border-outline-variant/30">
+                                    <button onclick="setTikTokRange('7')" class="tiktok-range-btn px-3 py-1 text-label-sm rounded-lg text-on-surface-variant hover:text-on-surface transition-all" data-days="7">7G</button>
+                                    <button onclick="setTikTokRange('30')" class="tiktok-range-btn px-3 py-1 text-label-sm rounded-lg text-on-surface-variant hover:text-on-surface transition-all" data-days="30">30G</button>
+                                    <button onclick="setTikTokRange('90')" class="tiktok-range-btn px-3 py-1 text-label-sm rounded-lg text-on-surface-variant hover:text-on-surface transition-all" data-days="90">90G</button>
+                                    <button onclick="setTikTokRange('all')" class="tiktok-range-btn px-3 py-1 text-label-sm rounded-lg bg-[#00F2EA] text-black" data-days="all">Tumu</button>
+                                </div>
+                                <button onclick="loadTikTokData()" class="px-4 py-2 bg-[#00F2EA] text-black font-label-md text-label-md rounded-full hover:brightness-110 active:scale-95 transition-all">Yukle</button>
+                                <span class="text-label-sm font-label-sm text-on-surface-variant bg-surface-container px-md py-xs rounded-full border border-outline-variant/30" id="tiktok-status">Hazir</span>
+                            </div>
+                        </header>
+
+                        <!-- Profile + Follower Growth -->
+                        <div class="grid grid-cols-12 gap-5 mb-8" id="tiktok-profile-cards">
+                            <div class="col-span-12 flex items-center justify-center py-12"><div class="loading-spinner"></div></div>
+                        </div>
+
+                        <!-- Follower Growth Chart -->
+                        <section class="mb-8">
+                            <h2 class="font-headline-md text-headline-md text-on-surface mb-lg">Takipci Artisi</h2>
+                            <div class="grid grid-cols-12 gap-5" id="tiktok-follower-growth">
+                                <div class="col-span-12 flex items-center justify-center py-8"><div class="loading-spinner"></div></div>
+                            </div>
+                        </section>
+
+                        <!-- View Quality Metrics -->
+                        <section class="mb-8">
+                            <h2 class="font-headline-md text-headline-md text-on-surface mb-lg">Izlenme Kalitesi</h2>
+                            <div class="grid grid-cols-2 md:grid-cols-4 gap-4" id="tiktok-view-quality">
+                                <div class="col-span-4 flex items-center justify-center py-8"><div class="loading-spinner"></div></div>
+                            </div>
+                        </section>
+
+                        <!-- Engagement Metrics -->
+                        <section class="mb-8">
+                            <h2 class="font-headline-md text-headline-md text-on-surface mb-lg">Etkilesim Metrikleri</h2>
+                            <div class="grid grid-cols-2 md:grid-cols-4 gap-4" id="tiktok-engagement">
+                                <div class="col-span-4 flex items-center justify-center py-8"><div class="loading-spinner"></div></div>
+                            </div>
+                        </section>
+
+                        <!-- Best & Worst Videos -->
+                        <section class="mb-8">
+                            <h2 class="font-headline-md text-headline-md text-on-surface mb-lg">Video Performansi</h2>
+                            <div class="grid grid-cols-1 md:grid-cols-2 gap-5" id="tiktok-video-rankings">
+                                <div class="col-span-2 flex items-center justify-center py-8"><div class="loading-spinner"></div></div>
+                            </div>
+                        </section>
+
+                        <!-- Video Format Analysis -->
+                        <section class="mb-8">
+                            <h2 class="font-headline-md text-headline-md text-on-surface mb-lg">Format Bazli Analiz</h2>
+                            <div class="grid grid-cols-3 gap-4" id="tiktok-formats">
+                                <div class="col-span-3 flex items-center justify-center py-8"><div class="loading-spinner"></div></div>
+                            </div>
+                        </section>
+
+                        <!-- Top Hashtags -->
+                        <section class="mb-8">
+                            <h2 class="font-headline-md text-headline-md text-on-surface mb-lg">Populer Hashtagler</h2>
+                            <div class="grid grid-cols-2 md:grid-cols-5 gap-4" id="tiktok-hashtags">
+                                <div class="col-span-5 flex items-center justify-center py-8"><div class="loading-spinner"></div></div>
+                            </div>
+                        </section>
+
+                        <!-- All Videos Table -->
+                        <section class="mb-xl">
+                            <div class="flex justify-between items-center mb-lg">
+                                <h2 class="font-headline-md text-headline-md text-on-surface">Tum Videolar</h2>
+                                <span class="text-label-sm font-label-sm text-on-surface-variant" id="tiktok-video-count-label">0 video</span>
+                            </div>
+                            <div class="glass-card rounded-xl overflow-hidden">
+                                <div class="overflow-x-auto">
+                                    <table class="w-full text-left border-collapse">
+                                        <thead>
+                                            <tr class="bg-surface-container-highest/30">
+                                                <th class="px-4 py-3 font-label-sm text-label-sm text-on-surface-variant uppercase tracking-widest">Video</th>
+                                                <th class="px-4 py-3 font-label-sm text-label-sm text-on-surface-variant uppercase tracking-widest">Sure</th>
+                                                <th class="px-4 py-3 font-label-sm text-label-sm text-on-surface-variant uppercase tracking-widest text-right">Izlenme</th>
+                                                <th class="px-4 py-3 font-label-sm text-label-sm text-on-surface-variant uppercase tracking-widest text-right">Begeni</th>
+                                                <th class="px-4 py-3 font-label-sm text-label-sm text-on-surface-variant uppercase tracking-widest text-right">Yorum</th>
+                                                <th class="px-4 py-3 font-label-sm text-label-sm text-on-surface-variant uppercase tracking-widest text-right">Kaydetme</th>
+                                                <th class="px-4 py-3 font-label-sm text-label-sm text-on-surface-variant uppercase tracking-widest text-right">Etkilesim</th>
+                                            </tr>
+                                        </thead>
+                                        <tbody class="divide-y divide-outline-variant/20" id="tiktok-videos-table">
+                                            <tr><td colspan="7" class="px-4 py-8 text-center"><div class="loading-spinner mx-auto"></div></td></tr>
+                                        </tbody>
+                                    </table>
+                                </div>
+                            </div>
+                        </section>
+                    </div>
+                    <!-- COMPETITOR TAB -->
+                    <div id="tab-competitor" class="tab-content hidden">
+                        <header class="mb-xl flex flex-col md:flex-row md:items-end justify-between gap-lg">
+                            <div>
+                                <h1 class="font-headline-lg text-headline-lg text-on-surface mb-2">Rakip Analizi</h1>
+                                <p class="font-body-md text-on-surface-variant">Rakiplerinizin tum platformlardaki hesaplarini analiz edin</p>
+                            </div>
+                            <div class="flex items-center gap-4">
+                                <div class="flex items-center bg-surface-container-lowest px-4 py-2 rounded-full border border-outline-variant/20 w-96 focus-within:border-primary transition-all">
+                                    <span class="material-symbols-outlined text-on-surface-variant mr-2">search</span>
+                                    <input id="competitor-search-input" type="text" placeholder="Rakip adi veya kullanici adi..." class="bg-transparent border-none focus:ring-0 text-body-sm w-full p-0 placeholder-on-surface-variant" onkeypress="if(event.key==='Enter')searchCompetitor()"/>
+                                </div>
+                                <button onclick="searchCompetitor()" class="px-6 py-2 bg-primary-container text-on-primary-container font-label-md text-label-md rounded-full hover:brightness-110 active:scale-95 transition-all">Ara</button>
+                                <span class="text-label-sm font-label-sm text-on-surface-variant bg-surface-container px-md py-xs rounded-full border border-outline-variant/30" id="competitor-status">Hazir</span>
+                            </div>
+                        </header>
+
+                        <!-- Arama Sonuclari - Platform Kartlari -->
+                        <div id="competitor-results" class="hidden">
+                            <h2 class="font-headline-md text-headline-md text-on-surface mb-lg" id="competitor-results-title">Arama Sonuclari</h2>
+                            <div class="grid grid-cols-1 md:grid-cols-3 lg:grid-cols-5 gap-4 mb-xl" id="competitor-platform-cards"></div>
+                        </div>
+
+                        <!-- Detay Analiz Alani -->
+                        <div id="competitor-detail" class="hidden">
+                            <div class="flex items-center gap-4 mb-xl">
+                                <button onclick="closeCompetitorDetail()" class="flex items-center gap-2 text-on-surface-variant hover:text-on-surface transition-colors">
+                                    <span class="material-symbols-outlined">arrow_back</span>
+                                    <span class="font-label-md text-label-md">Geri Don</span>
+                                </button>
+                                <h2 class="font-headline-md text-headline-md text-on-surface" id="competitor-detail-title">Detay Analiz</h2>
+                                <span class="text-label-sm font-label-sm px-md py-xs rounded-full border" id="competitor-detail-badge"></span>
+                            </div>
+
+                            <!-- Profil Cards -->
+                            <div class="grid grid-cols-12 gap-5 mb-8" id="competitor-profile-cards">
+                                <div class="col-span-12 flex items-center justify-center py-8"><div class="loading-spinner"></div></div>
+                            </div>
+
+                            <!-- Analytics Cards -->
+                            <div class="grid grid-cols-12 gap-5 mb-8" id="competitor-analytics-cards"></div>
+
+                            <!-- Icerik Tablosu -->
+                            <section class="mb-xl">
+                                <div class="flex justify-between items-center mb-lg">
+                                    <h2 class="font-headline-md text-headline-md text-on-surface" id="competitor-content-title">Icerikler</h2>
+                                    <span class="text-label-sm font-label-sm text-on-surface-variant" id="competitor-content-count"></span>
+                                </div>
+                                <div class="glass-card rounded-xl overflow-hidden">
+                                    <div class="overflow-x-auto">
+                                        <table class="w-full text-left border-collapse">
+                                            <thead>
+                                                <tr class="bg-surface-container-highest/30" id="competitor-table-header"></tr>
+                                            </thead>
+                                            <tbody class="divide-y divide-outline-variant/20" id="competitor-table-body">
+                                                <tr><td colspan="6" class="px-4 py-8 text-center"><div class="loading-spinner mx-auto"></div></td></tr>
+                                            </tbody>
+                                        </table>
+                                    </div>
+                                </div>
+                            </section>
+                        </div>
+
+                        <!-- Baslangic Durumu -->
+                        <div id="competitor-empty" class="flex flex-col items-center justify-center py-20">
+                            <span class="material-symbols-outlined text-7xl text-on-surface-variant/30 mb-6">compare_arrows</span>
+                            <h3 class="font-headline-md text-headline-md text-on-surface-variant mb-2">Rakip Arayin</h3>
+                            <p class="text-on-surface-variant text-center max-w-md">Instagram, Twitter, YouTube, TikTok ve LinkedIn'de rakiplerinizin hesaplarini analiz edin. Arama cubuguna bir isim veya kullanici adi yazin.</p>
+                        </div>
+                    </div>
+
+                    <div id="tab-influencer" class="tab-content hidden">
+                        <header class="mb-xl flex flex-col md:flex-row md:items-end justify-between gap-lg">
+                            <div>
+                                <h1 class="font-headline-lg text-headline-lg text-on-surface mb-2">Influencer Bulucu</h1>
+                                <p class="font-body-md text-on-surface-variant">Borsa, yatirim ve finans konularinda icerik ureten influencer'lari kesfedin</p>
+                            </div>
+                            <div class="flex items-center gap-4">
+                                <div class="flex items-center bg-surface-container-lowest px-4 py-2 rounded-full border border-outline-variant/20 w-96 focus-within:border-primary transition-all">
+                                    <span class="material-symbols-outlined text-on-surface-variant mr-2">search</span>
+                                    <input id="influencer-search-input" type="text" placeholder="Konu veya anahtar kelime..." class="bg-transparent border-none focus:ring-0 text-body-sm w-full p-0 placeholder-on-surface-variant" onkeypress="if(event.key==='Enter')searchInfluencer()"/>
+                                </div>
+                                <button onclick="searchInfluencer()" class="px-6 py-2 bg-primary-container text-on-primary-container font-label-md text-label-md rounded-full hover:brightness-110 active:scale-95 transition-all">Ara</button>
+                                <span class="text-label-sm font-label-sm text-on-surface-variant bg-surface-container px-md py-xs rounded-full border border-outline-variant/30" id="influencer-status">Hazir</span>
+                            </div>
+                        </header>
+
+                        <!-- Hizli Tag Butonlari -->
+                        <div class="flex flex-wrap gap-2 mb-xl">
+                            <button onclick="searchInfluencerTag('borsa')" class="px-4 py-2 bg-tertiary-container text-on-tertiary-container font-label-sm text-label-sm rounded-full hover:brightness-110 active:scale-95 transition-all">borsa</button>
+                            <button onclick="searchInfluencerTag('hisse senedi')" class="px-4 py-2 bg-tertiary-container text-on-tertiary-container font-label-sm text-label-sm rounded-full hover:brightness-110 active:scale-95 transition-all">hisse senedi</button>
+                            <button onclick="searchInfluencerTag('yatirim')" class="px-4 py-2 bg-tertiary-container text-on-tertiary-container font-label-sm text-label-sm rounded-full hover:brightness-110 active:scale-95 transition-all">yatirim</button>
+                            <button onclick="searchInfluencerTag('ekonomi')" class="px-4 py-2 bg-tertiary-container text-on-tertiary-container font-label-sm text-label-sm rounded-full hover:brightness-110 active:scale-95 transition-all">ekonomi</button>
+                            <button onclick="searchInfluencerTag('finans')" class="px-4 py-2 bg-tertiary-container text-on-tertiary-container font-label-sm text-label-sm rounded-full hover:brightness-110 active:scale-95 transition-all">finans</button>
+                            <button onclick="searchInfluencerTag('kripto para')" class="px-4 py-2 bg-tertiary-container text-on-tertiary-container font-label-sm text-label-sm rounded-full hover:brightness-110 active:scale-95 transition-all">kripto para</button>
+                            <button onclick="searchInfluencerTag('forex')" class="px-4 py-2 bg-tertiary-container text-on-tertiary-container font-label-sm text-label-sm rounded-full hover:brightness-110 active:scale-95 transition-all">forex</button>
+                            <button onclick="searchInfluencerTag('viop')" class="px-4 py-2 bg-tertiary-container text-on-tertiary-container font-label-sm text-label-sm rounded-full hover:brightness-110 active:scale-95 transition-all">viop</button>
+                            <button onclick="searchInfluencerTag('bist')" class="px-4 py-2 bg-tertiary-container text-on-tertiary-container font-label-sm text-label-sm rounded-full hover:brightness-110 active:scale-95 transition-all">bist</button>
+                            <button onclick="searchInfluencerTag('altin')" class="px-4 py-2 bg-tertiary-container text-on-tertiary-container font-label-sm text-label-sm rounded-full hover:brightness-110 active:scale-95 transition-all">altin</button>
+                            <button onclick="searchInfluencerTag('dolar')" class="px-4 py-2 bg-tertiary-container text-on-tertiary-container font-label-sm text-label-sm rounded-full hover:brightness-110 active:scale-95 transition-all">dolar</button>
+                            <button onclick="searchInfluencerTag('fintech')" class="px-4 py-2 bg-tertiary-container text-on-tertiary-container font-label-sm text-label-sm rounded-full hover:brightness-110 active:scale-95 transition-all">fintech</button>
+                        </div>
+
+                        <!-- Arama Sonuclari -->
+                        <div id="influencer-results" class="hidden">
+                            <h2 class="font-headline-md text-headline-md text-on-surface mb-lg" id="influencer-results-title">Arama Sonuclari</h2>
+                            <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-5" id="influencer-cards"></div>
+                        </div>
+
+                        <!-- Detay Analiz Alani -->
+                        <div id="influencer-detail" class="hidden">
+                            <div class="flex items-center gap-4 mb-xl">
+                                <button onclick="closeInfluencerDetail()" class="flex items-center gap-2 text-on-surface-variant hover:text-on-surface transition-colors">
+                                    <span class="material-symbols-outlined">arrow_back</span>
+                                    <span class="font-label-md text-label-md">Geri Don</span>
+                                </button>
+                                <h2 class="font-headline-md text-headline-md text-on-surface" id="influencer-detail-title">Detay Analiz</h2>
+                            </div>
+                            <div id="influencer-detail-content"></div>
+                        </div>
+
+                        <!-- Baslangic Durumu -->
+                        <div id="influencer-empty" class="flex flex-col items-center justify-center py-20">
+                            <span class="material-symbols-outlined text-7xl text-on-surface-variant/30 mb-6">person_search</span>
+                            <h3 class="font-headline-md text-headline-md text-on-surface-variant mb-2">Influencer Kesfedin</h3>
+                            <p class="text-on-surface-variant text-center max-w-md">Borsa, yatirim ve finans konularinda icerik ureten influencer'lari bulmak icin yukardaki tag'lara tiklayin veya anahtar kelime girin.</p>
+                        </div>
+                    </div>
+
+                    <div id="tab-linkedin" class="tab-content hidden">
+                        <header class="mb-xl">
+                            <h1 class="font-display-lg text-display-lg text-on-surface mb-2">LinkedIn Analytics</h1>
+                            <p class="font-body-md text-on-surface-variant">Coming soon - LinkedIn entegrasyonu hazirlaniyor.</p>
+                        </header>
+                        <div class="glass-card rounded-xl p-12 text-center">
+                            <span class="material-symbols-outlined text-6xl text-on-surface-variant mb-4">corporate_fare</span>
+                            <h3 class="font-headline-md text-headline-md text-on-surface mb-2">Yakinda</h3>
+                            <p class="text-on-surface-variant">LinkedIn API entegrasyonu tamamlaniyor.</p>
+                        </div>
+                    </div>
+
+                </div>
+            </main>
+        </div>
+    </div>
+
+    <script src="/static/app.js"></script>
+</body>
+</html>
