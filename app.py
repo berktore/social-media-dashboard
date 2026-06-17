@@ -25,13 +25,11 @@ def login_required(f):
         return f(*args, **kwargs)
     return decorated
 
-# Cookie'leri yukle
-cookies_file = "cookies.json"
-auth_token = None
-ct0 = None
-
-if os.path.exists(cookies_file):
-    with open(cookies_file) as f:
+# Cookie'leri yukle (env var > dosya)
+auth_token = os.environ.get('TWITTER_AUTH_TOKEN') or None
+ct0 = os.environ.get('TWITTER_CT0') or None
+if not auth_token and os.path.exists("cookies.json"):
+    with open("cookies.json") as f:
         cookies = json.load(f)
         auth_token = cookies.get("auth_token")
         ct0 = cookies.get("ct0")
