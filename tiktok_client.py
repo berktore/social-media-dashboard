@@ -4,7 +4,12 @@ import re
 import subprocess
 from datetime import datetime
 
-from curl_cffi import requests
+try:
+    from curl_cffi import requests as _requests
+    TIKTOK_IMPERSONATE = "chrome131"
+except ImportError:
+    import httpx as _requests
+    TIKTOK_IMPERSONATE = None
 
 HEADERS = {
     'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/131.0.0.0 Safari/537.36',
@@ -20,7 +25,10 @@ class TikTokClient:
 
     def _request(self, url, headers=None):
         h = {**HEADERS, **(headers or {})}
-        return requests.get(url, impersonate="chrome131", headers=h, timeout=20)
+        kwargs = {"headers": h, "timeout": 20}
+        if TIKTOK_IMPERSONATE:
+            kwargs["impersonate"] = TIKTOK_IMPERSONATE
+        return _requests.get(url, **kwargs)
 
     def _load_history(self):
         if os.path.exists(self.history_file):
