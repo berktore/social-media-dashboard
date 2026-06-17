@@ -3,50 +3,6 @@
     "query": "borsa",
     "influencers": [
       {
-        "username": "infoyatirim",
-        "name": "İnfo Yatırım Menkul Değerler",
-        "source": "twitter",
-        "platforms": {
-          "twitter": {
-            "username": "infoyatirim",
-            "followers": 100075
-          }
-        }
-      },
-      {
-        "username": "borsa_gunluk",
-        "name": "BORSA GÜNLÜK",
-        "source": "twitter",
-        "platforms": {
-          "twitter": {
-            "username": "borsa_gunluk",
-            "followers": 40
-          }
-        }
-      },
-      {
-        "username": "borsa_yatirimci",
-        "name": "Borsa Yatırımcısı",
-        "source": "twitter",
-        "platforms": {
-          "twitter": {
-            "username": "borsa_yatirimci",
-            "followers": 33
-          }
-        }
-      },
-      {
-        "username": "traborsa",
-        "name": "BORSA DOST 🥷🏿",
-        "source": "twitter",
-        "platforms": {
-          "twitter": {
-            "username": "traborsa",
-            "followers": 483
-          }
-        }
-      },
-      {
         "username": "yatirimsepeti",
         "name": "💰Yatırım Sepeti🛒",
         "source": "tiktok",
@@ -88,17 +44,6 @@
     "query": "yatirim",
     "influencers": [
       {
-        "username": "infoyatirim",
-        "name": "İnfo Yatırım Menkul Değerler",
-        "source": "twitter",
-        "platforms": {
-          "twitter": {
-            "username": "infoyatirim",
-            "followers": 100075
-          }
-        }
-      },
-      {
         "username": "yatirimsepeti",
         "name": "💰Yatırım Sepeti🛒",
         "source": "tiktok",
@@ -117,7 +62,7 @@
         "platforms": {
           "tiktok": {
             "username": "yatirimciadam",
-            "followers": 1147,
+            "followers": 1148,
             "nickname": "Yatırımcı Adam"
           }
         }
@@ -152,28 +97,6 @@
     "query": "ekonomi",
     "influencers": [
       {
-        "username": "infoyatirim",
-        "name": "İnfo Yatırım Menkul Değerler",
-        "source": "twitter",
-        "platforms": {
-          "twitter": {
-            "username": "infoyatirim",
-            "followers": 100075
-          }
-        }
-      },
-      {
-        "username": "dunyaekonomi",
-        "name": "dunyaekonomi.com",
-        "source": "twitter",
-        "platforms": {
-          "twitter": {
-            "username": "dunyaekonomi",
-            "followers": 1066
-          }
-        }
-      },
-      {
         "username": "piyasalar",
         "name": "user052494",
         "source": "tiktok",
@@ -202,17 +125,6 @@
   "finans": {
     "query": "finans",
     "influencers": [
-      {
-        "username": "infoyatirim",
-        "name": "İnfo Yatırım Menkul Değerler",
-        "source": "twitter",
-        "platforms": {
-          "twitter": {
-            "username": "infoyatirim",
-            "followers": 100075
-          }
-        }
-      },
       {
         "username": "finansbank",
         "name": "finansbank",
