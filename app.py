@@ -199,9 +199,7 @@ def api_tiktok_analytics(username):
         profile = tiktok.get_user_info(username)
         if 'error' in profile:
             return jsonify(profile)
-        videos = tiktok.get_user_videos(username, count=50)
-        if not videos:
-            return jsonify({'error': 'Video bulunamadi'})
+        videos = tiktok.get_user_videos(username, count=50) or []
 
         # --- Tarih araligi filtresi ---
         from_date = request.args.get('from', '')
