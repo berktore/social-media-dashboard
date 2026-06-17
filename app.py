@@ -10,7 +10,7 @@ from tiktok_client import TikTokClient
 from youtube_client import YouTubeClient
 
 app = Flask(__name__)
-app.secret_key = os.environ.get('SECRET_KEY', secrets.token_hex(16))
+app.secret_key = os.environ.get('SECRET_KEY', 'socialnexus-2024-sabit-anahtar-degistirme')
 
 # Login credentials
 USERNAME = 'info'
