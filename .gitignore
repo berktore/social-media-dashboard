@@ -15,3 +15,7 @@ login_result.html
 *.txt.bak
 .DS_Store
 test_*.py
+
+test_out/
+cookies_vercel.txt
+cookies.txt
