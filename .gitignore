@@ -4,7 +4,14 @@ __pycache__/
 venv/
 .venv/
 cookies.json
+cookies.txt
 tiktok_history.json
 twitter_history.json
+follower_history.json
+youtube_history.json
+tiktok_response.json
+*.log
+login_result.html
 *.txt.bak
 .DS_Store
+test_*.py
