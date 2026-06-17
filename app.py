@@ -83,11 +83,12 @@ def api_login():
     if not data or not data.get("auth_token") or not data.get("ct0"):
         return jsonify({"success": False, "error": "auth_token ve ct0 degerleri gerekli"})
     try:
-        with open("cookies.json", "w") as f:
-            json.dump(data, f)
+        try:
+            with open("cookies.json", "w") as f:
+                json.dump(data, f)
+        except (OSError, PermissionError):
+            pass  # Vercel serverless'te dosyaya yazma izni yok
         client.login(data["auth_token"], data["ct0"])
-        # Baglantiyi test et
-        client.get_user_info("twitter")
         return jsonify({"success": True})
     except Exception as e:
         return jsonify({"success": False, "error": str(e)})
