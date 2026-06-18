@@ -441,7 +441,7 @@ def api_youtube_analytics(channel_id):
         info = youtube.get_channel_info(channel_id)
         if 'error' in info:
             return jsonify(info)
-        videos = youtube.get_uploads(channel_id, count=50)
+        videos = youtube.get_uploads(channel_id, count=200)
 
         # Tarih filtresi: son N gun
         from datetime import timedelta

@@ -144,8 +144,7 @@ class YouTubeClient:
         return results
 
     def get_uploads(self, channel_id, count=30):
-        """Kanal yuklemelerini cek."""
-        # Uploads playlist ID'sini bul
+        """Kanal yuklemelerini cek (sayfalamali)."""
         ch_data = self._api_get(f'{self.BASE_URL}/channels', {
             'part': 'contentDetails',
             'id': channel_id,
@@ -154,54 +153,62 @@ class YouTubeClient:
             return []
         uploads_id = ch_data['items'][0]['contentDetails']['relatedPlaylists']['uploads']
 
-        # Playlist videolarini cek
-        pl_data = self._api_get(f'{self.BASE_URL}/playlistItems', {
-            'part': 'snippet',
-            'playlistId': uploads_id,
-            'maxResults': min(count, 50),
-        })
+        all_ids = []
+        page_token = None
 
-        video_ids = []
-        for item in pl_data.get('items', []):
-            vid = item.get('snippet', {}).get('resourceId', {}).get('videoId', '')
-            if vid:
-                video_ids.append(vid)
+        while len(all_ids) < count:
+            params = {
+                'part': 'snippet',
+                'playlistId': uploads_id,
+                'maxResults': min(50, count - len(all_ids)),
+            }
+            if page_token:
+                params['pageToken'] = page_token
 
-        if not video_ids:
+            pl_data = self._api_get(f'{self.BASE_URL}/playlistItems', params)
+
+            for item in pl_data.get('items', []):
+                vid = item.get('snippet', {}).get('resourceId', {}).get('videoId', '')
+                if vid:
+                    all_ids.append(vid)
+
+            page_token = pl_data.get('nextPageToken')
+            if not page_token or not pl_data.get('items'):
+                break
+
+        if not all_ids:
             return []
 
-        # Video detaylarini cek
-        vids_data = self._api_get(f'{self.BASE_URL}/videos', {
-            'part': 'snippet,statistics,contentDetails',
-            'id': ','.join(video_ids),
-            'maxResults': min(count, 50),
-        })
-
+        # YouTube API video ID'leri 50'li gruplar halinde cekilebilir
         videos = []
-        for item in vids_data.get('items', []):
-            snippet = item.get('snippet', {})
-            stats = item.get('statistics', {})
-            content = item.get('contentDetails', {})
-
-            # Suresi parse et (PT1H2M3S -> saniye)
-            duration_str = content.get('duration', 'PT0S')
-            dur_sec = self._parse_duration(duration_str)
-
-            videos.append({
-                'id': item['id'],
-                'title': snippet.get('title', ''),
-                'description': snippet.get('description', '')[:200],
-                'thumbnail': snippet.get('thumbnails', {}).get('high', {}).get('url', ''),
-                'published_at': snippet.get('publishedAt', ''),
-                'category_id': snippet.get('categoryId', ''),
-                'tags': snippet.get('tags', []),
-                'duration': dur_sec,
-                'duration_str': duration_str,
-                'view_count': int(stats.get('viewCount', 0)),
-                'like_count': int(stats.get('likeCount', 0)),
-                'comment_count': int(stats.get('commentCount', 0)),
-                'favorite_count': int(stats.get('favoriteCount', 0)),
+        for i in range(0, len(all_ids), 50):
+            batch = all_ids[i:i+50]
+            vids_data = self._api_get(f'{self.BASE_URL}/videos', {
+                'part': 'snippet,statistics,contentDetails',
+                'id': ','.join(batch),
+                'maxResults': 50,
             })
+            for item in vids_data.get('items', []):
+                snippet = item.get('snippet', {})
+                stats = item.get('statistics', {})
+                content = item.get('contentDetails', {})
+                duration_str = content.get('duration', 'PT0S')
+                dur_sec = self._parse_duration(duration_str)
+                videos.append({
+                    'id': item['id'],
+                    'title': snippet.get('title', ''),
+                    'description': snippet.get('description', '')[:200],
+                    'thumbnail': snippet.get('thumbnails', {}).get('high', {}).get('url', ''),
+                    'published_at': snippet.get('publishedAt', ''),
+                    'category_id': snippet.get('categoryId', ''),
+                    'tags': snippet.get('tags', []),
+                    'duration': dur_sec,
+                    'duration_str': duration_str,
+                    'view_count': int(stats.get('viewCount', 0)),
+                    'like_count': int(stats.get('likeCount', 0)),
+                    'comment_count': int(stats.get('commentCount', 0)),
+                    'favorite_count': int(stats.get('favoriteCount', 0)),
+                })
 
         return videos
 
