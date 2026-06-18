@@ -132,9 +132,11 @@ class TikTokClient:
                     continue
                 return {'error': str(e)}
 
-    def get_user_videos(self, username, count=30):
+    CACHE_FILE = "tiktok_videos_cache.json"
+
+    def _try_ytdlp(self, username, count):
         if not HAS_YT_DLP:
-            return []
+            return None
         try:
             ydl_opts = {
                 'quiet': True,
@@ -144,40 +146,117 @@ class TikTokClient:
             with yt_dlp.YoutubeDL(ydl_opts) as ydl:
                 info = ydl.extract_info(f'https://www.tiktok.com/@{username}', download=False)
                 entries = info.get('entries', [])
-                if not entries:
-                    return []
-
             videos = []
             for item in entries:
                 if not item:
                     continue
                 desc = item.get('description', '') or item.get('title', '')
-                upload_date = item.get('upload_date', '')
-                timestamp = item.get('timestamp', 0)
-                duration = item.get('duration', 0)
-
                 hashtags = re.findall(r'#(\w+)', desc)
-
                 thumbs = item.get('thumbnails', [])
-                cover = thumbs[0]['url'] if thumbs else ''
-
                 videos.append({
                     'id': item.get('id', ''),
                     'desc': desc,
-                    'created_at': timestamp,
-                    'upload_date': upload_date,
-                    'duration': duration,
+                    'created_at': item.get('timestamp', 0),
+                    'upload_date': item.get('upload_date', ''),
+                    'duration': item.get('duration', 0),
                     'play_count': item.get('view_count', 0) or 0,
                     'like_count': item.get('like_count', 0) or 0,
                     'comment_count': item.get('comment_count', 0) or 0,
                     'share_count': item.get('repost_count', 0) or 0,
                     'save_count': item.get('save_count', 0) or 0,
-                    'cover': cover,
+                    'cover': thumbs[0]['url'] if thumbs else '',
                     'music': item.get('track', ''),
                     'hashtags': hashtags,
                     'url': item.get('url', ''),
                 })
-
             return videos
         except Exception:
-            return []
+            return None
+
+    def _save_cache(self, videos):
+        if not videos:
+            return
+        try:
+            data = {'timestamp': datetime.now().isoformat(), 'videos': videos}
+            with open(self.CACHE_FILE, 'w', encoding='utf-8') as f:
+                json.dump(data, f, ensure_ascii=False, indent=2)
+        except (OSError, IOError):
+            pass
+
+    def _load_cache(self):
+        try:
+            if os.path.exists(self.CACHE_FILE):
+                with open(self.CACHE_FILE, 'r', encoding='utf-8') as f:
+                    return json.load(f).get('videos', [])
+        except (OSError, IOError, json.JSONDecodeError):
+            pass
+        return None
+
+    def _try_api(self, username, count):
+        try:
+            r = self._request(f'https://www.tiktok.com/@{username}')
+            m = re.search(r'<script id="__UNIVERSAL_DATA_FOR_REHYDRATION__"[^>]*>(.*?)</script>', r.text, re.DOTALL)
+            if not m:
+                return None
+            data = json.loads(m.group(1))
+            sc = data['__DEFAULT_SCOPE__']
+            user_info = sc.get('webapp.user-detail', {}).get('userInfo', {})
+            sec_uid = user_info.get('user', {}).get('secUid', '')
+            if not sec_uid:
+                return None
+
+            headers = {
+                'Referer': f'https://www.tiktok.com/@{username}',
+                'User-Agent': HEADERS['User-Agent'],
+            }
+            r2 = self._request(
+                f'https://www.tiktok.com/api/post/item_list/'
+                f'?aid=1988&secUid={sec_uid}&count={count}&cursor=0&sourceType=8&type=5',
+                headers=headers,
+            )
+            r2j = r2.json()
+            items = r2j.get('itemList', [])
+            if not items:
+                return None
+
+            videos = []
+            for item in items:
+                stats = item.get('stats', {})
+                video = item.get('video', {})
+                author = item.get('author', {})
+                desc = item.get('desc', '') or ''
+                hashtags = [t.get('name', '') for t in item.get('textExtra', []) if t.get('hashtagName')]
+
+                videos.append({
+                    'id': item.get('id', ''),
+                    'desc': desc,
+                    'created_at': item.get('createTime', 0),
+                    'upload_date': '',
+                    'duration': video.get('duration', 0),
+                    'play_count': stats.get('playCount', 0) or 0,
+                    'like_count': stats.get('diggCount', 0) or 0,
+                    'comment_count': stats.get('commentCount', 0) or 0,
+                    'share_count': stats.get('shareCount', 0) or 0,
+                    'save_count': stats.get('collectCount', 0) or 0,
+                    'cover': (video.get('cover', {}) or {}).get('url_list', [''])[0],
+                    'music': item.get('music', {}).get('title', ''),
+                    'hashtags': hashtags,
+                    'url': f'https://www.tiktok.com/@{username}/video/{item.get("id", "")}',
+                })
+            return videos
+        except Exception:
+            return None
+
+    def get_user_videos(self, username, count=30):
+        videos = self._try_ytdlp(username, count)
+        if videos is not None and len(videos) > 0:
+            self._save_cache(videos)
+            return videos
+        videos = self._try_api(username, count)
+        if videos is not None and len(videos) > 0:
+            self._save_cache(videos)
+            return videos
+        cached = self._load_cache()
+        if cached:
+            return cached
+        return videos or []
