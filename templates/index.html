@@ -170,6 +170,9 @@
                 <button onclick="loginWithCookies()" class="w-full py-3 bg-[#1DA1F2] text-white font-label-md rounded-xl hover:brightness-110 active:scale-[0.98] transition-all">
                     Giris Yap
                 </button>
+                <button onclick="showDashboard()" class="w-full py-3 bg-surface-container text-on-surface font-label-md rounded-xl hover:bg-surface-bright/50 active:scale-[0.98] transition-all mt-2">
+                    Twitter'siz Devam Et
+                </button>
                 <div id="login-error" class="text-error text-body-sm hidden"></div>
             </div>
         </div>
@@ -406,15 +409,113 @@
 
                     <!-- MOCK TABS -->
                     <div id="tab-instagram" class="tab-content hidden">
-                        <header class="mb-xl">
-                            <h1 class="font-display-lg text-display-lg text-on-surface mb-2">Instagram Analytics</h1>
-                            <p class="font-body-md text-on-surface-variant">Coming soon - Instagram entegrasyonu hazirlaniyor.</p>
+                        <header class="mb-xl flex flex-col md:flex-row md:items-end justify-between gap-lg">
+                            <div>
+                                <h1 class="font-headline-lg text-headline-lg text-on-surface mb-2">Instagram Analytics</h1>
+                                <p class="font-body-md text-on-surface-variant">@berktore1 hesabinin analizi</p>
+                            </div>
+                            <div class="flex items-center gap-2">
+                                <button onclick="showInstagramSettings()" class="flex items-center gap-2 px-4 py-2 bg-surface-container text-on-surface font-label-md text-label-md rounded-full border border-outline-variant/30 hover:bg-surface-bright/50 transition-all cursor-pointer">
+                                    <span class="material-symbols-outlined text-[18px]">settings</span> Session Bagla
+                                </button>
+                                <button onclick="loadInstagramData()" class="flex items-center gap-2 px-4 py-2 bg-[#E4405F] text-white font-label-md text-label-md rounded-full hover:brightness-110 active:scale-95 transition-all cursor-pointer">
+                                    <span class="material-symbols-outlined text-[18px]">refresh</span> Yukle
+                                </button>
+                                <span class="text-label-sm font-label-sm text-on-surface-variant bg-surface-container px-md py-xs rounded-full border border-outline-variant/30" id="instagram-status">Hazir</span>
+                            </div>
                         </header>
-                        <div class="glass-card rounded-xl p-12 text-center">
-                            <span class="material-symbols-outlined text-6xl text-on-surface-variant mb-4">camera_alt</span>
-                            <h3 class="font-headline-md text-headline-md text-on-surface mb-2">Yakinda</h3>
-                            <p class="text-on-surface-variant">Instagram API entegrasyonu tamamlaniyor.</p>
+
+                        <!-- Login Modal -->
+                        <div id="instagram-login-modal" class="hidden fixed inset-0 z-50 flex items-center justify-center bg-black/70 backdrop-blur-sm">
+                            <div class="glass-card rounded-2xl p-8 w-full max-w-md mx-4">
+                                <div class="flex items-center gap-3 mb-6">
+                                    <div class="w-12 h-12 bg-[#E4405F] flex items-center justify-center rounded-xl">
+                                        <span class="material-symbols-outlined text-white" style="font-variation-settings: 'FILL' 1;">camera_alt</span>
+                                    </div>
+                                    <div>
+                                        <h2 class="font-headline-md text-headline-md font-bold text-on-surface">Instagram Session</h2>
+                                        <p class="font-body-sm text-on-surface-variant">Tarayicindaki session cookie'sini yapistir</p>
+                                    </div>
+                                </div>
+                                <div class="space-y-4">
+                                    <div>
+                                        <label class="font-label-md text-label-md block mb-2 text-on-surface-variant">sessionid</label>
+                                        <input type="text" id="ig-sessionid" placeholder="sessionid degeri" class="w-full bg-surface-container-lowest border border-outline-variant rounded-xl text-body-sm px-4 py-3 focus:ring-[#E4405F] focus:border-[#E4405F] focus:outline-none"/>
+                                    </div>
+                                    <div>
+                                        <label class="font-label-md text-label-md block mb-2 text-on-surface-variant">csrftoken (opsiyonel)</label>
+                                        <input type="text" id="ig-csrftoken" placeholder="csrftoken degeri" class="w-full bg-surface-container-lowest border border-outline-variant rounded-xl text-body-sm px-4 py-3 focus:ring-[#E4405F] focus:border-[#E4405F] focus:outline-none"/>
+                                    </div>
+                                    <button onclick="loginInstagramSession()" class="w-full py-3 bg-[#E4405F] text-white font-label-md rounded-xl hover:brightness-110 active:scale-[0.98] transition-all">
+                                        Baglan
+                                    </button>
+                                    <div id="instagram-login-error" class="text-error text-body-sm hidden"></div>
+                                </div>
+                            </div>
                         </div>
+
+                        <!-- Profile Cards -->
+                        <div class="grid grid-cols-12 gap-5 mb-8" id="instagram-profile-cards">
+                            <div class="col-span-12 flex items-center justify-center py-12"><div class="loading-spinner"></div></div>
+                        </div>
+
+                        <!-- Analytics Metrics -->
+                        <section class="mb-8">
+                            <h2 class="font-headline-md text-headline-md text-on-surface mb-lg">Etkilesim Metrikleri</h2>
+                            <div class="grid grid-cols-2 md:grid-cols-4 gap-4" id="instagram-metrics">
+                                <div class="col-span-4 flex items-center justify-center py-8"><div class="loading-spinner"></div></div>
+                            </div>
+                        </section>
+
+                        <!-- Format Analysis -->
+                        <section class="mb-8">
+                            <h2 class="font-headline-md text-headline-md text-on-surface mb-lg">Format Bazli Analiz</h2>
+                            <div class="grid grid-cols-2 gap-4" id="instagram-formats">
+                                <div class="col-span-2 flex items-center justify-center py-8"><div class="loading-spinner"></div></div>
+                            </div>
+                        </section>
+
+                        <!-- Best Posts -->
+                        <section class="mb-8">
+                            <h2 class="font-headline-md text-headline-md text-on-surface mb-lg">En Iyi Postlar</h2>
+                            <div class="grid grid-cols-1 md:grid-cols-2 gap-5" id="instagram-rankings">
+                                <div class="col-span-2 flex items-center justify-center py-8"><div class="loading-spinner"></div></div>
+                            </div>
+                        </section>
+
+                        <!-- Top Hashtags -->
+                        <section class="mb-8">
+                            <h2 class="font-headline-md text-headline-md text-on-surface mb-lg">Populer Hashtagler</h2>
+                            <div class="grid grid-cols-2 md:grid-cols-5 gap-4" id="instagram-hashtags">
+                                <div class="col-span-5 flex items-center justify-center py-8"><div class="loading-spinner"></div></div>
+                            </div>
+                        </section>
+
+                        <!-- All Posts Table -->
+                        <section class="mb-xl">
+                            <div class="flex justify-between items-center mb-lg">
+                                <h2 class="font-headline-md text-headline-md text-on-surface">Tum Postlar</h2>
+                                <span class="text-label-sm font-label-sm text-on-surface-variant" id="instagram-posts-count">0 post</span>
+                            </div>
+                            <div class="glass-card rounded-xl overflow-hidden">
+                                <div class="overflow-x-auto">
+                                    <table class="w-full text-left border-collapse">
+                                        <thead>
+                                            <tr class="bg-surface-container-highest/30">
+                                                <th class="px-4 py-3 font-label-sm text-label-sm text-on-surface-variant uppercase tracking-widest">Post</th>
+                                                <th class="px-4 py-3 font-label-sm text-label-sm text-on-surface-variant uppercase tracking-widest">Tur</th>
+                                                <th class="px-4 py-3 font-label-sm text-label-sm text-on-surface-variant uppercase tracking-widest text-right">Begeni</th>
+                                                <th class="px-4 py-3 font-label-sm text-label-sm text-on-surface-variant uppercase tracking-widest text-right">Yorum</th>
+                                                <th class="px-4 py-3 font-label-sm text-label-sm text-on-surface-variant uppercase tracking-widest text-right">Tarih</th>
+                                            </tr>
+                                        </thead>
+                                        <tbody class="divide-y divide-outline-variant/20" id="instagram-posts-table">
+                                            <tr><td colspan="5" class="px-4 py-8 text-center"><div class="loading-spinner mx-auto"></div></td></tr>
+                                        </tbody>
+                                    </table>
+                                </div>
+                            </div>
+                        </section>
                     </div>
                     <div id="tab-youtube" class="tab-content hidden">
                         <header class="mb-xl flex flex-col md:flex-row md:items-end justify-between gap-lg">

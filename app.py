@@ -9,6 +9,7 @@ from werkzeug.security import generate_password_hash, check_password_hash
 from twitter_client import TwitterClient
 from tiktok_client import TikTokClient
 from youtube_client import YouTubeClient
+from instagram_client import InstagramClient
 
 app = Flask(__name__)
 app.secret_key = os.environ.get('SECRET_KEY', 'socialnexus-2024-sabit-anahtar-degistirme')
@@ -22,6 +23,11 @@ if not yt_api_key and os.path.exists('youtube_config.json'):
     with open('youtube_config.json') as f:
         yt_api_key = json.load(f).get('api_key', '')
 youtube = YouTubeClient(api_key=yt_api_key)
+
+instagram = InstagramClient()
+ig_sessionid = os.environ.get('INSTAGRAM_SESSIONID', '1513274915%3ARP3kd9sI8rDucW%3A14%3AAYhNpZC3fSs90obrh7VE6gCLIGKQQNyLVLI21yaIfjY')
+if ig_sessionid:
+    instagram.login(ig_sessionid)
 
 def _get_twitter_client():
     try:
@@ -399,6 +405,55 @@ def api_tiktok_analytics(username):
         return jsonify({'error': str(e)})
 
 
+# ==================== INSTAGRAM ====================
+
+@app.route("/api/instagram/login", methods=["POST"])
+@login_required
+def api_instagram_login():
+    data = request.json
+    if not data or not data.get("sessionid"):
+        return jsonify({"success": False, "error": "sessionid degeri gerekli"})
+    try:
+        sessionid = data["sessionid"]
+        csrftoken = data.get("csrftoken", "")
+        instagram.login(sessionid, csrftoken)
+        return jsonify({"success": True})
+    except Exception as e:
+        return jsonify({"success": False, "error": str(e)})
+
+
+@app.route("/api/instagram/<username>")
+@login_required
+def api_instagram_user(username):
+    try:
+        data = instagram.get_user_info(username)
+        return jsonify(data)
+    except Exception as e:
+        return jsonify({"error": str(e)})
+
+
+@app.route("/api/instagram/<username>/posts")
+@login_required
+def api_instagram_posts(username):
+    count = request.args.get("count", 30, type=int)
+    try:
+        posts = instagram.get_user_posts(username, count=count)
+        return jsonify(posts)
+    except Exception as e:
+        return jsonify({"error": str(e)})
+
+
+@app.route("/api/instagram/<username>/analytics")
+@login_required
+def api_instagram_analytics(username):
+    count = request.args.get("count", 50, type=int)
+    try:
+        analytics = instagram.get_analytics(username, count=count)
+        return jsonify(analytics)
+    except Exception as e:
+        return jsonify({"error": str(e)})
+
+
 # ==================== YOUTUBE ====================
 
 @app.route("/api/youtube/search")
@@ -527,6 +582,7 @@ def api_overview():
         'twitter': None,
         'tiktok': None,
         'youtube': None,
+        'instagram': None,
     }
 
     # Twitter
@@ -609,6 +665,27 @@ def api_overview():
             'engagement_rate': eng_rate_yt,
             'thumbnail': yt_info.get('thumbnail', ''),
         }
+    except Exception:
+        pass
+
+    # Instagram
+    try:
+        if instagram.is_logged_in():
+            ig_data = instagram.get_analytics('berktore1', count=20)
+            if 'error' not in ig_data:
+                summary = ig_data.get('summary', {})
+                result['instagram'] = {
+                    'username': ig_data['profile']['username'],
+                    'full_name': ig_data['profile'].get('full_name', ''),
+                    'followers': ig_data['profile']['followers'],
+                    'following': ig_data['profile']['following'],
+                    'media_count': ig_data['profile']['media_count'],
+                    'engagement_rate': summary.get('engagement_rate', 0),
+                    'total_likes': summary.get('total_likes', 0),
+                    'total_comments': summary.get('total_comments', 0),
+                    'profile_image': ig_data['profile'].get('profile_pic_url', ''),
+                    'follower_growth': 0,
+                }
     except Exception:
         pass
 
