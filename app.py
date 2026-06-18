@@ -97,8 +97,13 @@ def api_status():
 @app.before_request
 def _reload_twitter_client():
     global client
-    if not client.is_logged_in():
-        client = _get_twitter_client()
+    try:
+        fresh = _get_twitter_client()
+        if fresh.auth_token != client.auth_token or fresh.ct0 != client.ct0:
+            client = fresh
+    except Exception:
+        if not client.is_logged_in():
+            client = _get_twitter_client()
 
 
 @app.route("/api/login", methods=["POST"])
