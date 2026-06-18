@@ -1228,6 +1228,7 @@ function renderYouTubeAll() {
 
 // ==================== INSTAGRAM ====================
 let instagramData = null;
+let instagramDays = 30;
 
 function showInstagramSettings() {
     document.getElementById('instagram-login-modal').classList.remove('hidden');
@@ -1279,18 +1280,80 @@ function loadInstagramData(username) {
     });
 }
 
+function setInstagramDays(days) {
+    instagramDays = days;
+    document.querySelectorAll('.ig-days-btn').forEach(b => {
+        b.classList.remove('bg-[#E4405F]', 'text-white');
+        b.classList.add('text-on-surface-variant');
+    });
+    const btn = document.querySelector(`.ig-days-btn[data-days="${days}"]`);
+    if (btn) {
+        btn.classList.add('bg-[#E4405F]', 'text-white');
+        btn.classList.remove('text-on-surface-variant');
+    }
+    if (instagramData) renderInstagramAll();
+}
+
+function getFilteredInstagramPosts() {
+    if (!instagramData || !instagramData.posts) return [];
+    const now = Math.floor(Date.now() / 1000);
+    const cutoff = now - instagramDays * 86400;
+    return instagramData.posts.filter(p => p.date_ts >= cutoff);
+}
+
+function calcInstagramSummary(posts) {
+    if (!posts.length) return { total_posts: 0, total_likes: 0, total_comments: 0, avg_likes: 0, avg_comments: 0, engagement_rate: 0, video_count: 0, image_count: 0 };
+    const total_likes = posts.reduce((s, p) => s + (p.likes || 0), 0);
+    const total_comments = posts.reduce((s, p) => s + (p.comments || 0), 0);
+    const followers = instagramData.profile.followers || 1;
+    return {
+        total_posts: posts.length,
+        total_likes, total_comments,
+        avg_likes: Math.floor(total_likes / posts.length),
+        avg_comments: Math.floor(total_comments / posts.length),
+        engagement_rate: Math.round((total_likes + total_comments) / Math.max(1, followers) * 10000) / 100,
+        video_count: posts.filter(p => p.is_video).length,
+        image_count: posts.filter(p => !p.is_video).length,
+    };
+}
+
 function renderInstagramAll() {
     if (!instagramData) return;
-    const { profile, summary, format_analysis, best_by_likes, best_by_comments, worst_posts, top_tags, posts } = instagramData;
+    const { profile, top_tags } = instagramData;
+    const posts = getFilteredInstagramPosts();
+    const summary = calcInstagramSummary(posts);
 
-    document.getElementById('instagram-status').textContent = posts ? `${posts.length} post` : 'Aktif';
+    const byLikes = [...posts].sort((a, b) => (b.likes || 0) - (a.likes || 0));
+    const byComments = [...posts].sort((a, b) => (b.comments || 0) - (a.comments || 0));
+    const byLow = [...posts].sort((a, b) => (a.likes || 0) - (b.likes || 0));
 
+    const videos = posts.filter(p => p.is_video);
+    const images = posts.filter(p => !p.is_video);
+    const fa = {
+        short: { count: images.length, avg_likes: images.length ? Math.floor(images.reduce((s, p) => s + (p.likes || 0), 0) / images.length) : 0, avg_comments: images.length ? Math.floor(images.reduce((s, p) => s + (p.comments || 0), 0) / images.length) : 0 },
+        video: { count: videos.length, avg_likes: videos.length ? Math.floor(videos.reduce((s, p) => s + (p.likes || 0), 0) / videos.length) : 0, avg_comments: videos.length ? Math.floor(videos.reduce((s, p) => s + (p.comments || 0), 0) / videos.length) : 0 },
+    };
+
+    const tagMap = {};
+    posts.forEach(p => {
+        const caption = p.caption || '';
+        (caption.match(/#(\w+)/g) || []).forEach(t => {
+            const tag = t.substring(1).toLowerCase();
+            if (!tagMap[tag]) tagMap[tag] = { count: 0, total_likes: 0, total_comments: 0 };
+            tagMap[tag].count++;
+            tagMap[tag].total_likes += p.likes || 0;
+            tagMap[tag].total_comments += p.comments || 0;
+        });
+    });
+    const sortedTags = Object.entries(tagMap).sort((a, b) => b[1].total_likes - a[1].total_likes).slice(0, 10).map(([tag, s]) => ({ tag, ...s }));
+
+    document.getElementById('instagram-status').textContent = posts.length + ' post';
     renderInstagramProfile(profile);
     renderInstagramMetrics(summary);
-    renderInstagramFormats(format_analysis);
-    renderInstagramRankings(best_by_likes, best_by_comments, worst_posts);
-    renderInstagramHashtags(top_tags);
-    renderInstagramTable(posts || []);
+    renderInstagramFormats(fa);
+    renderInstagramRankings(byLikes.slice(0, 5), byComments.slice(0, 5), byLow.slice(0, 5));
+    renderInstagramHashtags(sortedTags);
+    renderInstagramTable(posts);
 }
 
 function renderInstagramProfile(profile) {

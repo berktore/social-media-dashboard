@@ -412,7 +412,7 @@
                         <header class="mb-xl flex flex-col md:flex-row md:items-end justify-between gap-lg">
                             <div>
                                 <h1 class="font-headline-lg text-headline-lg text-on-surface mb-2">Instagram Analytics</h1>
-                                <p class="font-body-md text-on-surface-variant">@berktore1 hesabinin analizi</p>
+                                <p class="font-body-md text-on-surface-variant">@infoyatirim hesabinin analizi</p>
                             </div>
                             <div class="flex items-center gap-2">
                                 <button onclick="showInstagramSettings()" class="flex items-center gap-2 px-4 py-2 bg-surface-container text-on-surface font-label-md text-label-md rounded-full border border-outline-variant/30 hover:bg-surface-bright/50 transition-all cursor-pointer">
@@ -421,6 +421,12 @@
                                 <button onclick="loadInstagramData()" class="flex items-center gap-2 px-4 py-2 bg-[#E4405F] text-white font-label-md text-label-md rounded-full hover:brightness-110 active:scale-95 transition-all cursor-pointer">
                                     <span class="material-symbols-outlined text-[18px]">refresh</span> Yukle
                                 </button>
+                                <div class="flex bg-surface-container rounded-xl p-1 border border-outline-variant/30">
+                                    <button onclick="setInstagramDays(7)" class="ig-days-btn px-3 py-1 text-label-sm rounded-lg text-on-surface-variant hover:text-on-surface transition-all" data-days="7">7G</button>
+                                    <button onclick="setInstagramDays(15)" class="ig-days-btn px-3 py-1 text-label-sm rounded-lg text-on-surface-variant hover:text-on-surface transition-all" data-days="15">15G</button>
+                                    <button onclick="setInstagramDays(30)" class="ig-days-btn px-3 py-1 text-label-sm rounded-lg bg-[#E4405F] text-white" data-days="30">30G</button>
+                                    <button onclick="setInstagramDays(90)" class="ig-days-btn px-3 py-1 text-label-sm rounded-lg text-on-surface-variant hover:text-on-surface transition-all" data-days="90">90G</button>
+                                </div>
                                 <span class="text-label-sm font-label-sm text-on-surface-variant bg-surface-container px-md py-xs rounded-full border border-outline-variant/30" id="instagram-status">Hazir</span>
                             </div>
                         </header>
