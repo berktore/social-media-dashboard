@@ -1592,7 +1592,7 @@ function renderCompetitorResults(data) {
             clickable = `onclick="openCompetitorDetail('youtube','${p.channel_id}')" style="cursor:pointer"`;
         } else if (key === 'instagram' && p.username) {
             statText = `${fmt(p.followers)} takipci`;
-            clickable = `onclick="window.open('${p.profile_url}','_blank')" style="cursor:pointer"`;
+            clickable = `onclick="openCompetitorDetail('instagram','${p.username}')" style="cursor:pointer"`;
         } else if (key === 'linkedin') {
             statText = 'Profil icin tiklayin';
             clickable = `onclick="window.open('${p.search_url}','_blank')" style="cursor:pointer"`;
