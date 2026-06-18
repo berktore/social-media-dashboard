@@ -209,41 +209,54 @@ class TikTokClient:
                 'Referer': f'https://www.tiktok.com/@{username}',
                 'User-Agent': HEADERS['User-Agent'],
             }
-            r2 = self._request(
-                f'https://www.tiktok.com/api/post/item_list/'
-                f'?aid=1988&secUid={sec_uid}&count={count}&cursor=0&sourceType=8&type=5',
-                headers=headers,
-            )
-            r2j = r2.json()
-            items = r2j.get('itemList', [])
-            if not items:
-                return None
 
             videos = []
-            for item in items:
-                stats = item.get('stats', {})
-                video = item.get('video', {})
-                author = item.get('author', {})
-                desc = item.get('desc', '') or ''
-                hashtags = [t.get('name', '') for t in item.get('textExtra', []) if t.get('hashtagName')]
+            seen_ids = set()
+            cursor = 0
 
-                videos.append({
-                    'id': item.get('id', ''),
-                    'desc': desc,
-                    'created_at': item.get('createTime', 0),
-                    'upload_date': '',
-                    'duration': video.get('duration', 0),
-                    'play_count': stats.get('playCount', 0) or 0,
-                    'like_count': stats.get('diggCount', 0) or 0,
-                    'comment_count': stats.get('commentCount', 0) or 0,
-                    'share_count': stats.get('shareCount', 0) or 0,
-                    'save_count': stats.get('collectCount', 0) or 0,
-                    'cover': (video.get('cover', {}) or {}).get('url_list', [''])[0],
-                    'music': item.get('music', {}).get('title', ''),
-                    'hashtags': hashtags,
-                    'url': f'https://www.tiktok.com/@{username}/video/{item.get("id", "")}',
-                })
-            return videos
+            while len(videos) < count:
+                r2 = self._request(
+                    f'https://www.tiktok.com/api/post/item_list/'
+                    f'?aid=1988&secUid={sec_uid}&count={min(30, count - len(videos))}&cursor={cursor}&sourceType=8&type=5',
+                    headers=headers,
+                )
+                r2j = r2.json()
+                items = r2j.get('itemList', [])
+                if not items:
+                    break
+
+                for item in items:
+                    vid = item.get('id', '')
+                    if vid in seen_ids:
+                        continue
+                    seen_ids.add(vid)
+                    stats = item.get('stats', {})
+                    video = item.get('video', {})
+                    desc = item.get('desc', '') or ''
+                    hashtags = [t.get('name', '') for t in item.get('textExtra', []) if t.get('hashtagName')]
+                    videos.append({
+                        'id': vid,
+                        'desc': desc,
+                        'created_at': item.get('createTime', 0),
+                        'upload_date': '',
+                        'duration': video.get('duration', 0),
+                        'play_count': stats.get('playCount', 0) or 0,
+                        'like_count': stats.get('diggCount', 0) or 0,
+                        'comment_count': stats.get('commentCount', 0) or 0,
+                        'share_count': stats.get('shareCount', 0) or 0,
+                        'save_count': stats.get('collectCount', 0) or 0,
+                        'cover': (video.get('cover', {}) or {}).get('url_list', [''])[0],
+                        'music': item.get('music', {}).get('title', ''),
+                        'hashtags': hashtags,
+                        'url': f'https://www.tiktok.com/@{username}/video/{vid}',
+                    })
+
+                has_more = r2j.get('hasMore', False)
+                cursor = r2j.get('cursor', 0)
+                if not has_more:
+                    break
+
+            return videos if videos else None
         except Exception:
             return None
 

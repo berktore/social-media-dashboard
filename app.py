@@ -267,14 +267,14 @@ def api_tiktok_analytics(username):
         profile = tiktok.get_user_info(username)
         if 'error' in profile:
             return jsonify(profile)
-        videos = tiktok.get_user_videos(username, count=50) or []
+        videos = tiktok.get_user_videos(username, count=200) or []
 
         # --- Tarih araligi filtresi ---
         from_date = request.args.get('from', '')
         to_date = request.args.get('to', '')
         if from_date or to_date:
             from_ts = int(datetime.strptime(from_date, '%Y-%m-%d').timestamp()) if from_date else 0
-            to_ts = int(datetime.strptime(to_date, '%Y-%m-%d').timestamp()) if to_date else 9999999999
+            to_ts = int(datetime.strptime(to_date, '%Y-%m-%d').timestamp()) + 86399 if to_date else 9999999999
             videos = [v for v in videos if from_ts <= v.get('created_at', 0) <= to_ts]
 
         # --- Takipci gecmisi (filtrlenebilir) ---
