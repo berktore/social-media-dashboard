@@ -1252,7 +1252,7 @@ function loginInstagramSession() {
 }
 
 function loadInstagramData(username) {
-    username = username || 'berktore1';
+    username = username || 'infoyatirim';
     const statusEl = document.getElementById('instagram-status');
     statusEl.textContent = 'Yukleniyor...';
     statusEl.className = 'text-label-sm font-label-sm text-on-surface-variant bg-surface-container px-md py-xs rounded-full border border-outline-variant/30';
