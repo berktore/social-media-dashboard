@@ -153,10 +153,18 @@ class TikTokClient:
                 desc = item.get('description', '') or item.get('title', '')
                 hashtags = re.findall(r'#(\w+)', desc)
                 thumbs = item.get('thumbnails', [])
+                ts = item.get('timestamp', 0)
+                if not ts:
+                    ud = item.get('upload_date', '')
+                    if len(ud) == 8:
+                        try:
+                            ts = int(datetime.strptime(ud, '%Y%m%d').timestamp())
+                        except:
+                            ts = 0
                 videos.append({
                     'id': item.get('id', ''),
                     'desc': desc,
-                    'created_at': item.get('timestamp', 0),
+                    'created_at': ts,
                     'upload_date': item.get('upload_date', ''),
                     'duration': item.get('duration', 0),
                     'play_count': item.get('view_count', 0) or 0,
