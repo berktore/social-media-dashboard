@@ -123,87 +123,117 @@ class TwitterClient:
             "follower_history": history[-30:],  # Son 30 gun
         }
 
+    def _parse_tweet(self, entry):
+        """Tek bir timeline entry'sinden tweet bilgisini cikar. Tweet degilse None doner."""
+        try:
+            tweet_result = entry['content']['itemContent']['tweet_results']['result']
+        except (KeyError, TypeError):
+            return None
+        if tweet_result.get('__typename') != 'Tweet':
+            return None
+        legacy = tweet_result['legacy']
+        user_legacy = tweet_result.get('core', {}).get('user_results', {}).get('result', {}).get('legacy', {})
+        created_at = legacy.get('created_at', '')
+        try:
+            dt = datetime.strptime(created_at, "%a %b %d %H:%M:%S %z %Y")
+            created_at_iso = dt.strftime("%Y-%m-%dT%H:%M:%SZ")
+            created_at_ts = int(dt.timestamp())
+        except:
+            created_at_iso = created_at
+            created_at_ts = 0
+        return {
+            "id": legacy.get('id_str', ''),
+            "text": legacy.get('full_text', ''),
+            "created_at": created_at_iso,
+            "created_at_ts": created_at_ts,
+            "retweet_count": legacy.get('retweet_count', 0),
+            "favorite_count": legacy.get('favorite_count', 0),
+            "reply_count": legacy.get('reply_count', 0),
+            "quote_count": legacy.get('quote_count', 0),
+            "bookmark_count": legacy.get('bookmark_count', 0),
+            "view_count": tweet_result.get('views', {}).get('count', 0),
+            "lang": legacy.get('lang', ''),
+            "is_retweet": 'retweeted_status_result' in legacy,
+            "is_quote": 'quoted_tweet' in tweet_result,
+            "media": [
+                {"type": m.get('type', ''), "url": m.get('media_url_https', '')}
+                for m in legacy.get('extended_entities', {}).get('media', [])
+            ],
+            "user": {
+                "name": user_legacy.get('name', ''),
+                "username": user_legacy.get('screen_name', ''),
+                "profile_image": user_legacy.get('profile_image_url_https', '').replace('_normal', '_400x400'),
+            } if user_legacy else None,
+        }
+
     def get_user_tweets(self, username, count=20):
         user_info = self.get_user_info(username)
         user_id = user_info['id']
 
-        data = self._graphql_get(
-            'https://x.com/i/api/graphql/H8OOoI-5ZE4NxgRr8lfyWg/UserTweets',
-            {"userId": str(user_id), "count": count, "includePromotedContent": False,
-             "withQuickPromoteEligibilityTweetFields": True, "withVoice": True, "withV2Timeline": True},
-            {
-                "rweb_tipjar_consumption_enabled": True, "responsive_web_graphql_exclude_directive_enabled": True,
-                "verified_phone_label_enabled": False, "creator_subscriptions_tweet_preview_api_enabled": True,
-                "responsive_web_graphql_timeline_navigation_enabled": True,
-                "responsive_web_graphql_skip_user_profile_image_extensions_enabled": False,
-                "communities_web_enable_tweet_community_results_fetch": True,
-                "c9s_tweet_anatomy_moderator_badge_enabled": True, "articles_preview_enabled": True,
-                "responsive_web_edit_tweet_api_enabled": True,
-                "graphql_is_translatable_rweb_tweet_is_translatable_enabled": True,
-                "view_counts_everywhere_api_enabled": True, "longform_notetweets_consumption_enabled": True,
-                "responsive_web_twitter_article_tweet_consumption_enabled": True,
-                "tweet_awards_web_tipping_enabled": False,
-                "creator_subscriptions_quote_tweet_preview_enabled": False,
-                "freedom_of_speech_not_reach_fetch_enabled": True, "standardized_nudges_misinfo": True,
-                "tweet_with_visibility_results_prefer_gql_limited_actions_policy_enabled": True,
-                "rweb_video_timestamps_enabled": True, "longform_notetweets_rich_text_read_enabled": True,
-                "longform_notetweets_inline_media_enabled": True, "responsive_web_enhance_cards_enabled": False
-            }
-        )
-
-        if 'data' not in data:
-            raise Exception('Could not fetch tweets')
+        features = {
+            "rweb_tipjar_consumption_enabled": True, "responsive_web_graphql_exclude_directive_enabled": True,
+            "verified_phone_label_enabled": False, "creator_subscriptions_tweet_preview_api_enabled": True,
+            "responsive_web_graphql_timeline_navigation_enabled": True,
+            "responsive_web_graphql_skip_user_profile_image_extensions_enabled": False,
+            "communities_web_enable_tweet_community_results_fetch": True,
+            "c9s_tweet_anatomy_moderator_badge_enabled": True, "articles_preview_enabled": True,
+            "responsive_web_edit_tweet_api_enabled": True,
+            "graphql_is_translatable_rweb_tweet_is_translatable_enabled": True,
+            "view_counts_everywhere_api_enabled": True, "longform_notetweets_consumption_enabled": True,
+            "responsive_web_twitter_article_tweet_consumption_enabled": True,
+            "tweet_awards_web_tipping_enabled": False,
+            "creator_subscriptions_quote_tweet_preview_enabled": False,
+            "freedom_of_speech_not_reach_fetch_enabled": True, "standardized_nudges_misinfo": True,
+            "tweet_with_visibility_results_prefer_gql_limited_actions_policy_enabled": True,
+            "rweb_video_timestamps_enabled": True, "longform_notetweets_rich_text_read_enabled": True,
+            "longform_notetweets_inline_media_enabled": True, "responsive_web_enhance_cards_enabled": False
+        }
 
         tweets = []
-        timeline = data['data']['user']['result']['timeline_v2']['timeline']
-        for instruction in timeline.get('instructions', []):
-            if instruction.get('type') == 'TimelineAddEntries':
-                for entry in instruction.get('entries', []):
-                    if entry.get('entryId', '').startswith('tweet-'):
-                        try:
-                            tweet_result = entry['content']['itemContent']['tweet_results']['result']
-                            if tweet_result.get('__typename') == 'Tweet':
-                                legacy = tweet_result['legacy']
-                                user_legacy = tweet_result.get('core', {}).get('user_results', {}).get('result', {}).get('legacy', {})
-                                # created_at'i ISO formatina cevir
-                                created_at = legacy.get('created_at', '')
-                                # "Thu May 28 12:00:01 +0000 2026" -> "2026-05-28T12:00:01Z"
-                                try:
-                                    dt = datetime.strptime(created_at, "%a %b %d %H:%M:%S %z %Y")
-                                    created_at_iso = dt.strftime("%Y-%m-%dT%H:%M:%SZ")
-                                    created_at_ts = int(dt.timestamp())
-                                except:
-                                    created_at_iso = created_at
-                                    created_at_ts = 0
+        seen_ids = set()
+        cursor = None
 
-                                tweets.append({
-                                    "id": legacy.get('id_str', ''),
-                                    "text": legacy.get('full_text', ''),
-                                    "created_at": created_at_iso,
-                                    "created_at_ts": created_at_ts,
-                                    "retweet_count": legacy.get('retweet_count', 0),
-                                    "favorite_count": legacy.get('favorite_count', 0),
-                                    "reply_count": legacy.get('reply_count', 0),
-                                    "quote_count": legacy.get('quote_count', 0),
-                                    "bookmark_count": legacy.get('bookmark_count', 0),
-                                    "view_count": tweet_result.get('views', {}).get('count', 0),
-                                    "lang": legacy.get('lang', ''),
-                                    "is_retweet": 'retweeted_status_result' in legacy,
-                                    "is_quote": 'quoted_tweet' in tweet_result,
-                                    "media": [
-                                        {"type": m.get('type', ''), "url": m.get('media_url_https', '')}
-                                        for m in legacy.get('extended_entities', {}).get('media', [])
-                                    ],
-                                    "user": {
-                                        "name": user_legacy.get('name', ''),
-                                        "username": user_legacy.get('screen_name', ''),
-                                        "profile_image": user_legacy.get('profile_image_url_https', '').replace('_normal', '_400x400'),
-                                    } if user_legacy else None,
-                                })
-                        except (KeyError, TypeError):
-                            continue
+        while len(tweets) < count:
+            variables = {
+                "userId": str(user_id), "count": min(20, count - len(tweets)),
+                "includePromotedContent": False,
+                "withQuickPromoteEligibilityTweetFields": True, "withVoice": True, "withV2Timeline": True,
+            }
+            if cursor:
+                variables["cursor"] = cursor
 
-        return tweets
+            data = self._graphql_get(
+                'https://x.com/i/api/graphql/H8OOoI-5ZE4NxgRr8lfyWg/UserTweets',
+                variables, features
+            )
+
+            if 'data' not in data:
+                raise Exception('Could not fetch tweets')
+
+            timeline = data['data']['user']['result']['timeline_v2']['timeline']
+            new_tweets = 0
+            cursor = None
+
+            for instruction in timeline.get('instructions', []):
+                if instruction.get('type') == 'TimelineAddEntries':
+                    for entry in instruction.get('entries', []):
+                        eid = entry.get('entryId', '')
+                        if eid.startswith('tweet-'):
+                            t = self._parse_tweet(entry)
+                            if t and t['id'] not in seen_ids:
+                                seen_ids.add(t['id'])
+                                tweets.append(t)
+                                new_tweets += 1
+                        elif eid.startswith('cursor-bottom-'):
+                            try:
+                                cursor = entry['content']['value']
+                            except (KeyError, TypeError):
+                                pass
+
+            if new_tweets == 0 or not cursor:
+                break
+
+        return tweets[:count]
 
     def search_tweets(self, query, count=20):
         # GraphQL search endpoint dene
