@@ -671,7 +671,7 @@ def api_overview():
     # Instagram
     try:
         if instagram.is_logged_in():
-            ig_data = instagram.get_analytics('berktore1', count=20)
+            ig_data = instagram.get_analytics('infoyatirim', count=20)
             if 'error' not in ig_data:
                 summary = ig_data.get('summary', {})
                 result['instagram'] = {
