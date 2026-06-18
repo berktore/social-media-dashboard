@@ -1,6 +1,7 @@
 import json
 import os
 import secrets
+import tempfile
 from datetime import datetime
 from functools import wraps
 from flask import Flask, render_template, jsonify, request, redirect, session, url_for
@@ -12,9 +13,35 @@ from youtube_client import YouTubeClient
 app = Flask(__name__)
 app.secret_key = os.environ.get('SECRET_KEY', 'socialnexus-2024-sabit-anahtar-degistirme')
 
-# Login credentials
 USERNAME = 'info'
 PASSWORD_HASH = generate_password_hash('info')
+
+tiktok = TikTokClient()
+yt_api_key = os.environ.get('YOUTUBE_API_KEY', '')
+if not yt_api_key and os.path.exists('youtube_config.json'):
+    with open('youtube_config.json') as f:
+        yt_api_key = json.load(f).get('api_key', '')
+youtube = YouTubeClient(api_key=yt_api_key)
+
+def _get_twitter_client():
+    auth_token = os.environ.get('TWITTER_AUTH_TOKEN') or None
+    ct0 = os.environ.get('TWITTER_CT0') or None
+    if not auth_token and os.path.exists("cookies.json"):
+        with open("cookies.json") as f:
+            c = json.load(f)
+            auth_token = c.get("auth_token")
+            ct0 = c.get("ct0")
+    if not auth_token and os.path.exists(os.path.join(tempfile.gettempdir(), "twitter_creds.json")):
+        try:
+            with open(os.path.join(tempfile.gettempdir(), "twitter_creds.json")) as f:
+                c = json.load(f)
+                auth_token = c.get("auth_token") or auth_token
+                ct0 = c.get("ct0") or ct0
+        except (OSError, IOError, json.JSONDecodeError):
+            pass
+    return TwitterClient(auth_token, ct0)
+
+client = _get_twitter_client()
 
 
 def login_required(f):
@@ -24,25 +51,6 @@ def login_required(f):
             return redirect(url_for('login'))
         return f(*args, **kwargs)
     return decorated
-
-# Cookie'leri yukle (env var > dosya)
-auth_token = os.environ.get('TWITTER_AUTH_TOKEN')
-ct0 = os.environ.get('TWITTER_CT0')
-if not auth_token and os.path.exists("cookies.json"):
-    with open("cookies.json") as f:
-        cookies = json.load(f)
-        auth_token = cookies.get("auth_token")
-        ct0 = cookies.get("ct0")
-
-client = TwitterClient(auth_token, ct0)
-tiktok = TikTokClient()
-
-# YouTube API key (env var > config file)
-yt_api_key = os.environ.get('YOUTUBE_API_KEY', '')
-if not yt_api_key and os.path.exists('youtube_config.json'):
-    with open('youtube_config.json') as f:
-        yt_api_key = json.load(f).get('api_key', '')
-youtube = YouTubeClient(api_key=yt_api_key)
 
 
 @app.route("/login", methods=["GET", "POST"])
@@ -76,6 +84,13 @@ def api_status():
     return jsonify({"logged_in": logged_in, "twitter_ready": client.is_logged_in()})
 
 
+@app.before_request
+def _reload_twitter_client():
+    global client
+    if not client.is_logged_in():
+        client = _get_twitter_client()
+
+
 @app.route("/api/login", methods=["POST"])
 @login_required
 def api_login():
@@ -83,11 +98,17 @@ def api_login():
     if not data or not data.get("auth_token") or not data.get("ct0"):
         return jsonify({"success": False, "error": "auth_token ve ct0 degerleri gerekli"})
     try:
+        tmp_creds = os.path.join(tempfile.gettempdir(), "twitter_creds.json")
+        try:
+            with open(tmp_creds, "w") as f:
+                json.dump(data, f)
+        except (OSError, PermissionError):
+            pass
         try:
             with open("cookies.json", "w") as f:
                 json.dump(data, f)
         except (OSError, PermissionError):
-            pass  # Vercel serverless'te dosyaya yazma izni yok
+            pass
         client.login(data["auth_token"], data["ct0"])
         return jsonify({"success": True})
     except Exception as e:
