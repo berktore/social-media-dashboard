@@ -1644,6 +1644,7 @@ function openCompetitorDetail(platform, id) {
         if (platform === 'twitter') renderCompetitorTwitter(data);
         else if (platform === 'tiktok') renderCompetitorTikTok(data);
         else if (platform === 'youtube') renderCompetitorYouTube(data);
+        else if (platform === 'instagram') renderCompetitorInstagram(data);
     });
 }
 
@@ -1820,6 +1821,91 @@ function renderCompetitorYouTube(data) {
             <td class="px-4 py-3 text-right text-body-sm">${fmt(v.view_count)}</td>
             <td class="px-4 py-3 text-right text-body-sm">${fmt(v.like_count)}</td>
             <td class="px-4 py-3 text-right text-body-sm">${fmt(v.comment_count)}</td>
+        </tr>`;
+    }).join('');
+}
+
+function renderCompetitorInstagram(data) {
+    const p = data.profile || {};
+    const summary = data.summary || {};
+    const posts = data.posts || [];
+
+    document.getElementById('competitor-profile-cards').innerHTML = `
+        <div class="col-span-12 md:col-span-4 glass-card p-xl rounded-xl relative overflow-hidden">
+            <div class="absolute top-0 left-0 w-full h-1 bg-[#E4405F]"></div>
+            <div class="flex items-center gap-3 mb-4">
+                ${p.profile_pic_url ? `<img src="${p.profile_pic_url}" class="w-14 h-14 rounded-full border-2 border-[#E4405F]">` : `<div class="w-14 h-14 rounded-full bg-[#E4405F]/20 flex items-center justify-center"><span class="material-symbols-outlined text-[#E4405F]">camera_alt</span></div>`}
+                <div>
+                    <h3 class="font-body-sm font-semibold text-on-surface">${p.full_name || p.username}</h3>
+                    <p class="font-label-sm text-on-surface-variant">@${p.username}</p>
+                </div>
+            </div>
+            ${p.biography ? `<p class="font-body-sm text-on-surface-variant text-xs line-clamp-2 mb-3">${p.biography}</p>` : ''}
+        </div>
+        <div class="col-span-12 md:col-span-4 glass-card p-xl rounded-xl relative overflow-hidden">
+            <div class="absolute top-0 left-0 w-full h-1 bg-tertiary"></div>
+            <div class="flex justify-between items-start mb-2">
+                <span class="material-symbols-outlined text-tertiary p-1.5 bg-tertiary/10 rounded-lg">group</span>
+                <span class="text-label-md text-label-sm text-on-surface-variant">${p.media_count} post</span>
+            </div>
+            <h3 class="font-label-md text-label-md text-on-surface-variant uppercase tracking-widest mb-1">Takipci</h3>
+            <span class="font-headline-lg text-headline-lg text-on-surface">${fmt(p.followers)}</span>
+            <p class="text-label-sm text-on-surface-variant mt-1">Takip: ${fmt(p.following)}</p>
+        </div>
+        <div class="col-span-12 md:col-span-4 glass-card p-xl rounded-xl relative overflow-hidden">
+            <div class="absolute top-0 left-0 w-full h-1 bg-primary"></div>
+            <div class="flex justify-between items-start mb-2">
+                <span class="material-symbols-outlined text-primary p-1.5 bg-primary/10 rounded-lg">verified</span>
+                <span class="material-symbols-outlined text-sm ${p.is_verified ? 'text-[#E4405F]' : 'text-on-surface-variant'}">${p.is_verified ? 'verified' : 'visibility_off'}</span>
+            </div>
+            <h3 class="font-label-md text-label-md text-on-surface-variant uppercase tracking-widest mb-1">Hesap</h3>
+            <span class="font-headline-md text-headline-md text-on-surface">${p.is_private ? 'Gizli' : 'Acik'}</span>
+            <p class="text-label-sm text-on-surface-variant mt-1">${p.is_verified ? 'Onayli' : 'Onaysiz'}</p>
+        </div>`;
+
+    document.getElementById('competitor-analytics-cards').innerHTML = `
+        <div class="col-span-6 md:col-span-3 glass-card rounded-xl p-5 relative overflow-hidden">
+            <div class="absolute top-0 left-0 w-full h-1 bg-[#E4405F]"></div>
+            <span class="material-symbols-outlined text-[#E4405F] mb-2">favorite</span>
+            <h4 class="font-label-md text-label-md text-on-surface-variant mb-1">Begeni</h4>
+            <div class="font-headline-md text-headline-md text-on-surface">${fmt(summary.total_likes)}</div>
+        </div>
+        <div class="col-span-6 md:col-span-3 glass-card rounded-xl p-5 relative overflow-hidden">
+            <div class="absolute top-0 left-0 w-full h-1 bg-tertiary"></div>
+            <span class="material-symbols-outlined text-tertiary mb-2">chat</span>
+            <h4 class="font-label-md text-label-md text-on-surface-variant mb-1">Yorum</h4>
+            <div class="font-headline-md text-headline-md text-on-surface">${fmt(summary.total_comments)}</div>
+        </div>
+        <div class="col-span-6 md:col-span-3 glass-card rounded-xl p-5 relative overflow-hidden">
+            <div class="absolute top-0 left-0 w-full h-1 bg-primary"></div>
+            <span class="material-symbols-outlined text-primary mb-2">trending_up</span>
+            <h4 class="font-label-md text-label-md text-on-surface-variant mb-1">Etkilesim</h4>
+            <div class="font-headline-md text-headline-md text-on-surface">${summary.engagement_rate || 0}%</div>
+        </div>
+        <div class="col-span-6 md:col-span-3 glass-card rounded-xl p-5 relative overflow-hidden">
+            <div class="absolute top-0 left-0 w-full h-1 bg-[#00F2EA]"></div>
+            <span class="material-symbols-outlined text-[#00F2EA] mb-2">visibility</span>
+            <h4 class="font-label-md text-label-md text-on-surface-variant mb-1">Ort. Begeni</h4>
+            <div class="font-headline-md text-headline-md text-on-surface">${fmt(summary.avg_likes)}</div>
+        </div>`;
+
+    document.getElementById('competitor-content-title').textContent = 'Son Gonderiler';
+    document.getElementById('competitor-content-count').textContent = `${posts.length} post`;
+    document.getElementById('competitor-table-header').innerHTML = '<th class="px-4 py-3 text-label-sm text-on-surface-variant">Icerik</th><th class="px-4 py-3 text-right text-label-sm text-on-surface-variant">Begeni</th><th class="px-4 py-3 text-right text-label-sm text-on-surface-variant">Yorum</th><th class="px-4 py-3 text-right text-label-sm text-on-surface-variant">Tarih</th><th class="px-4 py-3 text-right text-label-sm text-on-surface-variant">Tur</th>';
+    document.getElementById('competitor-table-body').innerHTML = posts.map(p => {
+        const postUrl = p.code ? `https://instagram.com/p/${p.code}/` : '#';
+        const type = p.is_video ? 'Video' : 'Fotograf';
+        return `<tr class="hover:bg-surface-container-highest transition-colors cursor-pointer" onclick="window.open('${postUrl}','_blank')">
+            <td class="px-4 py-3">
+                <div class="flex items-center gap-3">
+                    ${p.thumbnail_url ? `<img src="${p.thumbnail_url}" class="w-14 h-14 rounded object-cover flex-shrink-0">` : ''}
+                    <p class="text-body-sm text-on-surface line-clamp-1">${p.caption ? p.caption.substring(0, 80) : 'Aciklama yok'}</p>
+                </div>
+            </td>
+            <td class="px-4 py-3 text-right text-body-sm">${fmt(p.likes)}</td>
+            <td class="px-4 py-3 text-right text-body-sm">${fmt(p.comments)}</td>
+            <td class="px-4 py-3 text-right text-body-sm">${p.date ? p.date.substring(0, 10) : '-'}</td>
+            <td class="px-4 py-3 text-right"><span class="text-label-sm px-2 py-0.5 rounded-full" style="background:${p.is_video ? '#FF005015' : '#E4405F15'};color:${p.is_video ? '#FF0050' : '#E4405F'}">${type}</span></td>
         </tr>`;
     }).join('');
 }

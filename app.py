@@ -790,28 +790,21 @@ def api_competitor_search():
     except Exception:
         pass
 
-    # Instagram - profil bilgisi icin web'den cek
+    # Instagram
     try:
-        ig_resp = httpx.get(f'https://www.instagram.com/{query}/', headers={
-            'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36',
-        }, follow_redirects=True, timeout=10.0)
-        if ig_resp.status_code == 200:
-            import re as _re
-            meta_match = _re.search(r'<meta property="og:description" content="([^"]*)"', ig_resp.text)
-            desc = meta_match.group(1) if meta_match else ''
-            # Takipci sayisini cek
-            followers_match = _re.search(r'"edge_followed_by":\{"count":(\d+)\}', ig_resp.text)
-            following_match = _re.search(r'"edge_follow":\{"count":(\d+)\}', ig_resp.text)
-            posts_match = _re.search(r'"edge_owner_to_timeline_media":\{"count":(\d+)', ig_resp.text)
-
-            if followers_match:
+        if instagram.is_logged_in():
+            ig_info = instagram.get_user_info(query)
+            if 'error' not in ig_info:
                 results['platforms']['instagram'] = {
-                    'username': query,
-                    'followers': int(followers_match.group(1)),
-                    'following': int(following_match.group(1)) if following_match else 0,
-                    'posts': int(posts_match.group(1)) if posts_match else 0,
-                    'description': desc,
-                    'profile_url': f'https://www.instagram.com/{query}/',
+                    'username': ig_info['username'],
+                    'full_name': ig_info.get('full_name', ''),
+                    'followers': ig_info['followers'],
+                    'following': ig_info['following'],
+                    'posts': ig_info['media_count'],
+                    'biography': ig_info.get('biography', ''),
+                    'profile_pic_url': ig_info.get('profile_pic_url', ''),
+                    'is_private': ig_info.get('is_private', False),
+                    'is_verified': ig_info.get('is_verified', False),
                 }
     except Exception:
         pass
@@ -925,6 +918,12 @@ def api_competitor_detail(platform, username):
                 },
                 'best_videos': sorted(videos, key=lambda v: v.get('view_count', 0), reverse=True)[:5],
             })
+
+        elif platform == 'instagram':
+            analytics = instagram.get_analytics(username, count=30)
+            if 'error' in analytics:
+                return jsonify(analytics)
+            return jsonify(analytics)
 
         else:
             return jsonify({'error': f'{platform} desteklenmiyor'})
