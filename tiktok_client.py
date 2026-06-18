@@ -1,7 +1,6 @@
 import json
 import os
 import re
-import subprocess
 import tempfile
 from datetime import datetime
 
@@ -11,6 +10,12 @@ try:
 except ImportError:
     import httpx as _requests
     TIKTOK_IMPERSONATE = None
+
+try:
+    import yt_dlp
+    HAS_YT_DLP = True
+except ImportError:
+    HAS_YT_DLP = False
 
 HEADERS = {
     'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/131.0.0.0 Safari/537.36',
@@ -128,59 +133,51 @@ class TikTokClient:
                 return {'error': str(e)}
 
     def get_user_videos(self, username, count=30):
+        if not HAS_YT_DLP:
+            return []
         try:
-            cmd = [
-                'yt-dlp', '--flat-playlist', '-j',
-                '--playlist-items', f'1:{count}',
-                f'https://www.tiktok.com/@{username}',
-            ]
-            result = subprocess.run(
-                cmd, capture_output=True, text=True,
-                timeout=60, encoding='utf-8', errors='replace',
-            )
-
-            if result.returncode != 0:
-                return []
+            ydl_opts = {
+                'quiet': True,
+                'extract_flat': True,
+                'playlist_items': f'1:{count}',
+            }
+            with yt_dlp.YoutubeDL(ydl_opts) as ydl:
+                info = ydl.extract_info(f'https://www.tiktok.com/@{username}', download=False)
+                entries = info.get('entries', [])
+                if not entries:
+                    return []
 
             videos = []
-            for line in result.stdout.strip().split('\n'):
-                if not line.strip():
+            for item in entries:
+                if not item:
                     continue
-                try:
-                    item = json.loads(line)
-                    desc = item.get('description', '') or item.get('title', '')
-                    upload_date = item.get('upload_date', '')
-                    timestamp = item.get('timestamp', 0)
-                    duration = item.get('duration', 0)
+                desc = item.get('description', '') or item.get('title', '')
+                upload_date = item.get('upload_date', '')
+                timestamp = item.get('timestamp', 0)
+                duration = item.get('duration', 0)
 
-                    hashtags = re.findall(r'#(\w+)', desc)
+                hashtags = re.findall(r'#(\w+)', desc)
 
-                    thumbs = item.get('thumbnails', [])
-                    cover = thumbs[0]['url'] if thumbs else ''
+                thumbs = item.get('thumbnails', [])
+                cover = thumbs[0]['url'] if thumbs else ''
 
-                    videos.append({
-                        'id': item.get('id', ''),
-                        'desc': desc,
-                        'created_at': timestamp,
-                        'upload_date': upload_date,
-                        'duration': duration,
-                        'play_count': item.get('view_count', 0) or 0,
-                        'like_count': item.get('like_count', 0) or 0,
-                        'comment_count': item.get('comment_count', 0) or 0,
-                        'share_count': item.get('repost_count', 0) or 0,
-                        'save_count': item.get('save_count', 0) or 0,
-                        'cover': cover,
-                        'music': item.get('track', ''),
-                        'hashtags': hashtags,
-                        'url': item.get('url', ''),
-                    })
-                except json.JSONDecodeError:
-                    continue
+                videos.append({
+                    'id': item.get('id', ''),
+                    'desc': desc,
+                    'created_at': timestamp,
+                    'upload_date': upload_date,
+                    'duration': duration,
+                    'play_count': item.get('view_count', 0) or 0,
+                    'like_count': item.get('like_count', 0) or 0,
+                    'comment_count': item.get('comment_count', 0) or 0,
+                    'share_count': item.get('repost_count', 0) or 0,
+                    'save_count': item.get('save_count', 0) or 0,
+                    'cover': cover,
+                    'music': item.get('track', ''),
+                    'hashtags': hashtags,
+                    'url': item.get('url', ''),
+                })
 
             return videos
-        except subprocess.TimeoutExpired:
-            return []
-        except FileNotFoundError:
-            return []
         except Exception:
             return []
