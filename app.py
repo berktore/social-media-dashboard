@@ -26,15 +26,15 @@ def login_required(f):
     return decorated
 
 # Cookie'leri yukle (env var > dosya)
-auth_token = os.environ.get('TWITTER_AUTH_TOKEN', '') or ''
-ct0 = os.environ.get('TWITTER_CT0', '') or ''
+auth_token = os.environ.get('TWITTER_AUTH_TOKEN')
+ct0 = os.environ.get('TWITTER_CT0')
 if not auth_token and os.path.exists("cookies.json"):
     with open("cookies.json") as f:
         cookies = json.load(f)
-        auth_token = cookies.get("auth_token", '')
-        ct0 = cookies.get("ct0", '')
+        auth_token = cookies.get("auth_token")
+        ct0 = cookies.get("ct0")
 
-client = TwitterClient(auth_token.strip() if auth_token else None, ct0.strip() if ct0 else None)
+client = TwitterClient(auth_token, ct0)
 tiktok = TikTokClient()
 
 # YouTube API key (env var > config file)
@@ -73,21 +73,7 @@ def index():
 @app.route("/api/status")
 def api_status():
     logged_in = 'logged_in' in session
-    env_at = os.environ.get('TWITTER_AUTH_TOKEN', '')
-    env_ct0 = os.environ.get('TWITTER_CT0', '')
-    vercel_env = os.environ.get('VERCEL_ENV', 'not-set')
-    all_keys = [k for k in os.environ.keys() if 'TWITTER' in k or 'AUTH' in k or 'CT0' in k]
-    return jsonify({
-        "logged_in": logged_in,
-        "twitter_ready": client.is_logged_in(),
-        "debug_env": {
-            "TWITTER_AUTH_TOKEN": f"len={len(env_at)} first4={env_at[:4] if env_at else 'EMPTY'}",
-            "TWITTER_CT0": f"len={len(env_ct0)} first4={env_ct0[:4] if env_ct0 else 'EMPTY'}",
-            "VERCEL_ENV": vercel_env,
-            "matching_env_keys": all_keys,
-            "all_env_keys": sorted([k for k in os.environ.keys() if not k.startswith('_')])[:30],
-        }
-    })
+    return jsonify({"logged_in": logged_in, "twitter_ready": client.is_logged_in()})
 
 
 @app.route("/api/login", methods=["POST"])
