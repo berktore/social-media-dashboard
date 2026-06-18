@@ -132,6 +132,36 @@ def api_login():
         return jsonify({"success": False, "error": str(e)})
 
 
+@app.route("/api/debug")
+@login_required
+def api_debug():
+    from twitter_client import TwitterClient
+    import inspect
+    has_twitter_session = bool(session.get('twitter_auth_token'))
+    client_creds = {"auth_token": client.auth_token[:8] + "..." if client.auth_token else None,
+                    "ct0": client.ct0[:8] + "..." if client.ct0 else None,
+                    "logged_in": client.is_logged_in(),
+                    "instance_id": id(client)}
+    try:
+        fresh = _get_twitter_client()
+        fresh_creds = {"auth_token": fresh.auth_token[:8] + "..." if fresh.auth_token else None,
+                       "ct0": fresh.ct0[:8] + "..." if fresh.ct0 else None,
+                       "logged_in": fresh.is_logged_in(),
+                       "instance_id": id(fresh)}
+    except Exception as e:
+        fresh_creds = {"error": str(e)}
+    return jsonify({
+        "session_twitter_auth_token": has_twitter_session,
+        "session_keys": list(session.keys()),
+        "client": client_creds,
+        "fresh_client": fresh_creds,
+        "cookies_json_exists": os.path.exists("cookies.json"),
+        "tmp_creds_exists": os.path.exists(os.path.join(tempfile.gettempdir(), "twitter_creds.json")),
+        "env_has_twitter_auth_token": "TWITTER_AUTH_TOKEN" in os.environ,
+        "env_has_twitter_ct0": "TWITTER_CT0" in os.environ,
+    })
+
+
 @app.route("/api/user/<username>")
 @login_required
 def api_user(username):
