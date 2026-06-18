@@ -24,8 +24,18 @@ if not yt_api_key and os.path.exists('youtube_config.json'):
 youtube = YouTubeClient(api_key=yt_api_key)
 
 def _get_twitter_client():
-    auth_token = os.environ.get('TWITTER_AUTH_TOKEN') or None
-    ct0 = os.environ.get('TWITTER_CT0') or None
+    try:
+        auth_token = session.get('twitter_auth_token') if session else None
+    except RuntimeError:
+        auth_token = None
+    if not auth_token:
+        auth_token = os.environ.get('TWITTER_AUTH_TOKEN') or None
+    try:
+        ct0 = session.get('twitter_ct0') if session else None
+    except RuntimeError:
+        ct0 = None
+    if not ct0:
+        ct0 = os.environ.get('TWITTER_CT0') or None
     if not auth_token and os.path.exists("cookies.json"):
         with open("cookies.json") as f:
             c = json.load(f)
@@ -110,6 +120,8 @@ def api_login():
         except (OSError, PermissionError):
             pass
         client.login(data["auth_token"], data["ct0"])
+        session['twitter_auth_token'] = data["auth_token"]
+        session['twitter_ct0'] = data["ct0"]
         return jsonify({"success": True})
     except Exception as e:
         return jsonify({"success": False, "error": str(e)})
