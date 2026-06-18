@@ -57,6 +57,10 @@ function switchTab(tabName) {
         if (youtubeData) setTimeout(() => renderYouTubeAll(), 100);
         else loadYouTubeData('UC-Il4FpbUEatDuaefVzqh8Q');
     }
+    if (tabName === 'instagram') {
+        if (instagramData) setTimeout(() => renderInstagramAll(), 100);
+        else loadInstagramData();
+    }
 }
 
 function handleGlobalSearch() {
