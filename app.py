@@ -71,9 +71,9 @@ def index():
 
 
 @app.route("/api/status")
-@login_required
 def api_status():
-    return jsonify({"logged_in": client.is_logged_in()})
+    logged_in = 'logged_in' in session
+    return jsonify({"logged_in": logged_in, "twitter_ready": client.is_logged_in()})
 
 
 @app.route("/api/login", methods=["POST"])
