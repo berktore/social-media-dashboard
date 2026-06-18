@@ -26,15 +26,15 @@ def login_required(f):
     return decorated
 
 # Cookie'leri yukle (env var > dosya)
-auth_token = os.environ.get('TWITTER_AUTH_TOKEN') or None
-ct0 = os.environ.get('TWITTER_CT0') or None
+auth_token = os.environ.get('TWITTER_AUTH_TOKEN', '') or ''
+ct0 = os.environ.get('TWITTER_CT0', '') or ''
 if not auth_token and os.path.exists("cookies.json"):
     with open("cookies.json") as f:
         cookies = json.load(f)
-        auth_token = cookies.get("auth_token")
-        ct0 = cookies.get("ct0")
+        auth_token = cookies.get("auth_token", '')
+        ct0 = cookies.get("ct0", '')
 
-client = TwitterClient(auth_token, ct0)
+client = TwitterClient(auth_token.strip() if auth_token else None, ct0.strip() if ct0 else None)
 tiktok = TikTokClient()
 
 # YouTube API key (env var > config file)
@@ -73,7 +73,16 @@ def index():
 @app.route("/api/status")
 def api_status():
     logged_in = 'logged_in' in session
-    return jsonify({"logged_in": logged_in, "twitter_ready": client.is_logged_in()})
+    env_at = os.environ.get('TWITTER_AUTH_TOKEN', '')
+    env_ct0 = os.environ.get('TWITTER_CT0', '')
+    return jsonify({
+        "logged_in": logged_in,
+        "twitter_ready": client.is_logged_in(),
+        "debug_env": {
+            "TWITTER_AUTH_TOKEN": f"len={len(env_at)} first4={env_at[:4] if env_at else 'EMPTY'}",
+            "TWITTER_CT0": f"len={len(env_ct0)} first4={env_ct0[:4] if env_ct0 else 'EMPTY'}",
+        }
+    })
 
 
 @app.route("/api/login", methods=["POST"])
