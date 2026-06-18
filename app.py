@@ -75,12 +75,17 @@ def api_status():
     logged_in = 'logged_in' in session
     env_at = os.environ.get('TWITTER_AUTH_TOKEN', '')
     env_ct0 = os.environ.get('TWITTER_CT0', '')
+    vercel_env = os.environ.get('VERCEL_ENV', 'not-set')
+    all_keys = [k for k in os.environ.keys() if 'TWITTER' in k or 'AUTH' in k or 'CT0' in k]
     return jsonify({
         "logged_in": logged_in,
         "twitter_ready": client.is_logged_in(),
         "debug_env": {
             "TWITTER_AUTH_TOKEN": f"len={len(env_at)} first4={env_at[:4] if env_at else 'EMPTY'}",
             "TWITTER_CT0": f"len={len(env_ct0)} first4={env_ct0[:4] if env_ct0 else 'EMPTY'}",
+            "VERCEL_ENV": vercel_env,
+            "matching_env_keys": all_keys,
+            "all_env_keys": sorted([k for k in os.environ.keys() if not k.startswith('_')])[:30],
         }
     })
 
