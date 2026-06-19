@@ -1107,7 +1107,6 @@ function searchYouTube() {
         `).join('');
     });
 
-    renderTikTokChart(all_videos);
 }
 
 function loadYouTubeData(channelId) {
@@ -1859,6 +1858,33 @@ function renderCompetitorTwitter(data) {
             <td class="px-4 py-3 text-right"><span class="text-label-sm ${engRate > 5 ? 'text-primary' : 'text-on-surface-variant'}">%${engRate}</span></td>
         </tr>`;
     }).join('');
+    if (typeof best_tweets !== 'undefined') renderBestContent(best_tweets, 'twitter');
+}
+
+function renderBestContent(best, platform) {
+    const section = document.getElementById('competitor-best-section');
+    const cards = document.getElementById('competitor-best-cards');
+    if (!best || best.length === 0) { section.classList.add('hidden'); return; }
+    section.classList.remove('hidden');
+    const icons = { twitter: 'chat', tiktok: 'play_circle', youtube: 'play_circle', instagram: 'photo_library' };
+    const icon = icons[platform] || 'stars';
+    cards.innerHTML = best.map((item, i) => {
+        const title = item.title || item.text || item.desc || '';
+        const views = item.view_count || item.play_count || 0;
+        const likes = item.like_count || item.favorite_count || 0;
+        const thumbnail = item.thumbnail || item.thumbnail_url || '';
+        return `<div class="col-span-12 md:col-span-4 glass-card rounded-xl overflow-hidden hover:scale-[1.02] transition-transform">
+            ${thumbnail ? `<div class="relative"><img src="${thumbnail}" class="w-full h-32 object-cover"><div class="absolute bottom-2 right-2 bg-black/60 text-white text-label-xs px-2 py-0.5 rounded">${fmt(views)}</div></div>` : ''}
+            <div class="p-3">
+                <div class="flex items-center gap-1 mb-1"><span class="material-symbols-outlined text-amber-400 text-sm">${icon}</span><span class="text-label-xs text-amber-400">#${i+1}</span></div>
+                <p class="text-body-sm text-on-surface line-clamp-2">${title.substring(0, 100)}</p>
+                <div class="flex gap-3 mt-2 text-label-xs text-on-surface-variant">
+                    <span>${fmt(likes)} begeni</span>
+                    <span>${fmt(views)} izlenme</span>
+                </div>
+            </div>
+        </div>`;
+    }).join('');
 }
 
 function renderCompetitorTikTok(data) {
@@ -1894,6 +1920,29 @@ function renderCompetitorTikTok(data) {
         <div class="col-span-12 md:col-span-3 glass-card p-5 rounded-xl"><span class="material-symbols-outlined text-primary text-lg mb-2">chat</span><h4 class="font-label-md text-on-surface-variant mb-1">Yorum</h4><div class="font-headline-md text-on-surface">${fmt(a.total_comments)}</div></div>
         <div class="col-span-12 md:col-span-3 glass-card p-5 rounded-xl"><span class="material-symbols-outlined text-tertiary text-lg mb-2">share</span><h4 class="font-label-md text-on-surface-variant mb-1">Paylasim</h4><div class="font-headline-md text-on-surface">${fmt(a.total_shares)}</div></div>`;
 
+    // Format analysis (short/medium/long)
+    const formatSection = document.getElementById('competitor-format-section');
+    const formatCards = document.getElementById('competitor-format-cards');
+    if (format_analysis) {
+        formatSection.classList.remove('hidden');
+        const colors = { short: { bg: '#00F2EA', label: 'Kisa (0-15s)' }, medium: { bg: '#FF0050', label: 'Orta (15-60s)' }, long: { bg: '#818cf8', label: 'Uzun (60s+)' } };
+        formatCards.innerHTML = Object.entries(format_analysis).map(([key, val]) => {
+            const c = colors[key] || { bg: '#818cf8', label: key };
+            return `<div class="col-span-12 md:col-span-4 glass-card p-5 rounded-xl relative overflow-hidden">
+                <div class="absolute top-0 left-0 w-full h-1" style="background:${c.bg}"></div>
+                <div class="flex items-center gap-2 mb-3">
+                    <span class="w-3 h-3 rounded-full" style="background:${c.bg}"></span>
+                    <h4 class="font-label-md text-label-sm uppercase tracking-widest" style="color:${c.bg}">${c.label}</h4>
+                </div>
+                <div class="font-headline-md text-on-surface">${val.count} video</div>
+                <div class="mt-1 flex gap-4 text-label-sm text-on-surface-variant">
+                    <span>Ort. izlenme: ${fmt(val.avg_views)}</span>
+                    <span>Ort. begeni: ${fmt(val.avg_likes)}</span>
+                </div>
+            </div>`;
+        }).join('');
+    }
+
     document.getElementById('competitor-content-title').textContent = 'Son Videolar';
     document.getElementById('competitor-content-count').textContent = `${videos.length} video`;
     document.getElementById('competitor-table-header').innerHTML = `
@@ -1914,6 +1963,7 @@ function renderCompetitorTikTok(data) {
             <td class="px-4 py-3 text-right"><span class="text-label-sm ${engRate > 10 ? 'text-[#00F2EA]' : 'text-on-surface-variant'}">%${engRate}</span></td>
         </tr>`;
     }).join('');
+    renderBestContent(best_videos, 'tiktok');
 }
 
 function renderCompetitorYouTube(data) {
@@ -1972,6 +2022,7 @@ function renderCompetitorYouTube(data) {
             <td class="px-4 py-3 text-right text-body-sm">${fmt(v.comment_count)}</td>
         </tr>`;
     }).join('');
+    renderBestContent(best_videos, 'youtube');
 }
 
 function renderCompetitorInstagram(data) {
