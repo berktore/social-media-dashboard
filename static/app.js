@@ -322,6 +322,36 @@ function renderOverview(data) {
                 </td>
             </tr>`);
     }
+    if (instagram) {
+        const engPct = Math.min(100, Math.round((instagram.engagement_rate || 0) * 10));
+        healthRows.push(`
+            <tr class="hover:bg-surface-container-highest transition-colors cursor-pointer" onclick="switchTab('instagram')">
+                <td class="px-6 py-3">
+                    <div class="flex items-center gap-2">
+                        <span class="material-symbols-outlined text-[#E4405F]">camera_alt</span>
+                        <span class="text-body-sm font-body-sm">Instagram</span>
+                    </div>
+                </td>
+                <td class="px-6 py-3">
+                    <div class="flex items-center gap-3">
+                        <div class="w-8 h-8 rounded-full bg-[#E4405F] flex items-center justify-center text-label-sm text-white">${(instagram.full_name || instagram.username).substring(0, 2).toUpperCase()}</div>
+                        <span class="text-body-sm font-body-sm font-medium">@${instagram.username}</span>
+                    </div>
+                </td>
+                <td class="px-6 py-3 text-right text-body-sm font-body-sm">${fmt(instagram.followers)}</td>
+                <td class="px-6 py-3 text-right">
+                    <div class="flex items-center justify-end gap-2">
+                        <div class="w-16 bg-surface-container h-1 rounded-full overflow-hidden">
+                            <div class="bg-[#E4405F] h-full w-[${engPct}%]"></div>
+                        </div>
+                        <span class="text-label-sm text-on-surface-variant">%${instagram.engagement_rate || 0}</span>
+                    </div>
+                </td>
+                <td class="px-6 py-3 text-right">
+                    <span class="bg-[#E4405F]/10 text-[#E4405F] px-3 py-1 rounded-full text-label-sm border border-[#E4405F]/20">Aktif</span>
+                </td>
+            </tr>`);
+    }
     if (healthRows.length === 0) {
         healthRows.push('<tr><td colspan="5" class="px-6 py-8 text-center text-on-surface-variant">Henuz platform baglanmadi</td></tr>');
     }
