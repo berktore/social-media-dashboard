@@ -827,14 +827,16 @@ def api_competitor_detail(platform, username):
         cutoff = (datetime.now(timezone.utc) - timedelta(days=days)).timestamp()
 
         def parse_ts(item):
-            ts = item.get('created_at') or item.get('published_at') or 0
-            if isinstance(ts, (int, float)):
-                return ts
-            if isinstance(ts, str):
-            for fmt in ('%a %b %d %H:%M:%S %z %Y', '%Y-%m-%dT%H:%M:%SZ', '%Y-%m-%dT%H:%M:%S.%fZ'):
-                try:
-                    return datetime.strptime(ts.rstrip('Z'), fmt.replace('%z', '').replace('%Y-%m-%dT%H:%M:%SZ', '%Y-%m-%dT%H:%M:%S')).timestamp()
-                except: pass
+            raw = item.get('created_at') or item.get('published_at') or 0
+            if isinstance(raw, (int, float)):
+                return raw
+            if isinstance(raw, str):
+                s = raw.strip()
+                fmts = ('%a %b %d %H:%M:%S %z %Y', '%Y-%m-%dT%H:%M:%SZ', '%Y-%m-%dT%H:%M:%S.%fZ', '%Y-%m-%dT%H:%M:%S%z')
+                for fmt in fmts:
+                    try:
+                        return datetime.strptime(s, fmt).timestamp()
+                    except: pass
             return 0
 
         if platform == 'twitter':

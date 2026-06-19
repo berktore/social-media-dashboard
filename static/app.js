@@ -1786,7 +1786,7 @@ function openCompetitorDetail(platform, id) {
     document.getElementById('competitor-table-header').innerHTML = '';
     document.getElementById('competitor-table-body').innerHTML = '<tr><td colspan="6" class="px-4 py-8 text-center"><div class="loading-spinner mx-auto"></div></td></tr>';
 
-    fetch(`/api/competitor/${platform}/${id}?days=${competitorDays}`)
+    fetch(`/api/competitor/${platform}/${id}?days=${competitorDays}&_=${Date.now()}`)
     .then(r => r.json()).then(data => {
         if (data.error) {
             document.getElementById('competitor-profile-cards').innerHTML = `<div class="col-span-12 text-center text-error py-8">${data.error}</div>`;
