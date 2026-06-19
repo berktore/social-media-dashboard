@@ -107,13 +107,71 @@
             },
         }
     </script>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.7/dist/chart.umd.min.js"></script>
     <style>
-        body { background-color: #051424; color: #d4e4fa; }
-        .glass-card {
-            background: rgba(30, 41, 59, 0.7);
-            backdrop-filter: blur(12px);
-            border: 1px solid rgba(51, 65, 85, 0.5);
+        :root {
+            --bg-deep: #051424;
+            --bg-surface: rgba(30, 41, 59, 0.65);
+            --glow-twitter: rgba(29, 161, 242, 0.15);
+            --glow-tiktok: rgba(0, 242, 234, 0.15);
+            --glow-youtube: rgba(255, 0, 0, 0.15);
+            --glow-instagram: rgba(228, 64, 95, 0.15);
         }
+        body {
+            background: var(--bg-deep);
+            background-image:
+                radial-gradient(ellipse 80% 50% at 50% -20%, rgba(29, 161, 242, 0.06) 0%, transparent 100%),
+                radial-gradient(ellipse 60% 40% at 80% 80%, rgba(228, 64, 95, 0.04) 0%, transparent 100%),
+                radial-gradient(ellipse 50% 30% at 20% 60%, rgba(0, 242, 234, 0.03) 0%, transparent 100%);
+            color: #d4e4fa;
+            position: relative;
+        }
+        body::before {
+            content: '';
+            position: fixed;
+            inset: 0;
+            background-image:
+                linear-gradient(rgba(255,255,255,0.02) 1px, transparent 1px),
+                linear-gradient(90deg, rgba(255,255,255,0.02) 1px, transparent 1px);
+            background-size: 60px 60px;
+            pointer-events: none;
+            z-index: 0;
+        }
+        .glass-card {
+            background: var(--bg-surface);
+            backdrop-filter: blur(16px);
+            -webkit-backdrop-filter: blur(16px);
+            border: 1px solid rgba(51, 65, 85, 0.4);
+            transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+            position: relative;
+            overflow: hidden;
+        }
+        .glass-card::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: -100%;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(90deg, transparent, rgba(255,255,255,0.03), transparent);
+            transition: left 0.6s ease;
+        }
+        .glass-card:hover::before {
+            left: 100%;
+        }
+        .glass-card:hover {
+            transform: translateY(-2px);
+            border-color: rgba(51, 65, 85, 0.7);
+            box-shadow: 0 8px 32px rgba(0,0,0,0.3);
+        }
+        .glow-twitter { box-shadow: 0 0 20px var(--glow-twitter); }
+        .glow-tiktok { box-shadow: 0 0 20px var(--glow-tiktok); }
+        .glow-youtube { box-shadow: 0 0 20px var(--glow-youtube); }
+        .glow-instagram { box-shadow: 0 0 20px var(--glow-instagram); }
+        .glow-twitter:hover { box-shadow: 0 0 40px var(--glow-twitter); }
+        .glow-tiktok:hover { box-shadow: 0 0 40px var(--glow-tiktok); }
+        .glow-youtube:hover { box-shadow: 0 0 40px var(--glow-youtube); }
+        .glow-instagram:hover { box-shadow: 0 0 40px var(--glow-instagram); }
         .material-symbols-outlined {
             font-variation-settings: 'FILL' 0, 'wght' 400, 'GRAD' 0, 'opsz' 24;
         }
@@ -125,23 +183,88 @@
         ::-webkit-scrollbar { width: 6px; }
         ::-webkit-scrollbar-track { background: #051424; }
         ::-webkit-scrollbar-thumb { background: #1c2b3c; border-radius: 10px; }
+        ::-webkit-scrollbar-thumb:hover { background: #334155; }
         .nav-active {
-            background: rgba(0, 102, 255, 0.2);
+            background: linear-gradient(135deg, rgba(0, 102, 255, 0.2), rgba(29, 161, 242, 0.1));
             color: #1DA1F2;
-            border-left: 4px solid #1DA1F2;
-            border-radius: 0 0.75rem 0.75rem 0;
+            border-left: 3px solid #1DA1F2;
+        }
+        .nav-item {
+            position: relative;
+            overflow: hidden;
+        }
+        .nav-item::after {
+            content: '';
+            position: absolute;
+            bottom: 0;
+            left: 50%;
+            width: 0;
+            height: 1px;
+            background: #1DA1F2;
+            transition: all 0.3s ease;
+            transform: translateX(-50%);
+        }
+        .nav-item:hover::after {
+            width: 80%;
         }
         .loading-spinner {
-            border: 3px solid rgba(29, 161, 242, 0.2);
-            border-top: 3px solid #1DA1F2;
+            border: 3px solid rgba(29, 161, 242, 0.15);
+            border-top-color: #1DA1F2;
             border-radius: 50%;
             width: 40px;
             height: 40px;
-            animation: spin 1s linear infinite;
+            animation: spin 0.8s linear infinite;
         }
         @keyframes spin {
             0% { transform: rotate(0deg); }
             100% { transform: rotate(360deg); }
+        }
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(12px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+        @keyframes pulse-glow {
+            0%, 100% { opacity: 0.4; }
+            50% { opacity: 1; }
+        }
+        .tab-content:not(.hidden) > * {
+            animation: fadeIn 0.4s ease forwards;
+        }
+        .tab-content:not(.hidden) > *:nth-child(2) { animation-delay: 0.05s; }
+        .tab-content:not(.hidden) > *:nth-child(3) { animation-delay: 0.1s; }
+        .tab-content:not(.hidden) > *:nth-child(4) { animation-delay: 0.15s; }
+        .tab-content:not(.hidden) > *:nth-child(5) { animation-delay: 0.2s; }
+        table tbody tr {
+            transition: all 0.2s ease;
+        }
+        table tbody tr:hover {
+            background: rgba(29, 161, 242, 0.03);
+        }
+        input, button, select {
+            transition: all 0.2s ease;
+        }
+        input:focus {
+            box-shadow: 0 0 0 2px rgba(29, 161, 242, 0.2);
+        }
+        .metric-value {
+            background: linear-gradient(135deg, #d4e4fa 0%, #b3c5ff 100%);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+        }
+        .section-header {
+            position: relative;
+            display: inline-block;
+        }
+        .section-header::after {
+            content: '';
+            position: absolute;
+            bottom: -4px;
+            left: 0;
+            width: 40px;
+            height: 3px;
+            background: linear-gradient(90deg, #1DA1F2, transparent);
+            border-radius: 2px;
         }
     </style>
 </head>
@@ -291,6 +414,16 @@
                         <div class="grid grid-cols-1 md:grid-cols-4 gap-4 mb-xl" id="overview-platform-cards">
                             <div class="col-span-4 flex items-center justify-center py-8"><div class="loading-spinner"></div></div>
                         </div>
+
+                        <!-- Growth Chart -->
+                        <section class="glass-card rounded-xl overflow-hidden mb-xl">
+                            <div class="p-lg border-b border-outline-variant/30">
+                                <h2 class="font-headline-sm text-headline-sm text-on-surface">Platform Growth</h2>
+                            </div>
+                            <div class="p-lg">
+                                <canvas id="overview-growth-chart" height="240"></canvas>
+                            </div>
+                        </section>
 
                         <!-- Account Health Table -->
                         <section class="glass-card rounded-xl overflow-hidden mb-xl">

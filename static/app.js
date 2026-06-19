@@ -356,6 +356,86 @@ function renderOverview(data) {
         healthRows.push('<tr><td colspan="5" class="px-6 py-8 text-center text-on-surface-variant">Henuz platform baglanmadi</td></tr>');
     }
     document.getElementById('overview-health-table').innerHTML = healthRows.join('');
+
+    renderGrowthChart(data);
+}
+
+function renderGrowthChart(data) {
+    const ctx = document.getElementById('overview-growth-chart');
+    if (!ctx) return;
+    const existing = Chart.getChart(ctx);
+    if (existing) existing.destroy();
+
+    const labels = ['Twitter', 'TikTok', 'YouTube', 'Instagram'];
+    const followers = [
+        data.twitter?.followers || 0,
+        data.tiktok?.followers || 0,
+        data.youtube?.subscribers || 0,
+        data.instagram?.followers || 0
+    ];
+    const engagement = [
+        parseFloat((data.twitter?.engagement_rate || 0) * 100),
+        parseFloat((data.tiktok?.engagement_rate || 0) * 100),
+        parseFloat((data.youtube?.engagement_rate || 0) * 100),
+        parseFloat((data.instagram?.engagement_rate || 0) * 100)
+    ];
+    const colors = ['#1DA1F2', '#00F2EA', '#FF0000', '#E4405F'];
+
+    new Chart(ctx, {
+        type: 'bar',
+        data: {
+            labels,
+            datasets: [
+                {
+                    label: 'Takipci',
+                    data: followers,
+                    backgroundColor: colors.map(c => c + '80'),
+                    borderColor: colors,
+                    borderWidth: 2,
+                    borderRadius: 4,
+                    yAxisID: 'y',
+                },
+                {
+                    label: 'Etkilesim %',
+                    data: engagement,
+                    type: 'line',
+                    borderColor: '#7bd0ff',
+                    backgroundColor: 'rgba(123, 208, 255, 0.1)',
+                    borderWidth: 2,
+                    pointBackgroundColor: '#7bd0ff',
+                    pointRadius: 4,
+                    tension: 0.4,
+                    yAxisID: 'y1',
+                }
+            ]
+        },
+        options: {
+            responsive: true,
+            maintainAspectRatio: false,
+            interaction: { intersect: false, mode: 'index' },
+            plugins: {
+                legend: {
+                    labels: { color: '#c2c6d8', font: { family: 'Inter', size: 11 }, usePointStyle: true, padding: 16 }
+                }
+            },
+            scales: {
+                x: {
+                    grid: { color: 'rgba(255,255,255,0.04)' },
+                    ticks: { color: '#8c90a1', font: { family: 'Inter', size: 11 } }
+                },
+                y: {
+                    position: 'left',
+                    grid: { color: 'rgba(255,255,255,0.04)' },
+                    ticks: { color: '#8c90a1', font: { family: 'Inter', size: 11 }, callback: v => v >= 1000 ? (v/1000).toFixed(0)+'K' : v }
+                },
+                y1: {
+                    position: 'right',
+                    grid: { drawOnChartArea: false },
+                    ticks: { color: '#7bd0ff', font: { family: 'Inter', size: 11 }, callback: v => v.toFixed(1)+'%' }
+                }
+            }
+        }
+    });
 }
 
 function setDateRange(days) {
