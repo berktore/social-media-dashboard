@@ -86,23 +86,24 @@ function loadOverview() {
 }
 
 function renderOverview(data) {
-    const { twitter, tiktok, youtube } = data;
+    const { twitter, tiktok, youtube, instagram } = data;
 
     // Toplam degerleri hesapla
-    const totalFollowers = (twitter?.followers || 0) + (tiktok?.followers || 0) + (youtube?.subscribers || 0);
-    const totalImpressions = (twitter?.total_impressions || 0) + (tiktok?.total_views || 0) + (youtube?.total_views || 0);
+    const totalFollowers = (twitter?.followers || 0) + (tiktok?.followers || 0) + (youtube?.subscribers || 0) + (instagram?.followers || 0);
+    const totalImpressions = (twitter?.total_impressions || 0) + (tiktok?.total_views || 0) + (youtube?.total_views || 0) + (instagram?.total_likes || 0);
 
     // Agirlikli etkilesim orani
     const twEng = twitter?.engagement_rate || 0;
     const ttEng = tiktok?.engagement_rate || 0;
     const ytEng = youtube?.engagement_rate || 0;
-    const totalEngWeight = (twitter?.total_impressions || 0) + (tiktok?.total_views || 0) + (youtube?.total_views || 0);
+    const igEng = instagram?.engagement_rate || 0;
+    const totalEngWeight = (twitter?.total_impressions || 0) + (tiktok?.total_views || 0) + (youtube?.total_views || 0) + (instagram?.total_likes || 0);
     const avgEngRate = totalEngWeight > 0
-        ? ((twEng * (twitter?.total_impressions || 0) + ttEng * (tiktok?.total_views || 0) + ytEng * (youtube?.total_views || 0)) / totalEngWeight).toFixed(2)
+        ? ((twEng * (twitter?.total_impressions || 0) + ttEng * (tiktok?.total_views || 0) + ytEng * (youtube?.total_views || 0) + igEng * (instagram?.total_likes || 0)) / totalEngWeight).toFixed(2)
         : 0;
 
     // Toplam follower artisi
-    const totalGrowth = (twitter?.follower_growth || 0) + (tiktok?.follower_growth || 0) + (youtube?.subscriber_growth || 0);
+    const totalGrowth = (twitter?.follower_growth || 0) + (tiktok?.follower_growth || 0) + (youtube?.subscriber_growth || 0) + (instagram?.follower_growth || 0);
 
     // Core Metrics
     document.getElementById('overview-core-metrics').innerHTML = `
@@ -156,8 +157,9 @@ function renderOverview(data) {
                     ${twitter ? '<div class="w-8 h-8 rounded-full border-2 border-surface bg-surface-bright overflow-hidden"><img src="https://ui-avatars.com/api/?name=TW&background=1DA1F2&color=fff&size=32" alt=""></div>' : ''}
                     ${tiktok ? '<div class="w-8 h-8 rounded-full border-2 border-surface bg-surface-bright overflow-hidden"><img src="https://ui-avatars.com/api/?name=TT&background=00F2EA&color=000&size=32" alt=""></div>' : ''}
                     ${youtube ? '<div class="w-8 h-8 rounded-full border-2 border-surface bg-surface-bright overflow-hidden"><img src="https://ui-avatars.com/api/?name=YT&background=FF0000&color=fff&size=32" alt=""></div>' : ''}
+                    ${instagram ? '<div class="w-8 h-8 rounded-full border-2 border-surface bg-surface-bright overflow-hidden"><img src="https://ui-avatars.com/api/?name=IG&background=E4405F&color=fff&size=32" alt=""></div>' : ''}
                 </div>
-                <span class="font-label-sm text-label-sm text-on-surface-variant">${[twitter, tiktok, youtube].filter(Boolean).length} platform aktif</span>
+                <span class="font-label-sm text-label-sm text-on-surface-variant">${[twitter, tiktok, youtube, instagram].filter(Boolean).length} platform aktif</span>
             </div>
         </div>`;
 
@@ -205,6 +207,21 @@ function renderOverview(data) {
                 <div class="text-label-sm text-on-surface-variant flex items-center gap-1">
                     <span class="material-symbols-outlined text-[14px] ${ytGrowth >= 0 ? 'text-primary' : 'text-error'}">${ytGrowth >= 0 ? 'trending_up' : 'trending_down'}</span>
                     ${ytGrowth >= 0 ? '+' : ''}${fmt(ytGrowth)}
+                </div>
+            </div>`);
+    }
+    if (instagram) {
+        const igGrowth = instagram.follower_growth || 0;
+        platforms.push(`
+            <div class="glass-card p-4 rounded-xl platform-instagram hover:bg-surface-bright/20 transition-all cursor-pointer" onclick="switchTab('instagram')">
+                <div class="flex items-center gap-2 mb-3">
+                    <span class="material-symbols-outlined text-[18px] text-[#E4405F]">camera_alt</span>
+                    <span class="font-label-sm text-label-sm">INSTAGRAM</span>
+                </div>
+                <div class="text-headline-sm font-headline-sm">${fmt(instagram.followers)}</div>
+                <div class="text-label-sm text-on-surface-variant flex items-center gap-1">
+                    <span class="material-symbols-outlined text-[14px] ${igGrowth >= 0 ? 'text-primary' : 'text-error'}">${igGrowth >= 0 ? 'trending_up' : 'trending_down'}</span>
+                    ${igGrowth >= 0 ? '+' : ''}${fmt(igGrowth)}
                 </div>
             </div>`);
     }
