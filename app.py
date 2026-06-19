@@ -2,7 +2,7 @@ import json
 import os
 import secrets
 import tempfile
-from datetime import datetime
+from datetime import datetime, timedelta
 from functools import wraps
 from flask import Flask, render_template, jsonify, request, redirect, session, url_for
 from werkzeug.security import generate_password_hash, check_password_hash
@@ -821,13 +821,30 @@ def api_competitor_search():
 @app.route("/api/competitor/<platform>/<username>")
 @login_required
 def api_competitor_detail(platform, username):
-    """Tek bir platform icin detayli veri cek."""
+    """Tek bir platform icin detayli veri cek. ?days=30 ile tarih filtrele."""
     try:
+        days = request.args.get('days', 30, type=int)
+        cutoff = (datetime.utcnow() - timedelta(days=days)).timestamp()
+
+        def parse_ts(item):
+            ts = item.get('created_at') or item.get('published_at') or 0
+            if isinstance(ts, (int, float)):
+                return ts
+            if isinstance(ts, str):
+                for fmt in ('%a %b %d %H:%M:%S %z %Y', '%Y-%m-%dT%H:%M:%SZ', '%Y-%m-%dT%H:%M:%S.%fZ'):
+                    try:
+                        from datetime import datetime as dt2
+                        return dt2.strptime(ts.rstrip('Z'), fmt.replace('%z', '').replace('%Y-%m-%dT%H:%M:%SZ', '%Y-%m-%dT%H:%M:%S')).timestamp()
+                    except: pass
+            return 0
+
         if platform == 'twitter':
             if not client.is_logged_in():
                 return jsonify({'error': 'Twitter giris yapilmamis'})
             user = client.get_user_info(username)
-            tweets = client.get_user_tweets(username, count=30)
+            tweets = client.get_user_tweets(username, count=100)
+            tweets = [t for t in tweets if parse_ts(t) >= cutoff]
+
             total_impressions = sum(int(t.get('view_count', 0) or 0) for t in tweets)
             total_likes = sum(t.get('favorite_count', 0) for t in tweets)
             total_rts = sum(t.get('retweet_count', 0) for t in tweets)
@@ -835,7 +852,6 @@ def api_competitor_detail(platform, username):
             total_eng = total_likes + total_rts + total_replies
             eng_rate = round((total_eng / max(1, total_impressions)) * 100, 2)
 
-            # Icerik turu analizi
             original = [t for t in tweets if not t.get('is_retweet') and not t.get('text', '').startswith('RT')]
             retweets = [t for t in tweets if t.get('is_retweet') or t.get('text', '').startswith('RT')]
             with_media = [t for t in tweets if t.get('media')]
@@ -861,7 +877,9 @@ def api_competitor_detail(platform, username):
             user = tiktok.get_user_info(username)
             if 'error' in user:
                 return jsonify(user)
-            videos = tiktok.get_user_videos(username, count=30)
+            videos = tiktok.get_user_videos(username, count=100)
+            videos = [v for v in videos if parse_ts(v) >= cutoff]
+
             total_views = sum(v.get('play_count', 0) for v in videos)
             total_likes = sum(v.get('like_count', 0) for v in videos)
             total_comments = sum(v.get('comment_count', 0) for v in videos)
@@ -898,7 +916,9 @@ def api_competitor_detail(platform, username):
 
         elif platform == 'youtube':
             ch_info = youtube.get_channel_info(username)
-            videos = youtube.get_uploads(username, count=30)
+            videos = youtube.get_uploads(username, count=100)
+            videos = [v for v in videos if parse_ts(v) >= cutoff]
+
             total_views = sum(v.get('view_count', 0) for v in videos)
             total_likes = sum(v.get('like_count', 0) for v in videos)
             total_comments = sum(v.get('comment_count', 0) for v in videos)
@@ -920,9 +940,16 @@ def api_competitor_detail(platform, username):
             })
 
         elif platform == 'instagram':
-            analytics = instagram.get_analytics(username, count=30)
+            analytics = instagram.get_analytics(username, count=100)
             if 'error' in analytics:
                 return jsonify(analytics)
+            posts = analytics.get('posts', [])
+            posts = [p for p in posts if parse_ts(p) >= cutoff]
+            analytics['posts'] = posts
+            analytics['count'] = len(posts)
+            if posts:
+                analytics['avg_likes'] = sum(p.get('likes', 0) for p in posts) // len(posts)
+                analytics['avg_comments'] = sum(p.get('comments', 0) for p in posts) // len(posts)
             return jsonify(analytics)
 
         else:

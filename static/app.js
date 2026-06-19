@@ -1668,6 +1668,8 @@ function renderInstagramTable(posts) {
 // ==================== RAKIP ANALIZI ====================
 let competitorData = null;
 let competitorCurrentPlatform = null;
+let competitorCurrentUsername = null;
+let competitorDays = 30;
 
 function searchCompetitor() {
     const input = document.getElementById('competitor-search-input');
@@ -1767,6 +1769,7 @@ function renderCompetitorResults(data) {
 
 function openCompetitorDetail(platform, id) {
     competitorCurrentPlatform = platform;
+    competitorCurrentUsername = id;
     document.getElementById('competitor-results').classList.add('hidden');
     document.getElementById('competitor-empty').classList.add('hidden');
     document.getElementById('competitor-detail').classList.remove('hidden');
@@ -1783,7 +1786,7 @@ function openCompetitorDetail(platform, id) {
     document.getElementById('competitor-table-header').innerHTML = '';
     document.getElementById('competitor-table-body').innerHTML = '<tr><td colspan="6" class="px-4 py-8 text-center"><div class="loading-spinner mx-auto"></div></td></tr>';
 
-    fetch(`/api/competitor/${platform}/${id}`)
+    fetch(`/api/competitor/${platform}/${id}?days=${competitorDays}`)
     .then(r => r.json()).then(data => {
         if (data.error) {
             document.getElementById('competitor-profile-cards').innerHTML = `<div class="col-span-12 text-center text-error py-8">${data.error}</div>`;
@@ -1794,6 +1797,22 @@ function openCompetitorDetail(platform, id) {
         else if (platform === 'youtube') renderCompetitorYouTube(data);
         else if (platform === 'instagram') renderCompetitorInstagram(data);
     });
+}
+
+function setCompetitorDays(days) {
+    competitorDays = days;
+    document.querySelectorAll('.cmp-days-btn').forEach(b => {
+        if (parseInt(b.dataset.days) === days) {
+            b.classList.add('text-primary', 'bg-primary/10');
+            b.classList.remove('text-on-surface-variant');
+        } else {
+            b.classList.remove('text-primary', 'bg-primary/10');
+            b.classList.add('text-on-surface-variant');
+        }
+    });
+    if (competitorCurrentPlatform && competitorCurrentUsername) {
+        openCompetitorDetail(competitorCurrentPlatform, competitorCurrentUsername);
+    }
 }
 
 function closeCompetitorDetail() {
