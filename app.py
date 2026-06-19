@@ -827,8 +827,16 @@ def api_competitor_detail(platform, username):
         cutoff = (datetime.now(timezone.utc) - timedelta(days=days)).timestamp()
 
         def parse_ts(item):
-            raw = item.get('created_at') or item.get('published_at') or 0
+            fields = ('created_at', 'published_at', 'taken_at', 'date_ts', 'createTime')
+            raw = 0
+            for f in fields:
+                val = item.get(f)
+                if val:
+                    raw = val
+                    break
             if isinstance(raw, (int, float)):
+                if raw > 1e12:
+                    return raw / 1000
                 return raw
             if isinstance(raw, str):
                 s = raw.strip()
