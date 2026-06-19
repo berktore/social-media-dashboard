@@ -2,7 +2,7 @@ import json
 import os
 import secrets
 import tempfile
-from datetime import datetime, timedelta
+from datetime import datetime, timedelta, timezone
 from functools import wraps
 from flask import Flask, render_template, jsonify, request, redirect, session, url_for
 from werkzeug.security import generate_password_hash, check_password_hash
@@ -824,18 +824,17 @@ def api_competitor_detail(platform, username):
     """Tek bir platform icin detayli veri cek. ?days=30 ile tarih filtrele."""
     try:
         days = request.args.get('days', 30, type=int)
-        cutoff = (datetime.utcnow() - timedelta(days=days)).timestamp()
+        cutoff = (datetime.now(timezone.utc) - timedelta(days=days)).timestamp()
 
         def parse_ts(item):
             ts = item.get('created_at') or item.get('published_at') or 0
             if isinstance(ts, (int, float)):
                 return ts
             if isinstance(ts, str):
-                for fmt in ('%a %b %d %H:%M:%S %z %Y', '%Y-%m-%dT%H:%M:%SZ', '%Y-%m-%dT%H:%M:%S.%fZ'):
-                    try:
-                        from datetime import datetime as dt2
-                        return dt2.strptime(ts.rstrip('Z'), fmt.replace('%z', '').replace('%Y-%m-%dT%H:%M:%SZ', '%Y-%m-%dT%H:%M:%S')).timestamp()
-                    except: pass
+            for fmt in ('%a %b %d %H:%M:%S %z %Y', '%Y-%m-%dT%H:%M:%SZ', '%Y-%m-%dT%H:%M:%S.%fZ'):
+                try:
+                    return datetime.strptime(ts.rstrip('Z'), fmt.replace('%z', '').replace('%Y-%m-%dT%H:%M:%SZ', '%Y-%m-%dT%H:%M:%S')).timestamp()
+                except: pass
             return 0
 
         if platform == 'twitter':
