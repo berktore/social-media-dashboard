@@ -34,12 +34,17 @@ function switchTab(tabName) {
     document.querySelectorAll('.tab-content').forEach(t => t.classList.add('hidden'));
     document.getElementById('tab-' + tabName).classList.remove('hidden');
     document.querySelectorAll('.nav-item').forEach(n => {
-        n.classList.remove('nav-active', 'text-[#1DA1F2]');
-        n.classList.add('text-on-surface-variant', 'hover:text-on-surface', 'hover:bg-surface-container-highest/50');
+        n.classList.remove('nav-active', 'text-[#1DA1F2]', 'text-sky-400', 'text-red-400', 'text-pink-400', 'text-emerald-400', 'text-amber-400', 'text-teal-400', 'text-blue-400', 'text-indigo-400');
+        n.classList.add('text-on-surface-variant');
     });
+    const navColors = {
+        overview: 'text-indigo-400', twitter: 'text-sky-400', youtube: 'text-red-400',
+        instagram: 'text-pink-400', tiktok: 'text-emerald-400', competitor: 'text-amber-400',
+        influencer: 'text-teal-400', linkedin: 'text-blue-400'
+    };
     const activeNav = document.querySelector(`[data-tab="${tabName}"]`);
     if (activeNav) {
-        activeNav.classList.add('nav-active', 'text-[#1DA1F2]');
+        activeNav.classList.add('nav-active', navColors[tabName] || 'text-indigo-400');
         activeNav.classList.remove('text-on-surface-variant');
     }
     if (tabName === 'overview') {
@@ -380,6 +385,12 @@ function renderGrowthChart(data) {
         parseFloat((data.instagram?.engagement_rate || 0) * 100)
     ];
     const colors = ['#1DA1F2', '#00F2EA', '#FF0000', '#E4405F'];
+    const gradients = colors.map(c => {
+        const g = ctx.getContext('2d').createLinearGradient(0, 0, 0, 300);
+        g.addColorStop(0, c + '99');
+        g.addColorStop(1, c + '20');
+        return g;
+    });
 
     new Chart(ctx, {
         type: 'bar',
@@ -389,21 +400,25 @@ function renderGrowthChart(data) {
                 {
                     label: 'Takipci',
                     data: followers,
-                    backgroundColor: colors.map(c => c + '80'),
+                    backgroundColor: gradients,
                     borderColor: colors,
                     borderWidth: 2,
-                    borderRadius: 4,
+                    borderRadius: 6,
+                    borderSkipped: false,
                     yAxisID: 'y',
                 },
                 {
                     label: 'Etkilesim %',
                     data: engagement,
                     type: 'line',
-                    borderColor: '#7bd0ff',
-                    backgroundColor: 'rgba(123, 208, 255, 0.1)',
-                    borderWidth: 2,
-                    pointBackgroundColor: '#7bd0ff',
-                    pointRadius: 4,
+                    borderColor: '#a78bfa',
+                    backgroundColor: 'rgba(167, 139, 250, 0.1)',
+                    borderWidth: 2.5,
+                    pointBackgroundColor: '#a78bfa',
+                    pointBorderColor: '#fff',
+                    pointBorderWidth: 1.5,
+                    pointRadius: 5,
+                    pointHoverRadius: 7,
                     tension: 0.4,
                     yAxisID: 'y1',
                 }
@@ -415,23 +430,23 @@ function renderGrowthChart(data) {
             interaction: { intersect: false, mode: 'index' },
             plugins: {
                 legend: {
-                    labels: { color: '#c2c6d8', font: { family: 'Inter', size: 11 }, usePointStyle: true, padding: 16 }
+                    labels: { color: '#c4b5fd', font: { family: 'Inter', size: 11 }, usePointStyle: true, padding: 16 }
                 }
             },
             scales: {
                 x: {
-                    grid: { color: 'rgba(255,255,255,0.04)' },
-                    ticks: { color: '#8c90a1', font: { family: 'Inter', size: 11 } }
+                    grid: { display: false },
+                    ticks: { color: 'rgba(148,163,184,0.6)', font: { family: 'Inter', size: 11 } }
                 },
                 y: {
                     position: 'left',
                     grid: { color: 'rgba(255,255,255,0.04)' },
-                    ticks: { color: '#8c90a1', font: { family: 'Inter', size: 11 }, callback: v => v >= 1000 ? (v/1000).toFixed(0)+'K' : v }
+                    ticks: { color: 'rgba(148,163,184,0.6)', font: { family: 'Inter', size: 11 }, callback: v => v >= 1000 ? (v/1000).toFixed(0)+'K' : v }
                 },
                 y1: {
                     position: 'right',
                     grid: { drawOnChartArea: false },
-                    ticks: { color: '#7bd0ff', font: { family: 'Inter', size: 11 }, callback: v => v.toFixed(1)+'%' }
+                    ticks: { color: '#a78bfa', font: { family: 'Inter', size: 11 }, callback: v => v.toFixed(1)+'%' }
                 }
             }
         }
@@ -2239,6 +2254,10 @@ function createActivityChart(canvasId, items, label, dateField, color) {
     const labels = sorted.map(s => s[0].substring(5));
     const counts = sorted.map(s => s[1]);
 
+    const gradient = ctx.getContext('2d').createLinearGradient(0, 0, 0, 300);
+    gradient.addColorStop(0, color + '80');
+    gradient.addColorStop(1, color + '10');
+
     new Chart(ctx, {
         type: 'bar',
         data: {
@@ -2246,10 +2265,10 @@ function createActivityChart(canvasId, items, label, dateField, color) {
             datasets: [{
                 label,
                 data: counts,
-                backgroundColor: color + '60',
+                backgroundColor: gradient,
                 borderColor: color,
                 borderWidth: 1.5,
-                borderRadius: 3,
+                borderRadius: 4,
             }]
         },
         options: {
@@ -2260,12 +2279,12 @@ function createActivityChart(canvasId, items, label, dateField, color) {
             },
             scales: {
                 x: {
-                    grid: { color: 'rgba(255,255,255,0.03)' },
-                    ticks: { color: '#8c90a1', font: { size: 10 }, maxTicksLimit: 15 }
+                    grid: { display: false },
+                    ticks: { color: 'rgba(148,163,184,0.6)', font: { size: 10 }, maxTicksLimit: 12 }
                 },
                 y: {
-                    grid: { color: 'rgba(255,255,255,0.03)' },
-                    ticks: { color: '#8c90a1', font: { size: 10 }, stepSize: 1 }
+                    grid: { color: 'rgba(255,255,255,0.04)' },
+                    ticks: { color: 'rgba(148,163,184,0.6)', font: { size: 10 }, stepSize: 1 }
                 }
             }
         }

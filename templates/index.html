@@ -23,43 +23,43 @@
                         "outline": "#8c90a1",
                         "surface-bright": "#2c3a4c",
                         "on-tertiary": "#00354a",
-                        "primary": "#b3c5ff",
-                        "primary-fixed-dim": "#b3c5ff",
+                        "primary": "#818cf8",
+                        "primary-fixed-dim": "#a5b4fc",
                         "on-error": "#690005",
                         "secondary-container": "#3f465c",
                         "primary-fixed": "#dae1ff",
-                        "surface": "#051424",
+                        "surface": "#0a0a1a",
                         "on-primary-fixed": "#001849",
-                        "error": "#ffb4ab",
+                        "error": "#f87171",
                         "inverse-on-surface": "#233143",
-                        "on-primary-container": "#f8f7ff",
-                        "background": "#051424",
+                        "on-primary-container": "#ffffff",
+                        "background": "#0a0a1a",
                         "on-secondary-fixed": "#131b2e",
-                        "secondary": "#bec6e0",
-                        "primary-container": "#0066ff",
-                        "surface-container-highest": "#273647",
-                        "surface-container-lowest": "#010f1f",
+                        "secondary": "#a5b4fc",
+                        "primary-container": "#4f46e5",
+                        "surface-container-highest": "#1e1e3a",
+                        "surface-container-lowest": "#050510",
                         "tertiary-fixed-dim": "#7bd0ff",
                         "on-tertiary-fixed-variant": "#004c69",
-                        "outline-variant": "#424656",
-                        "on-surface-variant": "#c2c6d8",
+                        "outline-variant": "#3a3a5c",
+                        "on-surface-variant": "#c4b5fd",
                         "inverse-surface": "#d4e4fa",
                         "tertiary-fixed": "#c4e7ff",
-                        "surface-dim": "#051424",
-                        "tertiary-container": "#007aa5",
+                        "surface-dim": "#0a0a1a",
+                        "tertiary-container": "#6d28d9",
                         "on-error-container": "#ffdad6",
-                        "surface-variant": "#273647",
-                        "surface-tint": "#b3c5ff",
-                        "on-background": "#d4e4fa",
-                        "tertiary": "#7bd0ff",
+                        "surface-variant": "#1e1e3a",
+                        "surface-tint": "#818cf8",
+                        "on-background": "#e2e8f0",
+                        "tertiary": "#a78bfa",
                         "on-tertiary-fixed": "#001e2c",
-                        "on-surface": "#d4e4fa",
+                        "on-surface": "#e2e8f0",
                         "on-primary-fixed-variant": "#003fa4",
                         "secondary-fixed": "#dae2fd",
-                        "on-secondary-container": "#adb4ce",
+                        "on-secondary-container": "#c4b5fd",
                         "on-tertiary-container": "#f1f8ff",
-                        "on-primary": "#002b75",
-                        "surface-container-low": "#0d1c2d"
+                        "on-primary": "#ffffff",
+                        "surface-container-low": "#0f0f25"
                     },
                     "borderRadius": {
                         "DEFAULT": "0.125rem",
@@ -110,20 +110,31 @@
     <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.7/dist/chart.umd.min.js"></script>
     <style>
         :root {
-            --bg-deep: #051424;
-            --bg-surface: rgba(30, 41, 59, 0.65);
-            --glow-twitter: rgba(29, 161, 242, 0.15);
-            --glow-tiktok: rgba(0, 242, 234, 0.15);
-            --glow-youtube: rgba(255, 0, 0, 0.15);
-            --glow-instagram: rgba(228, 64, 95, 0.15);
+            --bg-deep: #0a0a1a;
+            --bg-surface: rgba(20, 20, 45, 0.7);
+            --glow-twitter: rgba(29, 161, 242, 0.3);
+            --glow-tiktok: rgba(0, 242, 234, 0.3);
+            --glow-youtube: rgba(255, 0, 0, 0.3);
+            --glow-instagram: rgba(228, 64, 95, 0.3);
+            --glow-primary: rgba(99, 102, 241, 0.3);
+            --neon-twitter: #1DA1F2;
+            --neon-tiktok: #00F2EA;
+            --neon-youtube: #FF0000;
+            --neon-instagram: #E4405F;
+            --neon-primary: #818cf8;
+            --gradient-1: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            --gradient-2: linear-gradient(135deg, #f093fb 0%, #f5576c 100%);
+            --gradient-3: linear-gradient(135deg, #4facfe 0%, #00f2fe 100%);
+            --gradient-4: linear-gradient(135deg, #fa709a 0%, #fee140 100%);
         }
         body {
             background: var(--bg-deep);
             background-image:
-                radial-gradient(ellipse 80% 50% at 50% -20%, rgba(29, 161, 242, 0.06) 0%, transparent 100%),
-                radial-gradient(ellipse 60% 40% at 80% 80%, rgba(228, 64, 95, 0.04) 0%, transparent 100%),
-                radial-gradient(ellipse 50% 30% at 20% 60%, rgba(0, 242, 234, 0.03) 0%, transparent 100%);
-            color: #d4e4fa;
+                radial-gradient(ellipse 60% 40% at 20% 30%, rgba(99, 102, 241, 0.08) 0%, transparent 100%),
+                radial-gradient(ellipse 50% 30% at 80% 20%, rgba(29, 161, 242, 0.06) 0%, transparent 100%),
+                radial-gradient(ellipse 40% 25% at 50% 80%, rgba(228, 64, 95, 0.05) 0%, transparent 100%),
+                radial-gradient(ellipse 30% 20% at 10% 60%, rgba(0, 242, 234, 0.04) 0%, transparent 100%);
+            color: #e2e8f0;
             position: relative;
         }
         body::before {
@@ -131,18 +142,37 @@
             position: fixed;
             inset: 0;
             background-image:
-                linear-gradient(rgba(255,255,255,0.02) 1px, transparent 1px),
-                linear-gradient(90deg, rgba(255,255,255,0.02) 1px, transparent 1px);
-            background-size: 60px 60px;
+                linear-gradient(rgba(255,255,255,0.015) 1px, transparent 1px),
+                linear-gradient(90deg, rgba(255,255,255,0.015) 1px, transparent 1px);
+            background-size: 40px 40px;
             pointer-events: none;
             z-index: 0;
         }
+        body::after {
+            content: '';
+            position: fixed;
+            top: -50%;
+            left: -50%;
+            width: 200%;
+            height: 200%;
+            background: radial-gradient(circle at 30% 50%, rgba(99,102,241,0.03) 0%, transparent 50%),
+                        radial-gradient(circle at 70% 50%, rgba(244,63,94,0.03) 0%, transparent 50%);
+            animation: aurora 20s ease infinite;
+            pointer-events: none;
+            z-index: 0;
+        }
+        @keyframes aurora {
+            0%, 100% { transform: translate(0, 0) rotate(0deg); }
+            25% { transform: translate(5%, 3%) rotate(1deg); }
+            50% { transform: translate(-3%, 5%) rotate(-0.5deg); }
+            75% { transform: translate(8%, -2%) rotate(1.5deg); }
+        }
         .glass-card {
             background: var(--bg-surface);
-            backdrop-filter: blur(16px);
-            -webkit-backdrop-filter: blur(16px);
-            border: 1px solid rgba(51, 65, 85, 0.4);
-            transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+            backdrop-filter: blur(20px);
+            -webkit-backdrop-filter: blur(20px);
+            border: 1px solid rgba(255,255,255,0.06);
+            transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
             position: relative;
             overflow: hidden;
         }
@@ -150,48 +180,79 @@
             content: '';
             position: absolute;
             top: 0;
-            left: -100%;
-            width: 100%;
-            height: 100%;
-            background: linear-gradient(90deg, transparent, rgba(255,255,255,0.03), transparent);
-            transition: left 0.6s ease;
+            left: 0;
+            right: 0;
+            height: 1px;
+            background: linear-gradient(90deg, transparent, rgba(255,255,255,0.2), transparent);
+            opacity: 0;
+            transition: opacity 0.4s ease;
         }
         .glass-card:hover::before {
-            left: 100%;
+            opacity: 1;
+        }
+        .glass-card::after {
+            content: '';
+            position: absolute;
+            top: -50%;
+            left: -50%;
+            width: 200%;
+            height: 200%;
+            background: conic-gradient(from 0deg at 50% 50%, transparent 0%, rgba(255,255,255,0.03) 25%, transparent 50%);
+            animation: rotate-glow 8s linear infinite;
+            opacity: 0;
+            transition: opacity 0.4s ease;
+            pointer-events: none;
+        }
+        .glass-card:hover::after {
+            opacity: 1;
+        }
+        @keyframes rotate-glow {
+            from { transform: rotate(0deg); }
+            to { transform: rotate(360deg); }
         }
         .glass-card:hover {
-            transform: translateY(-2px);
-            border-color: rgba(51, 65, 85, 0.7);
-            box-shadow: 0 8px 32px rgba(0,0,0,0.3);
+            transform: translateY(-3px) scale(1.01);
+            border-color: rgba(255,255,255,0.12);
+            box-shadow: 0 12px 48px rgba(0,0,0,0.4);
         }
-        .glow-twitter { box-shadow: 0 0 20px var(--glow-twitter); }
-        .glow-tiktok { box-shadow: 0 0 20px var(--glow-tiktok); }
-        .glow-youtube { box-shadow: 0 0 20px var(--glow-youtube); }
-        .glow-instagram { box-shadow: 0 0 20px var(--glow-instagram); }
-        .glow-twitter:hover { box-shadow: 0 0 40px var(--glow-twitter); }
-        .glow-tiktok:hover { box-shadow: 0 0 40px var(--glow-tiktok); }
-        .glow-youtube:hover { box-shadow: 0 0 40px var(--glow-youtube); }
-        .glow-instagram:hover { box-shadow: 0 0 40px var(--glow-instagram); }
+        .glass-card:active {
+            transform: translateY(-1px) scale(0.99);
+        }
+        .glow-twitter { box-shadow: 0 0 24px var(--glow-twitter), inset 0 0 24px rgba(29,161,242,0.03); }
+        .glow-tiktok { box-shadow: 0 0 24px var(--glow-tiktok), inset 0 0 24px rgba(0,242,234,0.03); }
+        .glow-youtube { box-shadow: 0 0 24px var(--glow-youtube), inset 0 0 24px rgba(255,0,0,0.03); }
+        .glow-instagram { box-shadow: 0 0 24px var(--glow-instagram), inset 0 0 24px rgba(228,64,95,0.03); }
+        .glow-twitter:hover { box-shadow: 0 0 48px var(--glow-twitter), inset 0 0 32px rgba(29,161,242,0.05); }
+        .glow-tiktok:hover { box-shadow: 0 0 48px var(--glow-tiktok), inset 0 0 32px rgba(0,242,234,0.05); }
+        .glow-youtube:hover { box-shadow: 0 0 48px var(--glow-youtube), inset 0 0 32px rgba(255,0,0,0.05); }
+        .glow-instagram:hover { box-shadow: 0 0 48px var(--glow-instagram), inset 0 0 32px rgba(228,64,95,0.05); }
         .material-symbols-outlined {
             font-variation-settings: 'FILL' 0, 'wght' 400, 'GRAD' 0, 'opsz' 24;
         }
-        .platform-instagram { border-top: 2px solid #E4405F; }
-        .platform-twitter { border-top: 2px solid #1DA1F2; }
-        .platform-youtube { border-top: 2px solid #FF0000; }
-        .platform-tiktok { border-top: 2px solid #00F2EA; }
-        .platform-linkedin { border-top: 2px solid #0A66C2; }
-        ::-webkit-scrollbar { width: 6px; }
-        ::-webkit-scrollbar-track { background: #051424; }
-        ::-webkit-scrollbar-thumb { background: #1c2b3c; border-radius: 10px; }
-        ::-webkit-scrollbar-thumb:hover { background: #334155; }
+        .platform-twitter { border-left: 3px solid var(--neon-twitter); }
+        .platform-tiktok { border-left: 3px solid var(--neon-tiktok); }
+        .platform-youtube { border-left: 3px solid var(--neon-youtube); }
+        .platform-instagram { border-left: 3px solid var(--neon-instagram); }
+        .platform-linkedin { border-left: 3px solid #0A66C2; }
+        .platform-gradient-twitter { background: linear-gradient(135deg, rgba(29,161,242,0.1), rgba(29,161,242,0.02)); }
+        .platform-gradient-tiktok { background: linear-gradient(135deg, rgba(0,242,234,0.1), rgba(0,242,234,0.02)); }
+        .platform-gradient-youtube { background: linear-gradient(135deg, rgba(255,0,0,0.1), rgba(255,0,0,0.02)); }
+        .platform-gradient-instagram { background: linear-gradient(135deg, rgba(228,64,95,0.1), rgba(228,64,95,0.02)); }
+        ::-webkit-scrollbar { width: 4px; }
+        ::-webkit-scrollbar-track { background: transparent; }
+        ::-webkit-scrollbar-thumb { background: rgba(99, 102, 241, 0.3); border-radius: 10px; }
+        ::-webkit-scrollbar-thumb:hover { background: rgba(99, 102, 241, 0.5); }
         .nav-active {
-            background: linear-gradient(135deg, rgba(0, 102, 255, 0.2), rgba(29, 161, 242, 0.1));
-            color: #1DA1F2;
-            border-left: 3px solid #1DA1F2;
+            background: linear-gradient(135deg, rgba(99, 102, 241, 0.15), rgba(99, 102, 241, 0.05));
+            border-right: 3px solid currentColor;
+            border-left: none;
+            font-weight: 600 !important;
         }
         .nav-item {
             position: relative;
             overflow: hidden;
+            border-radius: 12px;
+            margin: 2px 8px;
         }
         .nav-item::after {
             content: '';
@@ -200,54 +261,74 @@
             left: 50%;
             width: 0;
             height: 1px;
-            background: #1DA1F2;
+            background: #818cf8;
             transition: all 0.3s ease;
             transform: translateX(-50%);
         }
         .nav-item:hover::after {
-            width: 80%;
+            width: 60%;
+        }
+        .nav-item:hover {
+            background: rgba(99, 102, 241, 0.08);
+            color: #a5b4fc !important;
         }
         .loading-spinner {
-            border: 3px solid rgba(29, 161, 242, 0.15);
-            border-top-color: #1DA1F2;
+            border: 2px solid rgba(99, 102, 241, 0.15);
+            border-top-color: #818cf8;
             border-radius: 50%;
-            width: 40px;
-            height: 40px;
-            animation: spin 0.8s linear infinite;
+            width: 36px;
+            height: 36px;
+            animation: spin 0.7s cubic-bezier(0.4, 0, 0.2, 1) infinite;
         }
         @keyframes spin {
             0% { transform: rotate(0deg); }
             100% { transform: rotate(360deg); }
         }
         @keyframes fadeIn {
-            from { opacity: 0; transform: translateY(12px); }
-            to { opacity: 1; transform: translateY(0); }
+            from { opacity: 0; transform: translateY(16px) scale(0.98); }
+            to { opacity: 1; transform: translateY(0) scale(1); }
         }
         @keyframes pulse-glow {
             0%, 100% { opacity: 0.4; }
-            50% { opacity: 1; }
+            50% { opacity: 0.8; }
         }
         .tab-content:not(.hidden) > * {
-            animation: fadeIn 0.4s ease forwards;
+            animation: fadeIn 0.5s cubic-bezier(0.4, 0, 0.2, 1) forwards;
         }
-        .tab-content:not(.hidden) > *:nth-child(2) { animation-delay: 0.05s; }
-        .tab-content:not(.hidden) > *:nth-child(3) { animation-delay: 0.1s; }
-        .tab-content:not(.hidden) > *:nth-child(4) { animation-delay: 0.15s; }
-        .tab-content:not(.hidden) > *:nth-child(5) { animation-delay: 0.2s; }
+        .tab-content:not(.hidden) > *:nth-child(2) { animation-delay: 0.06s; }
+        .tab-content:not(.hidden) > *:nth-child(3) { animation-delay: 0.12s; }
+        .tab-content:not(.hidden) > *:nth-child(4) { animation-delay: 0.18s; }
+        .tab-content:not(.hidden) > *:nth-child(5) { animation-delay: 0.24s; }
         table tbody tr {
-            transition: all 0.2s ease;
+            transition: all 0.25s ease;
         }
         table tbody tr:hover {
-            background: rgba(29, 161, 242, 0.03);
+            background: rgba(99, 102, 241, 0.04);
         }
         input, button, select {
-            transition: all 0.2s ease;
+            transition: all 0.25s ease;
         }
         input:focus {
-            box-shadow: 0 0 0 2px rgba(29, 161, 242, 0.2);
+            box-shadow: 0 0 0 2px rgba(99, 102, 241, 0.25);
+            border-color: #818cf8 !important;
+        }
+        button:active {
+            transform: scale(0.96);
         }
         .metric-value {
-            background: linear-gradient(135deg, #d4e4fa 0%, #b3c5ff 100%);
+            background: var(--gradient-1);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+        }
+        .metric-value-vivid {
+            background: var(--gradient-3);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+        }
+        .metric-value-warm {
+            background: var(--gradient-2);
             -webkit-background-clip: text;
             -webkit-text-fill-color: transparent;
             background-clip: text;
@@ -255,48 +336,87 @@
         .section-header {
             position: relative;
             display: inline-block;
+            padding-bottom: 4px;
         }
         .section-header::after {
             content: '';
             position: absolute;
-            bottom: -4px;
+            bottom: -2px;
             left: 0;
-            width: 40px;
+            width: 48px;
             height: 3px;
-            background: linear-gradient(90deg, #1DA1F2, transparent);
+            background: linear-gradient(90deg, #818cf8, #667eea, transparent);
             border-radius: 2px;
+        }
+        .badge-twitter { background: rgba(29,161,242,0.12); color: #1DA1F2; border: 1px solid rgba(29,161,242,0.2); }
+        .badge-tiktok { background: rgba(0,242,234,0.12); color: #00F2EA; border: 1px solid rgba(0,242,234,0.2); }
+        .badge-youtube { background: rgba(255,0,0,0.12); color: #FF0000; border: 1px solid rgba(255,0,0,0.2); }
+        .badge-instagram { background: rgba(228,64,95,0.12); color: #E4405F; border: 1px solid rgba(228,64,95,0.2); }
+        .badge-primary { background: rgba(99,102,241,0.12); color: #818cf8; border: 1px solid rgba(99,102,241,0.2); }
+        .badge-success { background: rgba(52,211,153,0.12); color: #34d399; border: 1px solid rgba(52,211,153,0.2); }
+        .badge-warning { background: rgba(251,191,36,0.12); color: #fbbf24; border: 1px solid rgba(251,191,36,0.2); }
+        .badge-error { background: rgba(248,113,113,0.12); color: #f87171; border: 1px solid rgba(248,113,113,0.2); }
+        .platform-dot {
+            display: inline-block;
+            width: 8px;
+            height: 8px;
+            border-radius: 50%;
+            margin-right: 6px;
+        }
+        .stat-label {
+            font-size: 10px;
+            letter-spacing: 0.08em;
+            text-transform: uppercase;
+            color: rgba(148, 163, 184, 0.7);
+            font-weight: 500;
+        }
+        .gradient-border {
+            position: relative;
+        }
+        .gradient-border::before {
+            content: '';
+            position: absolute;
+            inset: 0;
+            border-radius: inherit;
+            padding: 1px;
+            background: linear-gradient(135deg, #667eea, #764ba2, #f093fb);
+            -webkit-mask: linear-gradient(#fff 0 0) content-box, linear-gradient(#fff 0 0);
+            -webkit-mask-composite: xor;
+            mask-composite: exclude;
+            pointer-events: none;
         }
     </style>
 </head>
 <body class="overflow-hidden">
     <!-- Login Modal -->
     <div id="login-modal" class="fixed inset-0 z-50 flex items-center justify-center bg-black/70 backdrop-blur-sm">
-        <div class="glass-card rounded-2xl p-8 w-full max-w-md mx-4">
+        <div class="glass-card rounded-2xl p-8 w-full max-w-md mx-4 relative overflow-hidden">
+            <div class="absolute top-0 left-0 w-full h-1 bg-gradient-to-r from-[#667eea] via-[#764ba2] to-[#f093fb]"></div>
             <div class="flex items-center gap-3 mb-6">
-                <div class="w-12 h-12 bg-[#1DA1F2] flex items-center justify-center rounded-xl">
+                <div class="w-12 h-12 bg-gradient-to-br from-[#667eea] to-[#764ba2] flex items-center justify-center rounded-xl shadow-lg shadow-indigo-500/20">
                     <span class="material-symbols-outlined text-white" style="font-variation-settings: 'FILL' 1;">chat_bubble</span>
                 </div>
                 <div>
-                    <h2 class="font-headline-md text-headline-md font-bold text-on-surface">Twitter Giris</h2>
+                    <h2 class="font-headline-md text-headline-md font-bold" style="background: linear-gradient(135deg, #667eea, #764ba2); -webkit-background-clip: text; -webkit-text-fill-color: transparent;">Twitter Baglantisi</h2>
                     <p class="font-body-sm text-on-surface-variant">Cookie ile hesabini bagla</p>
                 </div>
             </div>
             <div class="space-y-4">
                 <div>
                     <label class="font-label-md text-label-md block mb-2 text-on-surface-variant">auth_token</label>
-                    <input type="text" id="auth-token" placeholder="auth_token degeri" class="w-full bg-surface-container-lowest border border-outline-variant rounded-xl text-body-sm px-4 py-3 focus:ring-[#1DA1F2] focus:border-[#1DA1F2] focus:outline-none"/>
+                    <input type="text" id="auth-token" placeholder="auth_token degeri" class="w-full bg-surface-container-lowest border border-outline-variant rounded-xl text-body-sm px-4 py-3 focus:ring-[#667eea] focus:border-[#667eea] focus:outline-none"/>
                 </div>
                 <div>
                     <label class="font-label-md text-label-md block mb-2 text-on-surface-variant">ct0</label>
-                    <input type="text" id="ct0" placeholder="ct0 degeri" class="w-full bg-surface-container-lowest border border-outline-variant rounded-xl text-body-sm px-4 py-3 focus:ring-[#1DA1F2] focus:border-[#1DA1F2] focus:outline-none"/>
+                    <input type="text" id="ct0" placeholder="ct0 degeri" class="w-full bg-surface-container-lowest border border-outline-variant rounded-xl text-body-sm px-4 py-3 focus:ring-[#667eea] focus:border-[#667eea] focus:outline-none"/>
                 </div>
-                <button onclick="loginWithCookies()" class="w-full py-3 bg-[#1DA1F2] text-white font-label-md rounded-xl hover:brightness-110 active:scale-[0.98] transition-all">
+                <button onclick="loginWithCookies()" class="w-full py-3 bg-gradient-to-r from-[#667eea] to-[#764ba2] text-white font-label-md rounded-xl hover:brightness-110 active:scale-[0.98] transition-all shadow-lg shadow-indigo-500/20">
                     Giris Yap
                 </button>
-                <button onclick="showDashboard()" class="w-full py-3 bg-surface-container text-on-surface font-label-md rounded-xl hover:bg-surface-bright/50 active:scale-[0.98] transition-all mt-2">
+                <button onclick="showDashboard()" class="w-full py-3 bg-surface-container text-on-surface font-label-md rounded-xl hover:bg-surface-bright/50 active:scale-[0.98] transition-all mt-2 border border-outline-variant/20">
                     Twitter'siz Devam Et
                 </button>
-                <div id="login-error" class="text-error text-body-sm hidden"></div>
+                <div id="login-error" class="text-red-400 text-body-sm hidden"></div>
             </div>
         </div>
     </div>
@@ -304,82 +424,82 @@
     <!-- Main Dashboard -->
     <div id="dashboard" class="hidden">
         <!-- Top Navigation Bar -->
-        <header class="flex justify-between items-center h-16 px-margin-desktop sticky top-0 z-40 bg-surface-container/80 backdrop-blur-xl border-b border-outline-variant/30 shadow-sm">
+        <header class="flex justify-between items-center h-16 px-margin-desktop sticky top-0 z-40 bg-surface-container/80 backdrop-blur-xl border-b border-outline-variant/20 shadow-lg shadow-black/10">
             <div class="flex items-center gap-8">
-                <span class="font-headline-md text-headline-md font-bold tracking-tighter text-on-surface">SocialNexus</span>
-                <div class="hidden md:flex items-center bg-surface-container-lowest px-4 py-2 rounded-full border border-outline-variant/20 w-80 group focus-within:border-[#1DA1F2] transition-all">
+                <span class="font-headline-md text-headline-md font-bold tracking-tighter" style="background: linear-gradient(135deg, #818cf8, #a78bfa, #667eea); -webkit-background-clip: text; -webkit-text-fill-color: transparent;">SocialNexus</span>
+                <div class="hidden md:flex items-center bg-surface-container-lowest px-4 py-2 rounded-full border border-outline-variant/20 w-80 group focus-within:border-[#818cf8] transition-all shadow-inner shadow-black/10">
                     <span class="material-symbols-outlined text-on-surface-variant mr-2">search</span>
                     <input id="global-search" type="text" placeholder="Global search..." class="bg-transparent border-none focus:ring-0 text-body-sm w-full p-0 placeholder-on-surface-variant" onkeypress="if(event.key==='Enter')handleGlobalSearch()"/>
                 </div>
             </div>
             <div class="flex items-center gap-4">
-                <button class="material-symbols-outlined p-2 text-on-surface-variant hover:bg-surface-bright/50 transition-colors rounded-full cursor-pointer">notifications</button>
-                <button onclick="showSettings()" class="material-symbols-outlined p-2 text-on-surface-variant hover:bg-surface-bright/50 transition-colors rounded-full cursor-pointer">settings</button>
-                <div class="w-10 h-10 rounded-full overflow-hidden border border-outline-variant/30 ml-2">
-                    <img alt="User" class="w-full h-full object-cover" src="https://ui-avatars.com/api/?name=Admin&background=0066ff&color=fff"/>
+                <button class="material-symbols-outlined p-2 text-on-surface-variant hover:text-[#818cf8] hover:bg-indigo-500/10 transition-colors rounded-full cursor-pointer">notifications</button>
+                <button onclick="showSettings()" class="material-symbols-outlined p-2 text-on-surface-variant hover:text-[#818cf8] hover:bg-indigo-500/10 transition-colors rounded-full cursor-pointer">settings</button>
+                <div class="w-10 h-10 rounded-full overflow-hidden border-2 border-indigo-500/30 ml-2 shadow-lg shadow-indigo-500/10">
+                    <img alt="User" class="w-full h-full object-cover" src="https://ui-avatars.com/api/?name=Admin&background=4f46e5&color=fff"/>
                 </div>
             </div>
         </header>
 
         <div class="flex h-[calc(100vh-64px)] overflow-hidden">
             <!-- Side Navigation -->
-            <aside class="flex flex-col gap-1 pt-lg bg-surface-container-low border-r border-outline-variant/20 fixed left-0 top-16 h-[calc(100vh-64px)] w-[260px] z-30">
+            <aside class="flex flex-col gap-1 pt-lg bg-surface-container-low/95 border-r border-outline-variant/15 fixed left-0 top-16 h-[calc(100vh-64px)] w-[260px] z-30">
                 <div class="px-6 mb-8">
                     <div class="flex items-center gap-3">
-                        <div class="w-10 h-10 bg-[#1DA1F2] flex items-center justify-center rounded-xl">
+                        <div class="w-10 h-10 bg-gradient-to-br from-[#818cf8] to-[#6d28d9] flex items-center justify-center rounded-xl shadow-lg shadow-indigo-500/20">
                             <span class="material-symbols-outlined text-white" style="font-variation-settings: 'FILL' 1;">hub</span>
                         </div>
                         <div>
-                            <h2 class="font-headline-sm text-headline-sm font-black text-[#1DA1F2] leading-tight">Mission Control</h2>
+                            <h2 class="font-headline-sm text-headline-sm font-black leading-tight" style="background: linear-gradient(135deg, #818cf8, #a78bfa); -webkit-background-clip: text; -webkit-text-fill-color: transparent;">Mission Control</h2>
                             <p class="font-body-sm text-on-surface-variant">Global Operations</p>
                         </div>
                     </div>
                 </div>
                 <nav class="flex-1 px-2 space-y-1 overflow-y-auto">
                     <a onclick="switchTab('overview')" class="nav-item flex items-center gap-4 py-3 px-4 transition-all font-label-md text-label-md cursor-pointer rounded-xl" data-tab="overview">
-                        <span class="material-symbols-outlined">dashboard</span>
-                        Overview
+                        <span class="material-symbols-outlined text-indigo-400">dashboard</span>
+                        <span>Overview</span>
                     </a>
-                    <a onclick="switchTab('instagram')" class="nav-item flex items-center gap-4 text-on-surface-variant hover:text-on-surface hover:bg-surface-container-highest/50 py-3 px-4 transition-all font-label-md text-label-md cursor-pointer rounded-xl" data-tab="instagram">
+                    <a onclick="switchTab('instagram')" class="nav-item flex items-center gap-4 text-on-surface-variant hover:text-pink-400 hover:bg-pink-500/10 py-3 px-4 transition-all font-label-md text-label-md cursor-pointer rounded-xl" data-tab="instagram">
                         <span class="material-symbols-outlined">camera_alt</span>
                         Instagram
                     </a>
-                    <a onclick="switchTab('twitter')" class="nav-item flex items-center gap-4 text-on-surface-variant hover:text-on-surface hover:bg-surface-container-highest/50 py-3 px-4 transition-all font-label-md text-label-md cursor-pointer rounded-xl" data-tab="twitter">
+                    <a onclick="switchTab('twitter')" class="nav-item flex items-center gap-4 text-on-surface-variant hover:text-sky-400 hover:bg-sky-500/10 py-3 px-4 transition-all font-label-md text-label-md cursor-pointer rounded-xl" data-tab="twitter">
                         <span class="material-symbols-outlined">chat_bubble</span>
                         Twitter
                     </a>
-                    <a onclick="switchTab('youtube')" class="nav-item flex items-center gap-4 text-on-surface-variant hover:text-on-surface hover:bg-surface-container-highest/50 py-3 px-4 transition-all font-label-md text-label-md cursor-pointer rounded-xl" data-tab="youtube">
+                    <a onclick="switchTab('youtube')" class="nav-item flex items-center gap-4 text-on-surface-variant hover:text-red-400 hover:bg-red-500/10 py-3 px-4 transition-all font-label-md text-label-md cursor-pointer rounded-xl" data-tab="youtube">
                         <span class="material-symbols-outlined">play_circle</span>
                         YouTube
                     </a>
-                    <a onclick="switchTab('tiktok')" class="nav-item flex items-center gap-4 text-on-surface-variant hover:text-on-surface hover:bg-surface-container-highest/50 py-3 px-4 transition-all font-label-md text-label-md cursor-pointer rounded-xl" data-tab="tiktok">
+                    <a onclick="switchTab('tiktok')" class="nav-item flex items-center gap-4 text-on-surface-variant hover:text-emerald-400 hover:bg-emerald-500/10 py-3 px-4 transition-all font-label-md text-label-md cursor-pointer rounded-xl" data-tab="tiktok">
                         <span class="material-symbols-outlined">video_library</span>
                         TikTok
                     </a>
-                    <a onclick="switchTab('linkedin')" class="nav-item flex items-center gap-4 text-on-surface-variant hover:text-on-surface hover:bg-surface-container-highest/50 py-3 px-4 transition-all font-label-md text-label-md cursor-pointer rounded-xl" data-tab="linkedin">
+                    <a onclick="switchTab('linkedin')" class="nav-item flex items-center gap-4 text-on-surface-variant hover:text-blue-400 hover:bg-blue-500/10 py-3 px-4 transition-all font-label-md text-label-md cursor-pointer rounded-xl" data-tab="linkedin">
                         <span class="material-symbols-outlined">corporate_fare</span>
                         LinkedIn
                     </a>
-                    <a onclick="switchTab('competitor')" class="nav-item flex items-center gap-4 text-on-surface-variant hover:text-on-surface hover:bg-surface-container-highest/50 py-3 px-4 transition-all font-label-md text-label-md cursor-pointer rounded-xl" data-tab="competitor">
-                        <span class="material-symbols-outlined">compare_arrows</span>
+                    <a onclick="switchTab('competitor')" class="nav-item flex items-center gap-4 text-on-surface-variant hover:text-amber-400 hover:bg-amber-500/10 py-3 px-4 transition-all font-label-md text-label-md cursor-pointer rounded-xl" data-tab="competitor">
+                        <span class="material-symbols-outlined text-orange-400">compare_arrows</span>
                         Rakip Analizi
                     </a>
-                    <a onclick="switchTab('influencer')" class="nav-item flex items-center gap-4 text-on-surface-variant hover:text-on-surface hover:bg-surface-container-highest/50 py-3 px-4 transition-all font-label-md text-label-md cursor-pointer rounded-xl" data-tab="influencer">
-                        <span class="material-symbols-outlined">person_search</span>
+                    <a onclick="switchTab('influencer')" class="nav-item flex items-center gap-4 text-on-surface-variant hover:text-teal-400 hover:bg-teal-500/10 py-3 px-4 transition-all font-label-md text-label-md cursor-pointer rounded-xl" data-tab="influencer">
+                        <span class="material-symbols-outlined text-cyan-400">person_search</span>
                         Influencer Bulucu
                     </a>
                 </nav>
-                <div class="p-6 border-t border-outline-variant/20">
-                    <button onclick="logout()" class="w-full bg-primary-container text-on-primary-container font-label-md text-label-md py-3 rounded-full hover:brightness-110 active:scale-95 transition-all mb-4">
+                <div class="p-6 border-t border-outline-variant/15">
+                    <button onclick="logout()" class="w-full bg-gradient-to-r from-[#4f46e5] to-[#6d28d9] text-white font-label-md text-label-md py-3 rounded-full hover:brightness-110 active:scale-95 transition-all mb-4 shadow-lg shadow-indigo-500/20">
                         Connect Account
                     </button>
                     <div class="space-y-1">
                         <a href="#" class="flex items-center gap-4 text-on-surface-variant hover:text-on-surface py-2 font-body-sm text-body-sm">
-                            <span class="material-symbols-outlined">help</span>
+                            <span class="material-symbols-outlined text-indigo-400">help</span>
                             Help Center
                         </a>
-                        <a onclick="logout()" class="flex items-center gap-4 text-on-surface-variant hover:text-on-surface py-2 font-body-sm text-body-sm cursor-pointer">
-                            <span class="material-symbols-outlined text-error">logout</span>
+                        <a onclick="logout()" class="flex items-center gap-4 text-on-surface-variant hover:text-red-400 py-2 font-body-sm text-body-sm cursor-pointer">
+                            <span class="material-symbols-outlined text-red-400">logout</span>
                             Cikis Yap
                         </a>
                     </div>
@@ -394,11 +514,11 @@
                     <div id="tab-overview" class="tab-content">
                         <header class="mb-xl flex justify-between items-end">
                             <div>
-                                <h1 class="font-display-lg text-display-lg text-on-surface mb-2 tracking-tight">Ecosystem Intelligence</h1>
+                                <h1 class="font-display-lg text-display-lg mb-2 tracking-tight" style="background: linear-gradient(135deg, #e2e8f0, #818cf8, #a78bfa); -webkit-background-clip: text; -webkit-text-fill-color: transparent;">Ecosystem Intelligence</h1>
                                 <p class="font-body-md text-body-md text-on-surface-variant">Real-time performance metrics across all connected social infrastructure.</p>
                             </div>
                             <div class="flex gap-4 items-center">
-                                <button onclick="loadOverview()" class="flex items-center gap-2 px-4 py-2 bg-primary-container text-on-primary-container font-label-md text-label-md rounded-xl hover:brightness-110 active:scale-95 transition-all">
+                                <button onclick="loadOverview()" class="flex items-center gap-2 px-4 py-2 bg-gradient-to-r from-[#4f46e5] to-[#6d28d9] text-white font-label-md text-label-md rounded-xl hover:brightness-110 active:scale-95 transition-all shadow-lg shadow-indigo-500/20">
                                     <span class="material-symbols-outlined text-[18px]">refresh</span> Yenile
                                 </button>
                                 <span class="text-label-sm font-label-sm text-on-surface-variant bg-surface-container px-md py-xs rounded-full border border-outline-variant/30" id="overview-status">Yukleniyor...</span>
@@ -416,32 +536,32 @@
                         </div>
 
                         <!-- Growth Chart -->
-                        <section class="glass-card rounded-xl overflow-hidden mb-xl">
-                            <div class="p-lg border-b border-outline-variant/30">
-                                <h2 class="font-headline-sm text-headline-sm text-on-surface">Platform Growth</h2>
+                        <section class="glass-card rounded-xl overflow-hidden mb-xl gradient-border">
+                            <div class="p-lg border-b border-outline-variant/20">
+                                <h2 class="font-headline-sm text-headline-sm" style="background: linear-gradient(135deg, #818cf8, #667eea); -webkit-background-clip: text; -webkit-text-fill-color: transparent;">Platform Growth</h2>
                             </div>
                             <div class="p-lg">
                                 <canvas id="overview-growth-chart" height="240"></canvas>
                             </div>
                         </section>
-
+                        
                         <!-- Account Health Table -->
-                        <section class="glass-card rounded-xl overflow-hidden mb-xl">
-                            <div class="p-lg border-b border-outline-variant/30">
-                                <h2 class="font-headline-sm text-headline-sm text-on-surface">Account Health Index</h2>
+                        <section class="glass-card rounded-xl overflow-hidden mb-xl gradient-border">
+                            <div class="p-lg border-b border-outline-variant/20">
+                                <h2 class="font-headline-sm text-headline-sm" style="background: linear-gradient(135deg, #34d399, #22d3ee); -webkit-background-clip: text; -webkit-text-fill-color: transparent;">Account Health Index</h2>
                             </div>
                             <div class="overflow-x-auto">
                                 <table class="w-full text-left border-collapse">
                                     <thead>
-                                        <tr class="bg-surface-container-highest/30">
-                                            <th class="px-6 py-4 font-label-sm text-label-sm text-on-surface-variant uppercase tracking-widest">Platform</th>
-                                            <th class="px-6 py-4 font-label-sm text-label-sm text-on-surface-variant uppercase tracking-widest">Profile</th>
-                                            <th class="px-6 py-4 font-label-sm text-label-sm text-on-surface-variant uppercase tracking-widest text-right">Takipci</th>
-                                            <th class="px-6 py-4 font-label-sm text-label-sm text-on-surface-variant uppercase tracking-widest text-right">Etkilesim</th>
-                                            <th class="px-6 py-4 font-label-sm text-label-sm text-on-surface-variant uppercase tracking-widest text-right">Durum</th>
+                                        <tr class="bg-gradient-to-r from-indigo-500/10 via-purple-500/5 to-transparent">
+                                            <th class="px-6 py-4 font-label-sm text-label-sm text-indigo-300 uppercase tracking-widest">Platform</th>
+                                            <th class="px-6 py-4 font-label-sm text-label-sm text-indigo-300 uppercase tracking-widest">Profile</th>
+                                            <th class="px-6 py-4 font-label-sm text-label-sm text-indigo-300 uppercase tracking-widest text-right">Takipci</th>
+                                            <th class="px-6 py-4 font-label-sm text-label-sm text-indigo-300 uppercase tracking-widest text-right">Etkilesim</th>
+                                            <th class="px-6 py-4 font-label-sm text-label-sm text-indigo-300 uppercase tracking-widest text-right">Durum</th>
                                         </tr>
                                     </thead>
-                                    <tbody class="divide-y divide-outline-variant/20" id="overview-health-table">
+                                    <tbody class="divide-y divide-outline-variant/15" id="overview-health-table">
                                         <tr><td colspan="5" class="px-6 py-8 text-center"><div class="loading-spinner mx-auto"></div></td></tr>
                                     </tbody>
                                 </table>
@@ -453,23 +573,23 @@
                     <div id="tab-twitter" class="tab-content hidden">
                         <header class="mb-xl flex flex-col md:flex-row md:items-end justify-between gap-lg">
                             <div>
-                                <h1 class="font-headline-lg text-headline-lg text-on-surface mb-2">Twitter Analytics</h1>
-                                <p class="font-body-md text-on-surface-variant">@infoyatirim hesabinin detayli analizi</p>
+                                <h1 class="font-headline-lg text-headline-lg mb-2" style="background: linear-gradient(135deg, #38bdf8, #818cf8); -webkit-background-clip: text; -webkit-text-fill-color: transparent;">Twitter Analytics</h1>
+                                <p class="font-body-md text-on-surface-variant"><span class="text-sky-400">@infoyatirim</span> hesabinin detayli analizi</p>
                             </div>
                             <div class="flex items-center gap-4">
                                 <!-- Date Range Picker -->
-                                <div class="flex items-center gap-2 bg-surface-container rounded-xl p-2 border border-outline-variant/30">
+                                <div class="flex items-center gap-2 bg-surface-container rounded-xl p-2 border border-sky-500/20">
                                     <input type="date" id="date-from" class="bg-transparent text-body-sm text-on-surface border-none focus:ring-0 cursor-pointer" onchange="filterTweetsByDate()"/>
                                     <span class="text-on-surface-variant">-</span>
                                     <input type="date" id="date-to" class="bg-transparent text-body-sm text-on-surface border-none focus:ring-0 cursor-pointer" onchange="filterTweetsByDate()"/>
                                 </div>
-                                <div class="flex bg-surface-container rounded-xl p-1 border border-outline-variant/30">
-                                    <button onclick="setDateRange('7')" class="date-btn px-3 py-1 text-label-sm rounded-lg text-on-surface-variant hover:text-on-surface transition-all" data-days="7">7G</button>
-                                    <button onclick="setDateRange('30')" class="date-btn px-3 py-1 text-label-sm rounded-lg text-on-surface-variant hover:text-on-surface transition-all" data-days="30">30G</button>
-                                    <button onclick="setDateRange('90')" class="date-btn px-3 py-1 text-label-sm rounded-lg text-on-surface-variant hover:text-on-surface transition-all" data-days="90">90G</button>
-                                    <button onclick="setDateRange('all')" class="date-btn px-3 py-1 text-label-sm rounded-lg bg-primary-container text-on-primary-container" data-days="all">Tumu</button>
+                                <div class="flex bg-surface-container rounded-xl p-1 border border-sky-500/20">
+                                    <button onclick="setDateRange('7')" class="date-btn px-3 py-1 text-label-sm rounded-lg text-on-surface-variant hover:text-sky-400 hover:bg-sky-500/10 transition-all" data-days="7">7G</button>
+                                    <button onclick="setDateRange('30')" class="date-btn px-3 py-1 text-label-sm rounded-lg text-on-surface-variant hover:text-sky-400 hover:bg-sky-500/10 transition-all" data-days="30">30G</button>
+                                    <button onclick="setDateRange('90')" class="date-btn px-3 py-1 text-label-sm rounded-lg text-on-surface-variant hover:text-sky-400 hover:bg-sky-500/10 transition-all" data-days="90">90G</button>
+                                    <button onclick="setDateRange('all')" class="date-btn px-3 py-1 text-label-sm rounded-lg bg-sky-500 text-white" data-days="all">Tumu</button>
                                 </div>
-                                <span class="text-label-sm font-label-sm text-on-surface-variant bg-surface-container px-md py-xs rounded-full border border-outline-variant/30" id="twitter-status">Baglan─▒yor...</span>
+                                <span class="text-label-sm font-label-sm text-sky-300 bg-sky-500/10 px-md py-xs rounded-full border border-sky-500/20" id="twitter-status">Baglan─▒yor...</span>
                             </div>
                         </header>
 
@@ -489,52 +609,52 @@
 
                         <!-- Tweet Activity Chart -->
                         <section class="glass-card rounded-xl overflow-hidden mb-xl">
-                            <div class="p-lg border-b border-outline-variant/30">
-                                <h2 class="font-headline-sm text-headline-sm text-on-surface">Tweet Aktivitesi</h2>
+                            <div class="p-lg border-b border-outline-variant/20">
+                                <h2 class="font-headline-sm text-headline-sm" style="background: linear-gradient(135deg, #38bdf8, #818cf8); -webkit-background-clip: text; -webkit-text-fill-color: transparent;">Tweet Aktivitesi</h2>
                             </div>
                             <div class="p-lg">
                                 <canvas id="twitter-activity-chart" height="200"></canvas>
                             </div>
                         </section>
-
+                        
                         <!-- Content Type Analysis -->
                         <section class="mb-xl">
-                            <h2 class="font-headline-md text-headline-md text-on-surface section-header mb-lg">Icerik Turu Analizi</h2>
+                            <h2 class="font-headline-md text-headline-md section-header mb-lg" style="background: linear-gradient(135deg, #38bdf8, #818cf8); -webkit-background-clip: text; -webkit-text-fill-color: transparent;">Icerik Turu Analizi</h2>
                             <div class="grid grid-cols-2 md:grid-cols-4 gap-4" id="content-type-cards">
                                 <div class="glass-card rounded-xl p-4 text-center">
                                     <div class="loading-spinner mx-auto"></div>
                                 </div>
                             </div>
                         </section>
-
+                        
                         <!-- Best Tweets Section -->
                         <section class="mb-xl">
-                            <h2 class="font-headline-md text-headline-md text-on-surface mb-lg">En Iyi Tweetler</h2>
+                            <h2 class="font-headline-md text-headline-md mb-lg" style="background: linear-gradient(135deg, #38bdf8, #818cf8); -webkit-background-clip: text; -webkit-text-fill-color: transparent;">En Iyi Tweetler</h2>
                             <div class="grid grid-cols-1 md:grid-cols-3 gap-5" id="best-tweets-grid">
                                 <div class="col-span-3 flex items-center justify-center py-8">
                                     <div class="loading-spinner"></div>
                                 </div>
                             </div>
                         </section>
-
+                        
                         <!-- All Tweets Table -->
                         <section class="mb-xl">
                             <div class="flex justify-between items-center mb-lg">
-                                <h2 class="font-headline-md text-headline-md text-on-surface">Tum Tweetler</h2>
-                                <span class="text-label-sm font-label-sm text-on-surface-variant" id="tweet-count-label">0 tweet</span>
+                                <h2 class="font-headline-md text-headline-md" style="background: linear-gradient(135deg, #38bdf8, #818cf8); -webkit-background-clip: text; -webkit-text-fill-color: transparent;">Tum Tweetler</h2>
+                                <span class="text-label-sm font-label-sm text-sky-300 bg-sky-500/10 px-md py-xs rounded-full border border-sky-500/20" id="tweet-count-label">0 tweet</span>
                             </div>
                             <div class="glass-card rounded-xl overflow-hidden">
                                 <div class="overflow-x-auto">
                                     <table class="w-full text-left border-collapse" id="tweets-table">
                                         <thead>
-                                            <tr class="bg-surface-container-highest/30">
-                                                <th class="px-4 py-3 font-label-sm text-label-sm text-on-surface-variant uppercase tracking-widest">Icerik</th>
-                                                <th class="px-4 py-3 font-label-sm text-label-sm text-on-surface-variant uppercase tracking-widest">Tur</th>
-                                                <th class="px-4 py-3 font-label-sm text-label-sm text-on-surface-variant uppercase tracking-widest text-right">Gosterim</th>
-                                                <th class="px-4 py-3 font-label-sm text-label-sm text-on-surface-variant uppercase tracking-widest text-right">Begeni</th>
-                                                <th class="px-4 py-3 font-label-sm text-label-sm text-on-surface-variant uppercase tracking-widest text-right">RT</th>
-                                                <th class="px-4 py-3 font-label-sm text-label-sm text-on-surface-variant uppercase tracking-widest text-right">Yanit</th>
-                                                <th class="px-4 py-3 font-label-sm text-label-sm text-on-surface-variant uppercase tracking-widest text-right">Etkilesim</th>
+                                            <tr class="bg-gradient-to-r from-sky-500/10 via-indigo-500/5 to-transparent">
+                                                <th class="px-4 py-3 font-label-sm text-label-sm text-sky-300 uppercase tracking-widest">Icerik</th>
+                                                <th class="px-4 py-3 font-label-sm text-label-sm text-sky-300 uppercase tracking-widest">Tur</th>
+                                                <th class="px-4 py-3 font-label-sm text-label-sm text-sky-300 uppercase tracking-widest text-right">Gosterim</th>
+                                                <th class="px-4 py-3 font-label-sm text-label-sm text-sky-300 uppercase tracking-widest text-right">Begeni</th>
+                                                <th class="px-4 py-3 font-label-sm text-label-sm text-sky-300 uppercase tracking-widest text-right">RT</th>
+                                                <th class="px-4 py-3 font-label-sm text-label-sm text-sky-300 uppercase tracking-widest text-right">Yanit</th>
+                                                <th class="px-4 py-3 font-label-sm text-label-sm text-sky-300 uppercase tracking-widest text-right">Etkilesim</th>
                                             </tr>
                                         </thead>
                                         <tbody class="divide-y divide-outline-variant/20" id="tweets-table-body">
@@ -554,51 +674,52 @@
                     <div id="tab-instagram" class="tab-content hidden">
                         <header class="mb-xl flex flex-col md:flex-row md:items-end justify-between gap-lg">
                             <div>
-                                <h1 class="font-headline-lg text-headline-lg text-on-surface mb-2">Instagram Analytics</h1>
-                                <p class="font-body-md text-on-surface-variant">@infoyatirim hesabinin analizi</p>
+                                <h1 class="font-headline-lg text-headline-lg mb-2" style="background: linear-gradient(135deg, #e4405f, #f97316, #fbbf24); -webkit-background-clip: text; -webkit-text-fill-color: transparent;">Instagram Analytics</h1>
+                                <p class="font-body-md text-on-surface-variant"><span class="text-pink-400">@infoyatirim</span> hesabinin analizi</p>
                             </div>
                             <div class="flex items-center gap-2">
-                                <button onclick="showInstagramSettings()" class="flex items-center gap-2 px-4 py-2 bg-surface-container text-on-surface font-label-md text-label-md rounded-full border border-outline-variant/30 hover:bg-surface-bright/50 transition-all cursor-pointer">
+                                <button onclick="showInstagramSettings()" class="flex items-center gap-2 px-4 py-2 bg-surface-container text-on-surface font-label-md text-label-md rounded-full border border-pink-500/20 hover:bg-pink-500/10 hover:text-pink-300 transition-all cursor-pointer">
                                     <span class="material-symbols-outlined text-[18px]">settings</span> Session Bagla
                                 </button>
-                                <button onclick="loadInstagramData()" class="flex items-center gap-2 px-4 py-2 bg-[#E4405F] text-white font-label-md text-label-md rounded-full hover:brightness-110 active:scale-95 transition-all cursor-pointer">
+                                <button onclick="loadInstagramData()" class="flex items-center gap-2 px-4 py-2 bg-gradient-to-r from-[#e4405f] to-[#f97316] text-white font-label-md text-label-md rounded-full hover:brightness-110 active:scale-95 transition-all cursor-pointer shadow-lg shadow-pink-500/20">
                                     <span class="material-symbols-outlined text-[18px]">refresh</span> Yukle
                                 </button>
-                                <div class="flex bg-surface-container rounded-xl p-1 border border-outline-variant/30">
-                                    <button onclick="setInstagramDays(7)" class="ig-days-btn px-3 py-1 text-label-sm rounded-lg text-on-surface-variant hover:text-on-surface transition-all" data-days="7">7G</button>
-                                    <button onclick="setInstagramDays(15)" class="ig-days-btn px-3 py-1 text-label-sm rounded-lg text-on-surface-variant hover:text-on-surface transition-all" data-days="15">15G</button>
-                                    <button onclick="setInstagramDays(30)" class="ig-days-btn px-3 py-1 text-label-sm rounded-lg bg-[#E4405F] text-white" data-days="30">30G</button>
-                                    <button onclick="setInstagramDays(90)" class="ig-days-btn px-3 py-1 text-label-sm rounded-lg text-on-surface-variant hover:text-on-surface transition-all" data-days="90">90G</button>
+                                <div class="flex bg-surface-container rounded-xl p-1 border border-pink-500/20">
+                                    <button onclick="setInstagramDays(7)" class="ig-days-btn px-3 py-1 text-label-sm rounded-lg text-on-surface-variant hover:text-pink-400 hover:bg-pink-500/10 transition-all" data-days="7">7G</button>
+                                    <button onclick="setInstagramDays(15)" class="ig-days-btn px-3 py-1 text-label-sm rounded-lg text-on-surface-variant hover:text-pink-400 hover:bg-pink-500/10 transition-all" data-days="15">15G</button>
+                                    <button onclick="setInstagramDays(30)" class="ig-days-btn px-3 py-1 text-label-sm rounded-lg bg-pink-500 text-white" data-days="30">30G</button>
+                                    <button onclick="setInstagramDays(90)" class="ig-days-btn px-3 py-1 text-label-sm rounded-lg text-on-surface-variant hover:text-pink-400 hover:bg-pink-500/10 transition-all" data-days="90">90G</button>
                                 </div>
-                                <span class="text-label-sm font-label-sm text-on-surface-variant bg-surface-container px-md py-xs rounded-full border border-outline-variant/30" id="instagram-status">Hazir</span>
+                                <span class="text-label-sm font-label-sm text-pink-300 bg-pink-500/10 px-md py-xs rounded-full border border-pink-500/20" id="instagram-status">Hazir</span>
                             </div>
                         </header>
 
                         <!-- Login Modal -->
                         <div id="instagram-login-modal" class="hidden fixed inset-0 z-50 flex items-center justify-center bg-black/70 backdrop-blur-sm">
-                            <div class="glass-card rounded-2xl p-8 w-full max-w-md mx-4">
+                            <div class="glass-card rounded-2xl p-8 w-full max-w-md mx-4 relative overflow-hidden">
+                                <div class="absolute top-0 left-0 w-full h-1 bg-gradient-to-r from-[#e4405f] via-[#f97316] to-[#fbbf24]"></div>
                                 <div class="flex items-center gap-3 mb-6">
-                                    <div class="w-12 h-12 bg-[#E4405F] flex items-center justify-center rounded-xl">
+                                    <div class="w-12 h-12 bg-gradient-to-br from-[#e4405f] to-[#f97316] flex items-center justify-center rounded-xl shadow-lg shadow-pink-500/20">
                                         <span class="material-symbols-outlined text-white" style="font-variation-settings: 'FILL' 1;">camera_alt</span>
                                     </div>
                                     <div>
-                                        <h2 class="font-headline-md text-headline-md font-bold text-on-surface">Instagram Session</h2>
+                                        <h2 class="font-headline-md text-headline-md font-bold" style="background: linear-gradient(135deg, #e4405f, #f97316); -webkit-background-clip: text; -webkit-text-fill-color: transparent;">Instagram Session</h2>
                                         <p class="font-body-sm text-on-surface-variant">Tarayicindaki session cookie'sini yapistir</p>
                                     </div>
                                 </div>
                                 <div class="space-y-4">
                                     <div>
                                         <label class="font-label-md text-label-md block mb-2 text-on-surface-variant">sessionid</label>
-                                        <input type="text" id="ig-sessionid" placeholder="sessionid degeri" class="w-full bg-surface-container-lowest border border-outline-variant rounded-xl text-body-sm px-4 py-3 focus:ring-[#E4405F] focus:border-[#E4405F] focus:outline-none"/>
+                                        <input type="text" id="ig-sessionid" placeholder="sessionid degeri" class="w-full bg-surface-container-lowest border border-outline-variant rounded-xl text-body-sm px-4 py-3 focus:ring-[#e4405f] focus:border-[#e4405f] focus:outline-none"/>
                                     </div>
                                     <div>
                                         <label class="font-label-md text-label-md block mb-2 text-on-surface-variant">csrftoken (opsiyonel)</label>
-                                        <input type="text" id="ig-csrftoken" placeholder="csrftoken degeri" class="w-full bg-surface-container-lowest border border-outline-variant rounded-xl text-body-sm px-4 py-3 focus:ring-[#E4405F] focus:border-[#E4405F] focus:outline-none"/>
+                                        <input type="text" id="ig-csrftoken" placeholder="csrftoken degeri" class="w-full bg-surface-container-lowest border border-outline-variant rounded-xl text-body-sm px-4 py-3 focus:ring-[#e4405f] focus:border-[#e4405f] focus:outline-none"/>
                                     </div>
-                                    <button onclick="loginInstagramSession()" class="w-full py-3 bg-[#E4405F] text-white font-label-md rounded-xl hover:brightness-110 active:scale-[0.98] transition-all">
+                                    <button onclick="loginInstagramSession()" class="w-full py-3 bg-gradient-to-r from-[#e4405f] to-[#f97316] text-white font-label-md rounded-xl hover:brightness-110 active:scale-[0.98] transition-all shadow-lg shadow-pink-500/20">
                                         Baglan
                                     </button>
-                                    <div id="instagram-login-error" class="text-error text-body-sm hidden"></div>
+                                    <div id="instagram-login-error" class="text-red-400 text-body-sm hidden"></div>
                                 </div>
                             </div>
                         </div>
@@ -610,62 +731,62 @@
 
                         <!-- Analytics Metrics -->
                         <section class="mb-8">
-                            <h2 class="font-headline-md text-headline-md text-on-surface section-header mb-lg">Etkilesim Metrikleri</h2>
+                            <h2 class="font-headline-md text-headline-md section-header mb-lg" style="background: linear-gradient(135deg, #e4405f, #f97316); -webkit-background-clip: text; -webkit-text-fill-color: transparent;">Etkilesim Metrikleri</h2>
                             <div class="grid grid-cols-2 md:grid-cols-4 gap-4" id="instagram-metrics">
                                 <div class="col-span-4 flex items-center justify-center py-8"><div class="loading-spinner"></div></div>
                             </div>
                         </section>
-
+                        
                         <!-- Instagram Activity Chart -->
                         <section class="glass-card rounded-xl overflow-hidden mb-8">
-                            <div class="p-lg border-b border-outline-variant/30">
-                                <h2 class="font-headline-sm text-headline-sm text-on-surface">Post Aktivitesi</h2>
+                            <div class="p-lg border-b border-outline-variant/20">
+                                <h2 class="font-headline-sm text-headline-sm" style="background: linear-gradient(135deg, #e4405f, #f97316); -webkit-background-clip: text; -webkit-text-fill-color: transparent;">Post Aktivitesi</h2>
                             </div>
                             <div class="p-lg">
                                 <canvas id="instagram-activity-chart" height="200"></canvas>
                             </div>
                         </section>
-
+                        
                         <!-- Format Analysis -->
                         <section class="mb-8">
-                            <h2 class="font-headline-md text-headline-md text-on-surface mb-lg">Format Bazli Analiz</h2>
+                            <h2 class="font-headline-md text-headline-md mb-lg" style="background: linear-gradient(135deg, #e4405f, #f97316); -webkit-background-clip: text; -webkit-text-fill-color: transparent;">Format Bazli Analiz</h2>
                             <div class="grid grid-cols-2 gap-4" id="instagram-formats">
                                 <div class="col-span-2 flex items-center justify-center py-8"><div class="loading-spinner"></div></div>
                             </div>
                         </section>
-
+                        
                         <!-- Best Posts -->
                         <section class="mb-8">
-                            <h2 class="font-headline-md text-headline-md text-on-surface mb-lg">En Iyi Postlar</h2>
+                            <h2 class="font-headline-md text-headline-md mb-lg" style="background: linear-gradient(135deg, #e4405f, #f97316); -webkit-background-clip: text; -webkit-text-fill-color: transparent;">En Iyi Postlar</h2>
                             <div class="grid grid-cols-1 md:grid-cols-2 gap-5" id="instagram-rankings">
                                 <div class="col-span-2 flex items-center justify-center py-8"><div class="loading-spinner"></div></div>
                             </div>
                         </section>
-
+                        
                         <!-- Top Hashtags -->
                         <section class="mb-8">
-                            <h2 class="font-headline-md text-headline-md text-on-surface mb-lg">Populer Hashtagler</h2>
+                            <h2 class="font-headline-md text-headline-md mb-lg" style="background: linear-gradient(135deg, #e4405f, #f97316); -webkit-background-clip: text; -webkit-text-fill-color: transparent;">Populer Hashtagler</h2>
                             <div class="grid grid-cols-2 md:grid-cols-5 gap-4" id="instagram-hashtags">
                                 <div class="col-span-5 flex items-center justify-center py-8"><div class="loading-spinner"></div></div>
                             </div>
                         </section>
-
+                        
                         <!-- All Posts Table -->
                         <section class="mb-xl">
                             <div class="flex justify-between items-center mb-lg">
-                                <h2 class="font-headline-md text-headline-md text-on-surface">Tum Postlar</h2>
-                                <span class="text-label-sm font-label-sm text-on-surface-variant" id="instagram-posts-count">0 post</span>
+                                <h2 class="font-headline-md text-headline-md" style="background: linear-gradient(135deg, #e4405f, #f97316); -webkit-background-clip: text; -webkit-text-fill-color: transparent;">Tum Postlar</h2>
+                                <span class="text-label-sm font-label-sm text-pink-300 bg-pink-500/10 px-md py-xs rounded-full border border-pink-500/20" id="instagram-posts-count">0 post</span>
                             </div>
                             <div class="glass-card rounded-xl overflow-hidden">
                                 <div class="overflow-x-auto">
                                     <table class="w-full text-left border-collapse">
                                         <thead>
-                                            <tr class="bg-surface-container-highest/30">
-                                                <th class="px-4 py-3 font-label-sm text-label-sm text-on-surface-variant uppercase tracking-widest">Post</th>
-                                                <th class="px-4 py-3 font-label-sm text-label-sm text-on-surface-variant uppercase tracking-widest">Tur</th>
-                                                <th class="px-4 py-3 font-label-sm text-label-sm text-on-surface-variant uppercase tracking-widest text-right">Begeni</th>
-                                                <th class="px-4 py-3 font-label-sm text-label-sm text-on-surface-variant uppercase tracking-widest text-right">Yorum</th>
-                                                <th class="px-4 py-3 font-label-sm text-label-sm text-on-surface-variant uppercase tracking-widest text-right">Tarih</th>
+                                            <tr class="bg-gradient-to-r from-pink-500/10 via-orange-500/5 to-transparent">
+                                                <th class="px-4 py-3 font-label-sm text-label-sm text-pink-300 uppercase tracking-widest">Post</th>
+                                                <th class="px-4 py-3 font-label-sm text-label-sm text-pink-300 uppercase tracking-widest">Tur</th>
+                                                <th class="px-4 py-3 font-label-sm text-label-sm text-pink-300 uppercase tracking-widest text-right">Begeni</th>
+                                                <th class="px-4 py-3 font-label-sm text-label-sm text-pink-300 uppercase tracking-widest text-right">Yorum</th>
+                                                <th class="px-4 py-3 font-label-sm text-label-sm text-pink-300 uppercase tracking-widest text-right">Tarih</th>
                                             </tr>
                                         </thead>
                                         <tbody class="divide-y divide-outline-variant/20" id="instagram-posts-table">
@@ -679,21 +800,21 @@
                     <div id="tab-youtube" class="tab-content hidden">
                         <header class="mb-xl flex flex-col md:flex-row md:items-end justify-between gap-lg">
                             <div>
-                                <h1 class="font-headline-lg text-headline-lg text-on-surface mb-2">YouTube Analytics</h1>
+                                <h1 class="font-headline-lg text-headline-lg mb-2" style="background: linear-gradient(135deg, #ff4444, #f97316); -webkit-background-clip: text; -webkit-text-fill-color: transparent;">YouTube Analytics</h1>
                                 <p class="font-body-md text-on-surface-variant">YouTube kanalinin detayli analizi</p>
                             </div>
                             <div class="flex items-center gap-4">
-                                <div class="flex items-center bg-surface-container-lowest px-4 py-2 rounded-full border border-outline-variant/20 focus-within:border-[#FF0000] transition-all">
+                                <div class="flex items-center bg-surface-container-lowest px-4 py-2 rounded-full border border-red-500/20 focus-within:border-[#FF0000] transition-all">
                                     <span class="material-symbols-outlined text-on-surface-variant mr-2">search</span>
                                     <input id="youtube-search-input" type="text" placeholder="Kanal ara..." class="bg-transparent border-none focus:ring-0 text-body-sm w-56 p-0 placeholder-on-surface-variant" onkeypress="if(event.key==='Enter')searchYouTube()"/>
                                 </div>
-                                <button onclick="searchYouTube()" class="px-4 py-2 bg-[#FF0000] text-white font-label-md text-label-md rounded-full hover:brightness-110 active:scale-95 transition-all">Ara</button>
-                                <div class="flex bg-surface-container rounded-xl p-1 border border-outline-variant/30">
-                                    <button onclick="setYouTubeDays(7)" class="yt-days-btn px-3 py-1 text-label-sm rounded-lg text-on-surface-variant hover:text-on-surface transition-all" data-days="7">7G</button>
-                                    <button onclick="setYouTubeDays(15)" class="yt-days-btn px-3 py-1 text-label-sm rounded-lg text-on-surface-variant hover:text-on-surface transition-all" data-days="15">15G</button>
-                                    <button onclick="setYouTubeDays(30)" class="yt-days-btn px-3 py-1 text-label-sm rounded-lg bg-[#FF0000] text-white" data-days="30">30G</button>
+                                <button onclick="searchYouTube()" class="px-4 py-2 bg-gradient-to-r from-[#FF0000] to-[#f97316] text-white font-label-md text-label-md rounded-full hover:brightness-110 active:scale-95 transition-all shadow-lg shadow-red-500/20">Ara</button>
+                                <div class="flex bg-surface-container rounded-xl p-1 border border-red-500/20">
+                                    <button onclick="setYouTubeDays(7)" class="yt-days-btn px-3 py-1 text-label-sm rounded-lg text-on-surface-variant hover:text-red-400 hover:bg-red-500/10 transition-all" data-days="7">7G</button>
+                                    <button onclick="setYouTubeDays(15)" class="yt-days-btn px-3 py-1 text-label-sm rounded-lg text-on-surface-variant hover:text-red-400 hover:bg-red-500/10 transition-all" data-days="15">15G</button>
+                                    <button onclick="setYouTubeDays(30)" class="yt-days-btn px-3 py-1 text-label-sm rounded-lg bg-red-500 text-white" data-days="30">30G</button>
                                 </div>
-                                <span class="text-label-sm font-label-sm text-on-surface-variant bg-surface-container px-md py-xs rounded-full border border-outline-variant/30" id="youtube-status">Hazir</span>
+                                <span class="text-label-sm font-label-sm text-red-300 bg-red-500/10 px-md py-xs rounded-full border border-red-500/20" id="youtube-status">Hazir</span>
                             </div>
                         </header>
 
@@ -716,55 +837,55 @@
 
                         <!-- YouTube Activity Chart -->
                         <section class="glass-card rounded-xl overflow-hidden mb-8 hidden" id="yt-chart-section">
-                            <div class="p-lg border-b border-outline-variant/30">
-                                <h2 class="font-headline-sm text-headline-sm text-on-surface">Video Yayin Aktivitesi</h2>
+                            <div class="p-lg border-b border-outline-variant/20">
+                                <h2 class="font-headline-sm text-headline-sm" style="background: linear-gradient(135deg, #ff4444, #f97316); -webkit-background-clip: text; -webkit-text-fill-color: transparent;">Video Yayin Aktivitesi</h2>
                             </div>
                             <div class="p-lg">
                                 <canvas id="youtube-activity-chart" height="200"></canvas>
                             </div>
                         </section>
-
+                        
                         <!-- Watch Time & View Metrics -->
                         <section class="mb-8 hidden" id="yt-metrics-section">
-                            <h2 class="font-headline-md text-headline-md text-on-surface section-header mb-lg">Izlenme & Sure Metrikleri</h2>
+                            <h2 class="font-headline-md text-headline-md section-header mb-lg" style="background: linear-gradient(135deg, #ff4444, #f97316); -webkit-background-clip: text; -webkit-text-fill-color: transparent;">Izlenme & Sure Metrikleri</h2>
                             <div class="grid grid-cols-2 md:grid-cols-4 gap-4" id="yt-metrics"></div>
                         </section>
-
+                        
                         <!-- Video Rankings -->
                         <section class="mb-8 hidden" id="yt-rankings-section">
-                            <h2 class="font-headline-md text-headline-md text-on-surface mb-lg">Video Performansi</h2>
+                            <h2 class="font-headline-md text-headline-md mb-lg" style="background: linear-gradient(135deg, #ff4444, #f97316); -webkit-background-clip: text; -webkit-text-fill-color: transparent;">Video Performansi</h2>
                             <div class="grid grid-cols-1 md:grid-cols-2 gap-5" id="yt-rankings"></div>
                         </section>
-
+                        
                         <!-- Duration Analysis -->
                         <section class="mb-8 hidden" id="yt-duration-section">
-                            <h2 class="font-headline-md text-headline-md text-on-surface mb-lg">Sure Bazli Analiz</h2>
+                            <h2 class="font-headline-md text-headline-md mb-lg" style="background: linear-gradient(135deg, #ff4444, #f97316); -webkit-background-clip: text; -webkit-text-fill-color: transparent;">Sure Bazli Analiz</h2>
                             <div class="grid grid-cols-3 gap-4" id="yt-duration"></div>
                         </section>
-
+                        
                         <!-- Top Tags -->
                         <section class="mb-8 hidden" id="yt-tags-section">
-                            <h2 class="font-headline-md text-headline-md text-on-surface mb-lg">Populer Etiketler</h2>
+                            <h2 class="font-headline-md text-headline-md mb-lg" style="background: linear-gradient(135deg, #ff4444, #f97316); -webkit-background-clip: text; -webkit-text-fill-color: transparent;">Populer Etiketler</h2>
                             <div class="grid grid-cols-2 md:grid-cols-5 gap-4" id="yt-tags"></div>
                         </section>
-
+                        
                         <!-- All Videos Table -->
                         <section class="mb-xl hidden" id="yt-table-section">
                             <div class="flex justify-between items-center mb-lg">
-                                <h2 class="font-headline-md text-headline-md text-on-surface">Tum Videolar</h2>
-                                <span class="text-label-sm font-label-sm text-on-surface-variant" id="yt-video-count-label">0 video</span>
+                                <h2 class="font-headline-md text-headline-md" style="background: linear-gradient(135deg, #ff4444, #f97316); -webkit-background-clip: text; -webkit-text-fill-color: transparent;">Tum Videolar</h2>
+                                <span class="text-label-sm font-label-sm text-red-300 bg-red-500/10 px-md py-xs rounded-full border border-red-500/20" id="yt-video-count-label">0 video</span>
                             </div>
                             <div class="glass-card rounded-xl overflow-hidden">
                                 <div class="overflow-x-auto">
                                     <table class="w-full text-left border-collapse">
                                         <thead>
-                                            <tr class="bg-surface-container-highest/30">
-                                                <th class="px-4 py-3 font-label-sm text-label-sm text-on-surface-variant uppercase tracking-widest">Video</th>
-                                                <th class="px-4 py-3 font-label-sm text-label-sm text-on-surface-variant uppercase tracking-widest">Sure</th>
-                                                <th class="px-4 py-3 font-label-sm text-label-sm text-on-surface-variant uppercase tracking-widest text-right">Izlenme</th>
-                                                <th class="px-4 py-3 font-label-sm text-label-sm text-on-surface-variant uppercase tracking-widest text-right">Begeni</th>
-                                                <th class="px-4 py-3 font-label-sm text-label-sm text-on-surface-variant uppercase tracking-widest text-right">Yorum</th>
-                                                <th class="px-4 py-3 font-label-sm text-label-sm text-on-surface-variant uppercase tracking-widest text-right">Tarih</th>
+                                            <tr class="bg-gradient-to-r from-red-500/10 via-orange-500/5 to-transparent">
+                                                <th class="px-4 py-3 font-label-sm text-label-sm text-red-300 uppercase tracking-widest">Video</th>
+                                                <th class="px-4 py-3 font-label-sm text-label-sm text-red-300 uppercase tracking-widest">Sure</th>
+                                                <th class="px-4 py-3 font-label-sm text-label-sm text-red-300 uppercase tracking-widest text-right">Izlenme</th>
+                                                <th class="px-4 py-3 font-label-sm text-label-sm text-red-300 uppercase tracking-widest text-right">Begeni</th>
+                                                <th class="px-4 py-3 font-label-sm text-label-sm text-red-300 uppercase tracking-widest text-right">Yorum</th>
+                                                <th class="px-4 py-3 font-label-sm text-label-sm text-red-300 uppercase tracking-widest text-right">Tarih</th>
                                             </tr>
                                         </thead>
                                         <tbody class="divide-y divide-outline-variant/20" id="yt-videos-table">
@@ -778,27 +899,27 @@
                     <div id="tab-tiktok" class="tab-content hidden">
                         <header class="mb-xl flex flex-col md:flex-row md:items-end justify-between gap-lg">
                             <div>
-                                <h1 class="font-headline-lg text-headline-lg text-on-surface mb-2">TikTok Analytics</h1>
+                                <h1 class="font-headline-lg text-headline-lg mb-2" style="background: linear-gradient(135deg, #00f2ea, #4ade80); -webkit-background-clip: text; -webkit-text-fill-color: transparent;">TikTok Analytics</h1>
                                 <p class="font-body-md text-on-surface-variant">TikTok hesabinin detayli analizi</p>
                             </div>
                             <div class="flex items-center gap-4">
-                                <div class="flex items-center bg-surface-container-lowest px-4 py-2 rounded-full border border-outline-variant/20 focus-within:border-[#00F2EA] transition-all">
+                                <div class="flex items-center bg-surface-container-lowest px-4 py-2 rounded-full border border-emerald-500/20 focus-within:border-[#00F2EA] transition-all">
                                     <span class="material-symbols-outlined text-on-surface-variant mr-2">person</span>
                                     <input id="tiktok-username-input" type="text" placeholder="@kullaniciadi" value="infoyatirim" class="bg-transparent border-none focus:ring-0 text-body-sm w-48 p-0 placeholder-on-surface-variant" onkeypress="if(event.key==='Enter')loadTikTokData()"/>
                                 </div>
-                                <div class="flex items-center gap-2 bg-surface-container rounded-xl p-2 border border-outline-variant/30">
+                                <div class="flex items-center gap-2 bg-surface-container rounded-xl p-2 border border-emerald-500/20">
                                     <input type="date" id="tiktok-date-from" class="bg-transparent text-body-sm text-on-surface border-none focus:ring-0 cursor-pointer" onchange="loadTikTokData()"/>
                                     <span class="text-on-surface-variant">-</span>
                                     <input type="date" id="tiktok-date-to" class="bg-transparent text-body-sm text-on-surface border-none focus:ring-0 cursor-pointer" onchange="loadTikTokData()"/>
                                 </div>
-                                <div class="flex bg-surface-container rounded-xl p-1 border border-outline-variant/30">
-                                    <button onclick="setTikTokRange('7')" class="tiktok-range-btn px-3 py-1 text-label-sm rounded-lg text-on-surface-variant hover:text-on-surface transition-all" data-days="7">7G</button>
-                                    <button onclick="setTikTokRange('30')" class="tiktok-range-btn px-3 py-1 text-label-sm rounded-lg text-on-surface-variant hover:text-on-surface transition-all" data-days="30">30G</button>
-                                    <button onclick="setTikTokRange('90')" class="tiktok-range-btn px-3 py-1 text-label-sm rounded-lg text-on-surface-variant hover:text-on-surface transition-all" data-days="90">90G</button>
-                                    <button onclick="setTikTokRange('all')" class="tiktok-range-btn px-3 py-1 text-label-sm rounded-lg bg-[#00F2EA] text-black" data-days="all">Tumu</button>
+                                <div class="flex bg-surface-container rounded-xl p-1 border border-emerald-500/20">
+                                    <button onclick="setTikTokRange('7')" class="tiktok-range-btn px-3 py-1 text-label-sm rounded-lg text-on-surface-variant hover:text-emerald-400 hover:bg-emerald-500/10 transition-all" data-days="7">7G</button>
+                                    <button onclick="setTikTokRange('30')" class="tiktok-range-btn px-3 py-1 text-label-sm rounded-lg text-on-surface-variant hover:text-emerald-400 hover:bg-emerald-500/10 transition-all" data-days="30">30G</button>
+                                    <button onclick="setTikTokRange('90')" class="tiktok-range-btn px-3 py-1 text-label-sm rounded-lg text-on-surface-variant hover:text-emerald-400 hover:bg-emerald-500/10 transition-all" data-days="90">90G</button>
+                                    <button onclick="setTikTokRange('all')" class="tiktok-range-btn px-3 py-1 text-label-sm rounded-lg bg-gradient-to-r from-[#00f2ea] to-[#4ade80] text-black" data-days="all">Tumu</button>
                                 </div>
-                                <button onclick="loadTikTokData()" class="px-4 py-2 bg-[#00F2EA] text-black font-label-md text-label-md rounded-full hover:brightness-110 active:scale-95 transition-all">Yukle</button>
-                                <span class="text-label-sm font-label-sm text-on-surface-variant bg-surface-container px-md py-xs rounded-full border border-outline-variant/30" id="tiktok-status">Hazir</span>
+                                <button onclick="loadTikTokData()" class="px-4 py-2 bg-gradient-to-r from-[#00f2ea] to-[#4ade80] text-black font-label-md text-label-md rounded-full hover:brightness-110 active:scale-95 transition-all shadow-lg shadow-emerald-500/20">Yukle</button>
+                                <span class="text-label-sm font-label-sm text-emerald-300 bg-emerald-500/10 px-md py-xs rounded-full border border-emerald-500/20" id="tiktok-status">Hazir</span>
                             </div>
                         </header>
 
@@ -809,72 +930,72 @@
 
                         <!-- TikTok Activity Chart -->
                         <section class="glass-card rounded-xl overflow-hidden mb-8">
-                            <div class="p-lg border-b border-outline-variant/30">
-                                <h2 class="font-headline-sm text-headline-sm text-on-surface">Video Aktivitesi</h2>
+                            <div class="p-lg border-b border-outline-variant/20">
+                                <h2 class="font-headline-sm text-headline-sm" style="background: linear-gradient(135deg, #00f2ea, #4ade80); -webkit-background-clip: text; -webkit-text-fill-color: transparent;">Video Aktivitesi</h2>
                             </div>
                             <div class="p-lg">
                                 <canvas id="tiktok-activity-chart" height="200"></canvas>
                             </div>
                         </section>
-
+                        
                         <!-- View Quality Metrics -->
                         <section class="mb-8">
-                            <h2 class="font-headline-md text-headline-md text-on-surface section-header mb-lg">Izlenme Kalitesi</h2>
+                            <h2 class="font-headline-md text-headline-md section-header mb-lg" style="background: linear-gradient(135deg, #00f2ea, #4ade80); -webkit-background-clip: text; -webkit-text-fill-color: transparent;">Izlenme Kalitesi</h2>
                             <div class="grid grid-cols-2 md:grid-cols-4 gap-4" id="tiktok-view-quality">
                                 <div class="col-span-4 flex items-center justify-center py-8"><div class="loading-spinner"></div></div>
                             </div>
                         </section>
-
+                        
                         <!-- Engagement Metrics -->
                         <section class="mb-8">
-                            <h2 class="font-headline-md text-headline-md text-on-surface mb-lg">Etkilesim Metrikleri</h2>
+                            <h2 class="font-headline-md text-headline-md mb-lg" style="background: linear-gradient(135deg, #00f2ea, #4ade80); -webkit-background-clip: text; -webkit-text-fill-color: transparent;">Etkilesim Metrikleri</h2>
                             <div class="grid grid-cols-2 md:grid-cols-4 gap-4" id="tiktok-engagement">
                                 <div class="col-span-4 flex items-center justify-center py-8"><div class="loading-spinner"></div></div>
                             </div>
                         </section>
-
+                        
                         <!-- Best & Worst Videos -->
                         <section class="mb-8">
-                            <h2 class="font-headline-md text-headline-md text-on-surface mb-lg">Video Performansi</h2>
+                            <h2 class="font-headline-md text-headline-md mb-lg" style="background: linear-gradient(135deg, #00f2ea, #4ade80); -webkit-background-clip: text; -webkit-text-fill-color: transparent;">Video Performansi</h2>
                             <div class="grid grid-cols-1 md:grid-cols-2 gap-5" id="tiktok-video-rankings">
                                 <div class="col-span-2 flex items-center justify-center py-8"><div class="loading-spinner"></div></div>
                             </div>
                         </section>
-
+                        
                         <!-- Video Format Analysis -->
                         <section class="mb-8">
-                            <h2 class="font-headline-md text-headline-md text-on-surface mb-lg">Format Bazli Analiz</h2>
+                            <h2 class="font-headline-md text-headline-md mb-lg" style="background: linear-gradient(135deg, #00f2ea, #4ade80); -webkit-background-clip: text; -webkit-text-fill-color: transparent;">Format Bazli Analiz</h2>
                             <div class="grid grid-cols-3 gap-4" id="tiktok-formats">
                                 <div class="col-span-3 flex items-center justify-center py-8"><div class="loading-spinner"></div></div>
                             </div>
                         </section>
-
+                        
                         <!-- Top Hashtags -->
                         <section class="mb-8">
-                            <h2 class="font-headline-md text-headline-md text-on-surface mb-lg">Populer Hashtagler</h2>
+                            <h2 class="font-headline-md text-headline-md mb-lg" style="background: linear-gradient(135deg, #00f2ea, #4ade80); -webkit-background-clip: text; -webkit-text-fill-color: transparent;">Populer Hashtagler</h2>
                             <div class="grid grid-cols-2 md:grid-cols-5 gap-4" id="tiktok-hashtags">
                                 <div class="col-span-5 flex items-center justify-center py-8"><div class="loading-spinner"></div></div>
                             </div>
                         </section>
-
+                        
                         <!-- All Videos Table -->
                         <section class="mb-xl">
                             <div class="flex justify-between items-center mb-lg">
-                                <h2 class="font-headline-md text-headline-md text-on-surface">Tum Videolar</h2>
-                                <span class="text-label-sm font-label-sm text-on-surface-variant" id="tiktok-video-count-label">0 video</span>
+                                <h2 class="font-headline-md text-headline-md" style="background: linear-gradient(135deg, #00f2ea, #4ade80); -webkit-background-clip: text; -webkit-text-fill-color: transparent;">Tum Videolar</h2>
+                                <span class="text-label-sm font-label-sm text-emerald-300 bg-emerald-500/10 px-md py-xs rounded-full border border-emerald-500/20" id="tiktok-video-count-label">0 video</span>
                             </div>
                             <div class="glass-card rounded-xl overflow-hidden">
                                 <div class="overflow-x-auto">
                                     <table class="w-full text-left border-collapse">
                                         <thead>
-                                            <tr class="bg-surface-container-highest/30">
-                                                <th class="px-4 py-3 font-label-sm text-label-sm text-on-surface-variant uppercase tracking-widest">Video</th>
-                                                <th class="px-4 py-3 font-label-sm text-label-sm text-on-surface-variant uppercase tracking-widest">Sure</th>
-                                                <th class="px-4 py-3 font-label-sm text-label-sm text-on-surface-variant uppercase tracking-widest text-right">Izlenme</th>
-                                                <th class="px-4 py-3 font-label-sm text-label-sm text-on-surface-variant uppercase tracking-widest text-right">Begeni</th>
-                                                <th class="px-4 py-3 font-label-sm text-label-sm text-on-surface-variant uppercase tracking-widest text-right">Yorum</th>
-                                                <th class="px-4 py-3 font-label-sm text-label-sm text-on-surface-variant uppercase tracking-widest text-right">Kaydetme</th>
-                                                <th class="px-4 py-3 font-label-sm text-label-sm text-on-surface-variant uppercase tracking-widest text-right">Etkilesim</th>
+                                            <tr class="bg-gradient-to-r from-emerald-500/10 via-teal-500/5 to-transparent">
+                                                <th class="px-4 py-3 font-label-sm text-label-sm text-emerald-300 uppercase tracking-widest">Video</th>
+                                                <th class="px-4 py-3 font-label-sm text-label-sm text-emerald-300 uppercase tracking-widest">Sure</th>
+                                                <th class="px-4 py-3 font-label-sm text-label-sm text-emerald-300 uppercase tracking-widest text-right">Izlenme</th>
+                                                <th class="px-4 py-3 font-label-sm text-label-sm text-emerald-300 uppercase tracking-widest text-right">Begeni</th>
+                                                <th class="px-4 py-3 font-label-sm text-label-sm text-emerald-300 uppercase tracking-widest text-right">Yorum</th>
+                                                <th class="px-4 py-3 font-label-sm text-label-sm text-emerald-300 uppercase tracking-widest text-right">Kaydetme</th>
+                                                <th class="px-4 py-3 font-label-sm text-label-sm text-emerald-300 uppercase tracking-widest text-right">Etkilesim</th>
                                             </tr>
                                         </thead>
                                         <tbody class="divide-y divide-outline-variant/20" id="tiktok-videos-table">
@@ -889,7 +1010,7 @@
                     <div id="tab-competitor" class="tab-content hidden">
                         <header class="mb-xl flex flex-col md:flex-row md:items-end justify-between gap-lg">
                             <div>
-                                <h1 class="font-headline-lg text-headline-lg text-on-surface mb-2">Rakip Analizi</h1>
+                                <h1 class="font-headline-lg text-headline-lg mb-2" style="background: linear-gradient(135deg, #f59e0b, #ef4444); -webkit-background-clip: text; -webkit-text-fill-color: transparent;">Rakip Analizi</h1>
                                 <p class="font-body-md text-on-surface-variant">Rakiplerinizin tum platformlardaki hesaplarini analiz edin</p>
                             </div>
                             <div class="flex items-center gap-4">
@@ -950,16 +1071,16 @@
 
                         <!-- Baslangic Durumu -->
                         <div id="competitor-empty" class="flex flex-col items-center justify-center py-20">
-                            <span class="material-symbols-outlined text-7xl text-on-surface-variant/30 mb-6">compare_arrows</span>
-                            <h3 class="font-headline-md text-headline-md text-on-surface-variant mb-2">Rakip Arayin</h3>
-                            <p class="text-on-surface-variant text-center max-w-md">Instagram, Twitter, YouTube, TikTok ve LinkedIn'de rakiplerinizin hesaplarini analiz edin. Arama cubuguna bir isim veya kullanici adi yazin.</p>
+                            <span class="material-symbols-outlined text-7xl text-amber-500/30 mb-6">compare_arrows</span>
+                            <h3 class="font-headline-md text-headline-md text-amber-400 mb-2">Rakip Arayin</h3>
+                            <p class="text-amber-300/60 text-center max-w-md">Instagram, Twitter, YouTube, TikTok ve LinkedIn'de rakiplerinizin hesaplarini analiz edin. Arama cubuguna bir isim veya kullanici adi yazin.</p>
                         </div>
                     </div>
 
                     <div id="tab-influencer" class="tab-content hidden">
                         <header class="mb-xl flex flex-col md:flex-row md:items-end justify-between gap-lg">
                             <div>
-                                <h1 class="font-headline-lg text-headline-lg text-on-surface mb-2">Influencer Bulucu</h1>
+                                <h1 class="font-headline-lg text-headline-lg mb-2" style="background: linear-gradient(135deg, #14b8a6, #06b6d4); -webkit-background-clip: text; -webkit-text-fill-color: transparent;">Influencer Bulucu</h1>
                                 <p class="font-body-md text-on-surface-variant">Borsa, yatirim ve finans konularinda icerik ureten influencer'lari kesfedin</p>
                             </div>
                             <div class="flex items-center gap-4">
@@ -974,18 +1095,18 @@
 
                         <!-- Hizli Tag Butonlari -->
                         <div class="flex flex-wrap gap-2 mb-xl">
-                            <button onclick="searchInfluencerTag('borsa')" class="px-4 py-2 bg-tertiary-container text-on-tertiary-container font-label-sm text-label-sm rounded-full hover:brightness-110 active:scale-95 transition-all">borsa</button>
-                            <button onclick="searchInfluencerTag('hisse senedi')" class="px-4 py-2 bg-tertiary-container text-on-tertiary-container font-label-sm text-label-sm rounded-full hover:brightness-110 active:scale-95 transition-all">hisse senedi</button>
-                            <button onclick="searchInfluencerTag('yatirim')" class="px-4 py-2 bg-tertiary-container text-on-tertiary-container font-label-sm text-label-sm rounded-full hover:brightness-110 active:scale-95 transition-all">yatirim</button>
-                            <button onclick="searchInfluencerTag('ekonomi')" class="px-4 py-2 bg-tertiary-container text-on-tertiary-container font-label-sm text-label-sm rounded-full hover:brightness-110 active:scale-95 transition-all">ekonomi</button>
-                            <button onclick="searchInfluencerTag('finans')" class="px-4 py-2 bg-tertiary-container text-on-tertiary-container font-label-sm text-label-sm rounded-full hover:brightness-110 active:scale-95 transition-all">finans</button>
-                            <button onclick="searchInfluencerTag('kripto para')" class="px-4 py-2 bg-tertiary-container text-on-tertiary-container font-label-sm text-label-sm rounded-full hover:brightness-110 active:scale-95 transition-all">kripto para</button>
-                            <button onclick="searchInfluencerTag('forex')" class="px-4 py-2 bg-tertiary-container text-on-tertiary-container font-label-sm text-label-sm rounded-full hover:brightness-110 active:scale-95 transition-all">forex</button>
-                            <button onclick="searchInfluencerTag('viop')" class="px-4 py-2 bg-tertiary-container text-on-tertiary-container font-label-sm text-label-sm rounded-full hover:brightness-110 active:scale-95 transition-all">viop</button>
-                            <button onclick="searchInfluencerTag('bist')" class="px-4 py-2 bg-tertiary-container text-on-tertiary-container font-label-sm text-label-sm rounded-full hover:brightness-110 active:scale-95 transition-all">bist</button>
-                            <button onclick="searchInfluencerTag('altin')" class="px-4 py-2 bg-tertiary-container text-on-tertiary-container font-label-sm text-label-sm rounded-full hover:brightness-110 active:scale-95 transition-all">altin</button>
-                            <button onclick="searchInfluencerTag('dolar')" class="px-4 py-2 bg-tertiary-container text-on-tertiary-container font-label-sm text-label-sm rounded-full hover:brightness-110 active:scale-95 transition-all">dolar</button>
-                            <button onclick="searchInfluencerTag('fintech')" class="px-4 py-2 bg-tertiary-container text-on-tertiary-container font-label-sm text-label-sm rounded-full hover:brightness-110 active:scale-95 transition-all">fintech</button>
+                            <button onclick="searchInfluencerTag('borsa')" class="px-4 py-2 bg-gradient-to-r from-emerald-600/40 to-emerald-600/20 text-emerald-300 font-label-sm text-label-sm rounded-full hover:brightness-125 active:scale-95 transition-all border border-emerald-500/20">borsa</button>
+                            <button onclick="searchInfluencerTag('hisse senedi')" class="px-4 py-2 bg-gradient-to-r from-blue-600/40 to-blue-600/20 text-blue-300 font-label-sm text-label-sm rounded-full hover:brightness-125 active:scale-95 transition-all border border-blue-500/20">hisse senedi</button>
+                            <button onclick="searchInfluencerTag('yatirim')" class="px-4 py-2 bg-gradient-to-r from-purple-600/40 to-purple-600/20 text-purple-300 font-label-sm text-label-sm rounded-full hover:brightness-125 active:scale-95 transition-all border border-purple-500/20">yatirim</button>
+                            <button onclick="searchInfluencerTag('ekonomi')" class="px-4 py-2 bg-gradient-to-r from-sky-600/40 to-sky-600/20 text-sky-300 font-label-sm text-label-sm rounded-full hover:brightness-125 active:scale-95 transition-all border border-sky-500/20">ekonomi</button>
+                            <button onclick="searchInfluencerTag('finans')" class="px-4 py-2 bg-gradient-to-r from-indigo-600/40 to-indigo-600/20 text-indigo-300 font-label-sm text-label-sm rounded-full hover:brightness-125 active:scale-95 transition-all border border-indigo-500/20">finans</button>
+                            <button onclick="searchInfluencerTag('kripto para')" class="px-4 py-2 bg-gradient-to-r from-amber-600/40 to-amber-600/20 text-amber-300 font-label-sm text-label-sm rounded-full hover:brightness-125 active:scale-95 transition-all border border-amber-500/20">kripto para</button>
+                            <button onclick="searchInfluencerTag('forex')" class="px-4 py-2 bg-gradient-to-r from-cyan-600/40 to-cyan-600/20 text-cyan-300 font-label-sm text-label-sm rounded-full hover:brightness-125 active:scale-95 transition-all border border-cyan-500/20">forex</button>
+                            <button onclick="searchInfluencerTag('viop')" class="px-4 py-2 bg-gradient-to-r from-violet-600/40 to-violet-600/20 text-violet-300 font-label-sm text-label-sm rounded-full hover:brightness-125 active:scale-95 transition-all border border-violet-500/20">viop</button>
+                            <button onclick="searchInfluencerTag('bist')" class="px-4 py-2 bg-gradient-to-r from-rose-600/40 to-rose-600/20 text-rose-300 font-label-sm text-label-sm rounded-full hover:brightness-125 active:scale-95 transition-all border border-rose-500/20">bist</button>
+                            <button onclick="searchInfluencerTag('altin')" class="px-4 py-2 bg-gradient-to-r from-yellow-600/40 to-yellow-600/20 text-yellow-300 font-label-sm text-label-sm rounded-full hover:brightness-125 active:scale-95 transition-all border border-yellow-500/20">altin</button>
+                            <button onclick="searchInfluencerTag('dolar')" class="px-4 py-2 bg-gradient-to-r from-green-600/40 to-green-600/20 text-green-300 font-label-sm text-label-sm rounded-full hover:brightness-125 active:scale-95 transition-all border border-green-500/20">dolar</button>
+                            <button onclick="searchInfluencerTag('fintech')" class="px-4 py-2 bg-gradient-to-r from-teal-600/40 to-teal-600/20 text-teal-300 font-label-sm text-label-sm rounded-full hover:brightness-125 active:scale-95 transition-all border border-teal-500/20">fintech</button>
                         </div>
 
                         <!-- Arama Sonuclari -->
@@ -1008,21 +1129,21 @@
 
                         <!-- Baslangic Durumu -->
                         <div id="influencer-empty" class="flex flex-col items-center justify-center py-20">
-                            <span class="material-symbols-outlined text-7xl text-on-surface-variant/30 mb-6">person_search</span>
-                            <h3 class="font-headline-md text-headline-md text-on-surface-variant mb-2">Influencer Kesfedin</h3>
-                            <p class="text-on-surface-variant text-center max-w-md">Borsa, yatirim ve finans konularinda icerik ureten influencer'lari bulmak icin yukardaki tag'lara tiklayin veya anahtar kelime girin.</p>
+                            <span class="material-symbols-outlined text-7xl text-teal-500/30 mb-6">person_search</span>
+                            <h3 class="font-headline-md text-headline-md text-teal-400 mb-2">Influencer Kesfedin</h3>
+                            <p class="text-teal-300/60 text-center max-w-md">Borsa, yatirim ve finans konularinda icerik ureten influencer'lari bulmak icin yukardaki tag'lara tiklayin veya anahtar kelime girin.</p>
                         </div>
                     </div>
 
                     <div id="tab-linkedin" class="tab-content hidden">
                         <header class="mb-xl">
-                            <h1 class="font-display-lg text-display-lg text-on-surface mb-2">LinkedIn Analytics</h1>
+                            <h1 class="font-display-lg text-display-lg mb-2" style="background: linear-gradient(135deg, #0a66c2, #06b6d4); -webkit-background-clip: text; -webkit-text-fill-color: transparent;">LinkedIn Analytics</h1>
                             <p class="font-body-md text-on-surface-variant">Coming soon - LinkedIn entegrasyonu hazirlaniyor.</p>
                         </header>
                         <div class="glass-card rounded-xl p-12 text-center">
-                            <span class="material-symbols-outlined text-6xl text-on-surface-variant mb-4">corporate_fare</span>
-                            <h3 class="font-headline-md text-headline-md text-on-surface mb-2">Yakinda</h3>
-                            <p class="text-on-surface-variant">LinkedIn API entegrasyonu tamamlaniyor.</p>
+                            <span class="material-symbols-outlined text-6xl text-blue-500/30 mb-4">corporate_fare</span>
+                            <h3 class="font-headline-md text-headline-md text-blue-400 mb-2">Yakinda</h3>
+                            <p class="text-blue-300/60">LinkedIn API entegrasyonu tamamlaniyor.</p>
                         </div>
                     </div>
 
