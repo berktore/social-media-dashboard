@@ -487,9 +487,19 @@
                             </div>
                         </div>
 
+                        <!-- Tweet Activity Chart -->
+                        <section class="glass-card rounded-xl overflow-hidden mb-xl">
+                            <div class="p-lg border-b border-outline-variant/30">
+                                <h2 class="font-headline-sm text-headline-sm text-on-surface">Tweet Aktivitesi</h2>
+                            </div>
+                            <div class="p-lg">
+                                <canvas id="twitter-activity-chart" height="200"></canvas>
+                            </div>
+                        </section>
+
                         <!-- Content Type Analysis -->
                         <section class="mb-xl">
-                            <h2 class="font-headline-md text-headline-md text-on-surface mb-lg">Icerik Turu Analizi</h2>
+                            <h2 class="font-headline-md text-headline-md text-on-surface section-header mb-lg">Icerik Turu Analizi</h2>
                             <div class="grid grid-cols-2 md:grid-cols-4 gap-4" id="content-type-cards">
                                 <div class="glass-card rounded-xl p-4 text-center">
                                     <div class="loading-spinner mx-auto"></div>
@@ -600,9 +610,19 @@
 
                         <!-- Analytics Metrics -->
                         <section class="mb-8">
-                            <h2 class="font-headline-md text-headline-md text-on-surface mb-lg">Etkilesim Metrikleri</h2>
+                            <h2 class="font-headline-md text-headline-md text-on-surface section-header mb-lg">Etkilesim Metrikleri</h2>
                             <div class="grid grid-cols-2 md:grid-cols-4 gap-4" id="instagram-metrics">
                                 <div class="col-span-4 flex items-center justify-center py-8"><div class="loading-spinner"></div></div>
+                            </div>
+                        </section>
+
+                        <!-- Instagram Activity Chart -->
+                        <section class="glass-card rounded-xl overflow-hidden mb-8">
+                            <div class="p-lg border-b border-outline-variant/30">
+                                <h2 class="font-headline-sm text-headline-sm text-on-surface">Post Aktivitesi</h2>
+                            </div>
+                            <div class="p-lg">
+                                <canvas id="instagram-activity-chart" height="200"></canvas>
                             </div>
                         </section>
 
@@ -694,9 +714,19 @@
                             <div class="grid grid-cols-12 gap-5" id="yt-sub-growth"></div>
                         </section>
 
+                        <!-- YouTube Activity Chart -->
+                        <section class="glass-card rounded-xl overflow-hidden mb-8 hidden" id="yt-chart-section">
+                            <div class="p-lg border-b border-outline-variant/30">
+                                <h2 class="font-headline-sm text-headline-sm text-on-surface">Video Yayin Aktivitesi</h2>
+                            </div>
+                            <div class="p-lg">
+                                <canvas id="youtube-activity-chart" height="200"></canvas>
+                            </div>
+                        </section>
+
                         <!-- Watch Time & View Metrics -->
                         <section class="mb-8 hidden" id="yt-metrics-section">
-                            <h2 class="font-headline-md text-headline-md text-on-surface mb-lg">Izlenme & Sure Metrikleri</h2>
+                            <h2 class="font-headline-md text-headline-md text-on-surface section-header mb-lg">Izlenme & Sure Metrikleri</h2>
                             <div class="grid grid-cols-2 md:grid-cols-4 gap-4" id="yt-metrics"></div>
                         </section>
 
@@ -777,17 +807,19 @@
                             <div class="col-span-12 flex items-center justify-center py-12"><div class="loading-spinner"></div></div>
                         </div>
 
-                        <!-- Follower Growth Chart -->
-                        <section class="mb-8">
-                            <h2 class="font-headline-md text-headline-md text-on-surface mb-lg">Takipci Artisi</h2>
-                            <div class="grid grid-cols-12 gap-5" id="tiktok-follower-growth">
-                                <div class="col-span-12 flex items-center justify-center py-8"><div class="loading-spinner"></div></div>
+                        <!-- TikTok Activity Chart -->
+                        <section class="glass-card rounded-xl overflow-hidden mb-8">
+                            <div class="p-lg border-b border-outline-variant/30">
+                                <h2 class="font-headline-sm text-headline-sm text-on-surface">Video Aktivitesi</h2>
+                            </div>
+                            <div class="p-lg">
+                                <canvas id="tiktok-activity-chart" height="200"></canvas>
                             </div>
                         </section>
 
                         <!-- View Quality Metrics -->
                         <section class="mb-8">
-                            <h2 class="font-headline-md text-headline-md text-on-surface mb-lg">Izlenme Kalitesi</h2>
+                            <h2 class="font-headline-md text-headline-md text-on-surface section-header mb-lg">Izlenme Kalitesi</h2>
                             <div class="grid grid-cols-2 md:grid-cols-4 gap-4" id="tiktok-view-quality">
                                 <div class="col-span-4 flex items-center justify-center py-8"><div class="loading-spinner"></div></div>
                             </div>

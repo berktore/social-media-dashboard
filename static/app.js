@@ -674,6 +674,8 @@ function renderAnalytics() {
             <td class="px-4 py-3 text-right"><span class="text-label-sm ${engRate > 5 ? 'text-primary' : engRate > 2 ? 'text-tertiary' : 'text-on-surface-variant'}">%${engRate}</span></td>
         </tr>`;
     }).join('');
+
+    renderTwitterChart(tweets);
 }
 
 function fmt(n) { if (!n) return '0'; if (n >= 1000000) return (n / 1000000).toFixed(1) + 'M'; if (n >= 1000) return (n / 1000).toFixed(1) + 'K'; return n.toString(); }
@@ -1089,6 +1091,8 @@ function searchYouTube() {
             </div>
         `).join('');
     });
+
+    renderTikTokChart(all_videos);
 }
 
 function loadYouTubeData(channelId) {
@@ -1132,7 +1136,7 @@ function renderYouTubeAll() {
     const { channel, analytics, summary, duration_analysis, best_by_views, best_by_likes, best_by_comments, worst_videos, top_tags, all_videos } = youtubeData;
 
     // Show all sections
-    ['yt-sub-section', 'yt-metrics-section', 'yt-rankings-section', 'yt-duration-section', 'yt-tags-section', 'yt-table-section'].forEach(id => {
+    ['yt-sub-section', 'yt-metrics-section', 'yt-chart-section', 'yt-rankings-section', 'yt-duration-section', 'yt-tags-section', 'yt-table-section'].forEach(id => {
         document.getElementById(id).classList.remove('hidden');
     });
 
@@ -1351,6 +1355,8 @@ function renderYouTubeAll() {
             <td class="px-4 py-3 text-right text-label-sm text-on-surface-variant">${v.published_at ? new Date(v.published_at).toLocaleDateString('tr-TR') : '-'}</td>
         </tr>`;
     }).join('');
+
+    renderYouTubeChart(all_videos);
 }
 
 // ==================== INSTAGRAM ====================
@@ -1481,6 +1487,7 @@ function renderInstagramAll() {
     renderInstagramRankings(byLikes.slice(0, 5), byComments.slice(0, 5), byLow.slice(0, 5));
     renderInstagramHashtags(sortedTags);
     renderInstagramTable(posts);
+    renderInstagramChart(posts);
 }
 
 function renderInstagramProfile(profile) {
@@ -2211,5 +2218,73 @@ function openInfluencerDetail(idx) {
 function closeInfluencerDetail() {
     document.getElementById('influencer-detail').classList.add('hidden');
     document.getElementById('influencer-results').classList.remove('hidden');
+}
+
+// ==================== CHARTS ====================
+function createActivityChart(canvasId, items, label, dateField, color) {
+    const ctx = document.getElementById(canvasId);
+    if (!ctx) return;
+    const existing = Chart.getChart(ctx);
+    if (existing) existing.destroy();
+
+    const grouped = {};
+    items.forEach(item => {
+        const d = item[dateField];
+        if (!d) return;
+        const key = typeof d === 'number' ? new Date(d * 1000).toISOString().split('T')[0] : d.substring(0, 10);
+        grouped[key] = (grouped[key] || 0) + 1;
+    });
+
+    const sorted = Object.entries(grouped).sort((a, b) => a[0].localeCompare(b[0]));
+    const labels = sorted.map(s => s[0].substring(5));
+    const counts = sorted.map(s => s[1]);
+
+    new Chart(ctx, {
+        type: 'bar',
+        data: {
+            labels,
+            datasets: [{
+                label,
+                data: counts,
+                backgroundColor: color + '60',
+                borderColor: color,
+                borderWidth: 1.5,
+                borderRadius: 3,
+            }]
+        },
+        options: {
+            responsive: true,
+            maintainAspectRatio: false,
+            plugins: {
+                legend: { display: false }
+            },
+            scales: {
+                x: {
+                    grid: { color: 'rgba(255,255,255,0.03)' },
+                    ticks: { color: '#8c90a1', font: { size: 10 }, maxTicksLimit: 15 }
+                },
+                y: {
+                    grid: { color: 'rgba(255,255,255,0.03)' },
+                    ticks: { color: '#8c90a1', font: { size: 10 }, stepSize: 1 }
+                }
+            }
+        }
+    });
+}
+
+function renderTwitterChart(tweets) {
+    createActivityChart('twitter-activity-chart', tweets, 'Tweet', 'created_at', '#1DA1F2');
+}
+
+function renderTikTokChart(videos) {
+    createActivityChart('tiktok-activity-chart', videos, 'Video', 'create_time', '#00F2EA');
+}
+
+function renderYouTubeChart(videos) {
+    createActivityChart('youtube-activity-chart', videos, 'Video', 'published_at', '#FF0000');
+}
+
+function renderInstagramChart(posts) {
+    createActivityChart('instagram-activity-chart', posts, 'Post', 'taken_at', '#E4405F');
 }
 
