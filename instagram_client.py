@@ -57,6 +57,29 @@ class InstagramClient:
             **kwargs
         )
 
+    def search_users(self, query, count=30):
+        url = f'https://i.instagram.com/api/v1/users/search/?q={query}&count={min(count, 50)}'
+        try:
+            r = self._request(url, timeout=15)
+            if r.status_code == 200:
+                data = r.json()
+                users = data.get('users', []) or data.get('accounts', []) or []
+                results = []
+                for u in users[:count]:
+                    results.append({
+                        'username': u.get('username', ''),
+                        'full_name': u.get('full_name', ''),
+                        'followers': u.get('follower_count', 0),
+                        'profile_pic_url': u.get('profile_pic_url', ''),
+                        'is_verified': u.get('is_verified', False),
+                        'is_private': u.get('is_private', False),
+                        'pk': u.get('pk', ''),
+                    })
+                return results
+        except:
+            pass
+        return []
+
     def get_user_info(self, username):
         url = f'https://i.instagram.com/api/v1/users/web_profile_info/?username={username}'
         try:
@@ -134,8 +157,6 @@ class InstagramClient:
         }
 
     def _resolve_user_id(self, username):
-        if self.ds_user_id:
-            return self.ds_user_id
         url = f'https://i.instagram.com/api/v1/users/web_profile_info/?username={username}'
         try:
             r = self._request(url, timeout=15)

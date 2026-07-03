@@ -2,6 +2,7 @@ import json
 import os
 import secrets
 import tempfile
+import time as _time
 from datetime import datetime, timedelta, timezone
 from functools import wraps
 from flask import Flask, render_template, jsonify, request, redirect, session, url_for
@@ -11,11 +12,31 @@ from tiktok_client import TikTokClient
 from youtube_client import YouTubeClient
 from instagram_client import InstagramClient
 
+_competitor_cache = {}
+
+def _cache_get(key):
+    entry = _competitor_cache.get(key)
+    if entry and _time.time() - entry['t'] < 90:
+        return entry['data']
+    return None
+
+def _cache_set(key, data):
+    _competitor_cache[key] = {'data': data, 't': _time.time()}
+
 app = Flask(__name__)
 app.secret_key = os.environ.get('SECRET_KEY', 'socialnexus-2024-sabit-anahtar-degistirme')
 
-USERNAME = 'info'
-PASSWORD_HASH = generate_password_hash('info')
+USERS = {
+    'info': {'password': 'info', 'role': 'admin', 'name': 'Ana Admin'},
+    'demo': {'password': 'demo123', 'role': 'user', 'name': 'Demo Kullanici'},
+    'takip': {'password': 'takip2024', 'role': 'user', 'name': 'Takip Kullanici'},
+}
+
+def _check_login(username, password):
+    user = USERS.get(username)
+    if user and user['password'] == password:
+        return user
+    return None
 
 tiktok = TikTokClient()
 yt_api_key = os.environ.get('YOUTUBE_API_KEY', '')
@@ -74,9 +95,12 @@ def login():
     if request.method == "POST":
         username = request.form.get("username", "")
         password = request.form.get("password", "")
-        if username == USERNAME and check_password_hash(PASSWORD_HASH, password):
+        user = _check_login(username, password)
+        if user:
             session["logged_in"] = True
             session["username"] = username
+            session["role"] = user['role']
+            session["display_name"] = user['name']
             return redirect(url_for("index"))
         return render_template("login.html", error="Hatali kullanici adi veya sifre!")
     return render_template("login.html")
@@ -818,12 +842,45 @@ def api_competitor_search():
     return jsonify(results)
 
 
+def _snapshot_follower(key, count):
+    now_str = datetime.now(timezone.utc).isoformat()
+    data = _get_history_session()
+    if key not in data:
+        data[key] = []
+    entry = {'date': now_str, 'followers': count}
+    # ayni gun varsa guncelle, yoksa ekle
+    today = now_str[:10]
+    found = False
+    for i, h in enumerate(data[key]):
+        if h['date'][:10] == today:
+            data[key][i] = entry
+            found = True
+            break
+    if not found:
+        data[key].append(entry)
+    if len(data[key]) > 30:
+        data[key] = data[key][-30:]
+    _set_history_session(data)
+
+@app.after_request
+def add_cache_headers(response):
+    if request.path.startswith('/api/competitor/'):
+        response.headers['Cache-Control'] = 'no-store, no-cache, must-revalidate, max-age=0'
+        response.headers['Pragma'] = 'no-cache'
+        response.headers['Expires'] = '0'
+    return response
+
 @app.route("/api/competitor/<platform>/<username>")
 @login_required
 def api_competitor_detail(platform, username):
     """Tek bir platform icin detayli veri cek. ?days=30 ile tarih filtrele."""
+    days = request.args.get('days', 30, type=int)
+    cache_key = f"{platform}:{username}:{days}"
+    cached = _cache_get(cache_key)
+    if cached:
+        return jsonify(cached)
+
     try:
-        days = request.args.get('days', 30, type=int)
         cutoff = (datetime.now(timezone.utc) - timedelta(days=days)).timestamp()
 
         def parse_ts(item):
@@ -851,7 +908,7 @@ def api_competitor_detail(platform, username):
             if not client.is_logged_in():
                 return jsonify({'error': 'Twitter giris yapilmamis'})
             user = client.get_user_info(username)
-            tweets = client.get_user_tweets(username, count=100)
+            tweets = client.get_user_tweets(username, count=50)
             tweets = [t for t in tweets if parse_ts(t) >= cutoff]
 
             total_impressions = sum(int(t.get('view_count', 0) or 0) for t in tweets)
@@ -865,7 +922,7 @@ def api_competitor_detail(platform, username):
             retweets = [t for t in tweets if t.get('is_retweet') or t.get('text', '').startswith('RT')]
             with_media = [t for t in tweets if t.get('media')]
 
-            return jsonify({
+            data = {
                 'profile': user,
                 'tweets': tweets,
                 'analytics': {
@@ -880,7 +937,10 @@ def api_competitor_detail(platform, username):
                     'media_count': len(with_media),
                 },
                 'best_tweets': sorted(tweets, key=lambda t: int(t.get('view_count', 0) or 0), reverse=True)[:5],
-            })
+            }
+            _snapshot_follower(f"twitter:{user['username']}", user.get('followers_count', 0))
+            _cache_set(cache_key, data)
+            return jsonify(data)
 
         elif platform == 'tiktok':
             user = tiktok.get_user_info(username)
@@ -904,7 +964,7 @@ def api_competitor_detail(platform, username):
                 if not lst: return 0
                 return sum(v.get(key, 0) for v in lst) // len(lst)
 
-            return jsonify({
+            data = {
                 'profile': user,
                 'videos': videos,
                 'analytics': {
@@ -921,7 +981,10 @@ def api_competitor_detail(platform, username):
                     'long': {'count': len(long), 'avg_views': avg_of(long, 'play_count'), 'avg_likes': avg_of(long, 'like_count')},
                 },
                 'best_videos': sorted(videos, key=lambda v: v.get('play_count', 0), reverse=True)[:5],
-            })
+            }
+            _snapshot_follower(f"tiktok:{user['username']}", user.get('followers', 0))
+            _cache_set(cache_key, data)
+            return jsonify(data)
 
         elif platform == 'youtube':
             ch_info = youtube.get_channel_info(username)
@@ -934,7 +997,7 @@ def api_competitor_detail(platform, username):
             total_eng = total_likes + total_comments
             eng_rate = round((total_eng / max(1, total_views)) * 100, 2)
 
-            return jsonify({
+            data = {
                 'channel': ch_info,
                 'videos': videos,
                 'analytics': {
@@ -946,7 +1009,10 @@ def api_competitor_detail(platform, username):
                     'avg_likes': total_likes // len(videos) if videos else 0,
                 },
                 'best_videos': sorted(videos, key=lambda v: v.get('view_count', 0), reverse=True)[:5],
-            })
+            }
+            _snapshot_follower(f"youtube:{ch_info.get('id', username)}", ch_info.get('subscribers', 0))
+            _cache_set(cache_key, data)
+            return jsonify(data)
 
         elif platform == 'instagram':
             analytics = instagram.get_analytics(username, count=100)
@@ -959,6 +1025,9 @@ def api_competitor_detail(platform, username):
             if posts:
                 analytics['avg_likes'] = sum(p.get('likes', 0) for p in posts) // len(posts)
                 analytics['avg_comments'] = sum(p.get('comments', 0) for p in posts) // len(posts)
+            profile = analytics.get('profile', {})
+            _snapshot_follower(f"instagram:{profile.get('username', username)}", profile.get('followers', 0))
+            _cache_set(cache_key, analytics)
             return jsonify(analytics)
 
         else:
@@ -967,153 +1036,785 @@ def api_competitor_detail(platform, username):
         return jsonify({'error': str(e)})
 
 
+# ==================== WATCHLIST ====================
+_watchlists = {}
+
+@app.route("/api/watchlist", methods=["GET"])
+@login_required
+def api_watchlist_get():
+    user = session.get('username', 'default')
+    items = _watchlists.get(user, [])
+    return jsonify({'items': items})
+
+@app.route("/api/watchlist", methods=["POST"])
+@login_required
+def api_watchlist_add():
+    data = request.json
+    if not data or not data.get('platform') or not data.get('username'):
+        return jsonify({'error': 'platform ve username gerekli'}), 400
+    user = session.get('username', 'default')
+    if user not in _watchlists:
+        _watchlists[user] = []
+    new_item = {
+        'id': secrets.token_hex(6),
+        'platform': data['platform'],
+        'username': data['username'],
+        'name': data.get('name', data['username']),
+        'added_at': datetime.now(timezone.utc).isoformat(),
+        'last_follower_count': data.get('last_follower_count', 0),
+    }
+    _watchlists[user].append(new_item)
+    return jsonify({'success': True, 'item': new_item})
+
+@app.route("/api/watchlist/<item_id>", methods=["DELETE"])
+@login_required
+def api_watchlist_remove(item_id):
+    user = session.get('username', 'default')
+    items = _watchlists.get(user, [])
+    _watchlists[user] = [i for i in items if i.get('id') != item_id]
+    return jsonify({'success': True})
+
+
+# ==================== SIDE-BY-SIDE COMPARE ====================
+_compare_cache = {}
+
+@app.route("/api/competitor/compare", methods=["POST"])
+@login_required
+def api_competitor_compare():
+    data = request.json
+    entities = data.get('entities', [])
+    if not entities:
+        return jsonify({'error': 'Karsilastirilacak hesap listesi gerekli'}), 400
+    if len(entities) < 2:
+        return jsonify({'error': 'En az 2 hesap gerekli'}), 400
+
+    results = []
+    for entity in entities:
+        platform = entity.get('platform', '').lower()
+        username = entity.get('username', '').lower().strip()
+        if not platform or not username:
+            continue
+
+        cache_key = f"cmp:{platform}:{username}"
+        cached = _compare_cache.get(cache_key)
+        if cached and _time.time() - cached['t'] < 300:
+            results.append(cached['data'])
+            continue
+
+        entry = {'platform': platform, 'username': username, 'error': None}
+        try:
+            if platform == 'twitter':
+                if client.is_logged_in():
+                    u = client.get_user_info(username)
+                    tw_tweets = client.get_user_tweets(username, count=20)
+                    imp = sum(int(t.get('view_count', 0) or 0) for t in tw_tweets)
+                    likes = sum(t.get('favorite_count', 0) for t in tw_tweets)
+                    eng_rate = round((likes / max(1, imp)) * 100, 2) if imp else 0
+                    entry.update({
+                        'name': u.get('name', username), 'followers': u.get('followers_count', 0),
+                        'following': u.get('following_count', 0), 'tweets': u.get('tweets_count', 0),
+                        'engagement_rate': eng_rate, 'profile_image': u.get('profile_image_url', ''),
+                        'total_impressions': imp, 'total_likes': likes,
+                    })
+                else:
+                    entry['error'] = 'Twitter giris yapilmamis'
+            elif platform == 'tiktok':
+                u = tiktok.get_user_info(username)
+                if 'error' not in u:
+                    tt_videos = tiktok.get_user_videos(username, count=20)
+                    v = sum(v.get('play_count', 0) for v in tt_videos)
+                    l = sum(v.get('like_count', 0) for v in tt_videos)
+                    er = round((l / max(1, v)) * 100, 2) if v else 0
+                    entry.update({
+                        'name': u.get('nickname', username), 'followers': u.get('followers', 0),
+                        'hearts': u.get('hearts', 0), 'videos': u.get('videos', 0),
+                        'engagement_rate': er, 'avatar': u.get('avatar', ''),
+                        'total_views': v, 'total_likes': l,
+                    })
+                else:
+                    entry['error'] = u['error']
+            elif platform == 'youtube':
+                yt_search = youtube.get_channel_search(username)
+                if yt_search:
+                    ch = youtube.get_channel_info(yt_search[0]['id'])
+                    yt_v = youtube.get_uploads(yt_search[0]['id'], count=20)
+                    vi = sum(v.get('view_count', 0) for v in yt_v)
+                    li = sum(v.get('like_count', 0) for v in yt_v)
+                    er = round((li / max(1, vi)) * 100, 2) if vi else 0
+                    entry.update({
+                        'name': ch.get('title', username), 'followers': ch.get('subscribers', 0),
+                        'total_views': ch.get('total_views', 0), 'videos': ch.get('total_videos', 0),
+                        'engagement_rate': er, 'thumbnail': ch.get('thumbnail', ''),
+                    })
+                else:
+                    entry['error'] = 'Kanal bulunamadi'
+            elif platform == 'instagram':
+                ig_info = instagram.get_user_info(username)
+                if 'error' not in ig_info:
+                    ig_posts = []
+                    try:
+                        analytics = instagram.get_analytics(username, count=50)
+                        ig_posts = analytics.get('posts', [])
+                    except Exception:
+                        try:
+                            ig_posts = instagram.get_user_posts(username, count=50)
+                        except Exception:
+                            pass
+                    ig_views = sum(p.get('likes', 0) for p in ig_posts) * 3
+                    ig_likes = sum(p.get('likes', 0) for p in ig_posts)
+                    ig_comments = sum(p.get('comments', 0) for p in ig_posts)
+                    ig_eng = ig_likes + ig_comments
+                    ig_er = round((ig_eng / max(1, ig_info.get('followers', 1))) * 100, 2)
+
+                    entry.update({
+                        'name': ig_info.get('full_name', username), 'followers': ig_info.get('followers', 0),
+                        'following': ig_info.get('following', 0), 'posts': ig_info.get('media_count', 0),
+                        'profile_pic': ig_info.get('profile_pic_url', ''),
+                        'total_likes': ig_likes, 'total_views': ig_views,
+                        'engagement_rate': ig_er,
+                    })
+                else:
+                    entry['error'] = ig_info['error']
+        except Exception as e:
+            entry['error'] = str(e)
+
+        _compare_cache[cache_key] = {'data': entry, 't': _time.time()}
+        results.append(entry)
+
+    return jsonify({'comparison': results})
+
+
+# ==================== HASHTAG INTELLIGENCE ====================
+@app.route("/api/hashtag/analytics")
+@login_required
+def api_hashtag_analytics():
+    query = request.args.get('q', '').strip()
+    platform = request.args.get('platform', 'tiktok').lower()
+    if not query:
+        return jsonify({'error': 'Hashtag sorgusu gerekli'})
+
+    result = {'hashtag': query, 'platform': platform, 'analytics': []}
+
+    if platform == 'tiktok':
+        try:
+            # En cok etkilesim alan videolardan hashtag analizi
+            search_videos = tiktok.get_user_videos(query, count=100) if query else []
+            if not search_videos:
+                result['note'] = 'Kullanici bulunamadi, hashtag trend verisi gosterilemiyor'
+            else:
+                hashtag_map = {}
+                for v in search_videos:
+                    for tag in v.get('hashtags', []):
+                        if tag not in hashtag_map:
+                            hashtag_map[tag] = {'count': 0, 'total_views': 0, 'total_likes': 0, 'total_comments': 0}
+                        hashtag_map[tag]['count'] += 1
+                        hashtag_map[tag]['total_views'] += v.get('play_count', 0)
+                        hashtag_map[tag]['total_likes'] += v.get('like_count', 0)
+                        hashtag_map[tag]['total_comments'] += v.get('comment_count', 0)
+
+                sorted_tags = sorted(hashtag_map.items(), key=lambda x: x[1]['total_views'], reverse=True)[:20]
+                for tag, stats in sorted_tags:
+                    avg_eng = round((stats['total_likes'] + stats['total_comments']) / max(1, stats['count']), 1)
+                    result['analytics'].append({
+                        'tag': tag, 'frequency': stats['count'],
+                        'total_views': stats['total_views'], 'total_likes': stats['total_likes'],
+                        'total_comments': stats['total_comments'], 'avg_engagement': avg_eng,
+                    })
+        except Exception as e:
+            result['error'] = str(e)
+
+    elif platform == 'instagram':
+        try:
+            ig_posts = instagram.get_user_posts(query, count=100) if query else []
+            if not ig_posts:
+                result['note'] = 'Instagram kullanicisi bulunamadi'
+            else:
+                hashtag_map = {}
+                for p in ig_posts:
+                    caption = p.get('caption', '') or ''
+                    tags = [t.strip('#').lower() for t in caption.split() if t.startswith('#')]
+                    for tag in tags:
+                        if tag not in hashtag_map:
+                            hashtag_map[tag] = {'count': 0, 'total_likes': 0, 'total_comments': 0}
+                        hashtag_map[tag]['count'] += 1
+                        hashtag_map[tag]['total_likes'] += p.get('likes', 0)
+                        hashtag_map[tag]['total_comments'] += p.get('comments', 0)
+
+                sorted_tags = sorted(hashtag_map.items(), key=lambda x: x[1]['total_likes'], reverse=True)[:20]
+                for tag, stats in sorted_tags:
+                    avg_eng = round((stats['total_likes'] + stats['total_comments']) / max(1, stats['count']), 1)
+                    result['analytics'].append({
+                        'tag': tag, 'frequency': stats['count'],
+                        'total_likes': stats['total_likes'], 'total_comments': stats['total_comments'],
+                        'avg_engagement': avg_eng,
+                    })
+        except Exception as e:
+            result['error'] = str(e)
+
+    elif platform == 'twitter':
+        try:
+            if not client.is_logged_in():
+                result['error'] = 'Twitter giris yapilmamis'
+            else:
+                tw_posts = client.get_user_tweets(query, count=200)
+                if not tw_posts:
+                    result['note'] = 'Kullanici tweetleri bulunamadi'
+                else:
+                    hashtag_map = {}
+                    for t in tw_posts:
+                        text = t.get('text', '') or ''
+                        tags = [t.strip('#').lower() for t in text.split() if t.startswith('#')]
+                        for tag in tags:
+                            if tag not in hashtag_map:
+                                hashtag_map[tag] = {'count': 0, 'total_views': 0, 'total_likes': 0, 'total_retweets': 0}
+                            hashtag_map[tag]['count'] += 1
+                            hashtag_map[tag]['total_views'] += int(t.get('view_count', 0) or 0)
+                            hashtag_map[tag]['total_likes'] += t.get('favorite_count', 0)
+                            hashtag_map[tag]['total_retweets'] += t.get('retweet_count', 0)
+
+                    sorted_tags = sorted(hashtag_map.items(), key=lambda x: x[1]['total_views'], reverse=True)[:20]
+                    for tag, stats in sorted_tags:
+                        avg_eng = round((stats['total_likes'] + stats['total_retweets']) / max(1, stats['count']), 1)
+                        result['analytics'].append({
+                            'tag': tag, 'frequency': stats['count'],
+                            'total_views': stats['total_views'], 'total_likes': stats['total_likes'],
+                            'total_retweets': stats['total_retweets'], 'avg_engagement': avg_eng,
+                        })
+        except Exception as e:
+            result['error'] = str(e)
+
+    return jsonify(result)
+
+
+# ==================== CSV EXPORT ====================
+@app.route("/api/competitor/<platform>/<username>/export")
+@login_required
+def api_competitor_export(platform, username):
+    from io import StringIO
+    import csv as csv_module
+
+    days = request.args.get('days', 30, type=int)
+    cutoff = (datetime.now(timezone.utc) - timedelta(days=days)).timestamp()
+
+    rows = []
+    headers = []
+    filename = f"{platform}_{username}_export.csv"
+
+    try:
+        if platform == 'twitter':
+            if not client.is_logged_in():
+                return jsonify({'error': 'Twitter giris yapilmamis'}), 400
+            tweets = client.get_user_tweets(username, count=200)
+            headers = ['Tarih', 'Metin', 'Gosterim', 'Begeni', 'RT', 'Yanit', 'Tur']
+            for t in tweets:
+                ts = t.get('created_at', '')
+                rows.append([
+                    str(ts), t.get('text', '')[:200].replace('\n', ' '),
+                    t.get('view_count', 0), t.get('favorite_count', 0),
+                    t.get('retweet_count', 0), t.get('reply_count', 0),
+                    'RT' if t.get('is_retweet') else 'Original',
+                ])
+        elif platform == 'tiktok':
+            videos = tiktok.get_user_videos(username, count=200)
+            headers = ['Tarih', 'Aciklama', 'Izlenme', 'Begeni', 'Yorum', 'Paylasim', 'Sure']
+            for v in videos:
+                rows.append([
+                    str(v.get('created_at', '')), (v.get('desc', '') or '')[:200].replace('\n', ' '),
+                    v.get('play_count', 0), v.get('like_count', 0),
+                    v.get('comment_count', 0), v.get('share_count', 0),
+                    v.get('duration', 0),
+                ])
+        elif platform == 'youtube':
+            ch_videos = youtube.get_uploads(username, count=200)
+            headers = ['Tarih', 'Baslik', 'Izlenme', 'Begeni', 'Yorum', 'Sure']
+            for v in ch_videos:
+                rows.append([
+                    v.get('published_at', ''), v.get('title', '')[:200].replace('\n', ' '),
+                    v.get('view_count', 0), v.get('like_count', 0),
+                    v.get('comment_count', 0), v.get('duration', 0),
+                ])
+        elif platform == 'instagram':
+            ig_posts = instagram.get_user_posts(username, count=200) if instagram.is_logged_in() else []
+            headers = ['Tarih', 'Aciklama', 'Begeni', 'Yorum', 'Tur']
+            for p in ig_posts:
+                rows.append([
+                    str(p.get('date_ts', '')), (p.get('caption', '') or '')[:200].replace('\n', ' '),
+                    p.get('likes', 0), p.get('comments', 0),
+                    'Video' if p.get('is_video') else 'Foto',
+                ])
+        else:
+            return jsonify({'error': f'{platform} desteklenmiyor'}), 400
+    except Exception as e:
+        return jsonify({'error': str(e)}), 500
+
+    output = StringIO()
+    writer = csv_module.writer(output)
+    writer.writerow(headers)
+    writer.writerows(rows)
+    csv_content = output.getvalue()
+    output.close()
+
+    from flask import Response
+    return Response(
+        csv_content,
+        mimetype='text/csv',
+        headers={'Content-Disposition': f'attachment; filename={filename}'},
+    )
+
+
+# ==================== FOLLOWER HISTORY SNAPSHOT ====================
+
+def _get_history_session():
+    return session.get('follower_history', {})
+
+def _set_history_session(data):
+    session['follower_history'] = data
+    session.modified = True
+
+def _fetch_live_followers(platform, username):
+    try:
+        if platform == 'twitter':
+            if client.is_logged_in():
+                u = client.get_user_info(username)
+                return u.get('followers_count', 0)
+        elif platform == 'tiktok':
+            u = tiktok.get_user_info(username)
+            if 'error' not in u:
+                return u.get('followers', 0)
+        elif platform == 'youtube':
+            ch = youtube.get_channel_info(username)
+            return ch.get('subscribers', 0)
+        elif platform == 'instagram':
+            info = instagram.get_user_info(username)
+            if 'error' not in info:
+                return info.get('followers', 0)
+    except Exception:
+        pass
+    return None
+
+@app.route("/api/history/<platform>/<username>")
+@login_required
+def api_follower_history(platform, username):
+    """Takipci degisim gecmisini dondurur (son 30 gun) + canli snapshot"""
+    key = f"{platform}:{username}"
+    data = _get_history_session()
+    history = data.get(key, [])
+
+    # Canli veriyi cek - ayni yontemleri competitor detail gibi kullan
+    live_count = None
+    try:
+        if platform == 'twitter':
+            if client.is_logged_in():
+                u = client.get_user_info(username)
+                live_count = u.get('followers_count', 0)
+        elif platform == 'tiktok':
+            u = tiktok.get_user_info(username)
+            if 'error' not in u:
+                live_count = u.get('followers', 0)
+        elif platform == 'youtube':
+            ch = youtube.get_channel_info(username)
+            live_count = ch.get('subscribers', 0)
+        elif platform == 'instagram':
+            info = instagram.get_user_info(username)
+            if 'error' not in info:
+                live_count = info.get('followers', 0)
+    except Exception:
+        pass
+
+    if live_count is not None:
+        _snapshot_follower(key, live_count)
+        data = _get_history_session()
+        history = data.get(key, [])
+
+    if not history and live_count is None:
+        return jsonify({'platform': platform, 'username': username, 'history': [], 'error': 'canli_veri_yok'})
+
+    if not history and live_count is not None:
+        return jsonify({'platform': platform, 'username': username, 'history': [{'date': datetime.now(timezone.utc).isoformat(), 'followers': live_count}]})
+
+    return jsonify({'platform': platform, 'username': username, 'history': history})
+
+
+@app.route("/api/trend/<platform>/<username>")
+@login_required
+def api_trend_analysis(platform, username):
+    """Son 30 gunluk trend analizi: frekans, etkilesim, buyume ivmesi"""
+    cutoff = (datetime.now(timezone.utc) - timedelta(days=30)).timestamp()
+    prior_cutoff = (datetime.now(timezone.utc) - timedelta(days=60)).timestamp()
+
+    def parse_ts(item):
+        fields = ('created_at', 'published_at', 'taken_at', 'date_ts', 'createTime')
+        raw = 0
+        for f in fields:
+            val = item.get(f)
+            if val: raw = val; break
+        if isinstance(raw, (int, float)):
+            return raw / 1000 if raw > 1e12 else raw
+        if isinstance(raw, str):
+            for fmt in ('%a %b %d %H:%M:%S %z %Y', '%Y-%m-%dT%H:%M:%SZ', '%Y-%m-%dT%H:%M:%S.%fZ', '%Y-%m-%dT%H:%M:%S%z'):
+                try: return datetime.strptime(raw.strip(), fmt).timestamp()
+                except: pass
+        return 0
+
+    result = {'platform': platform, 'username': username, 'trends': {}}
+
+    try:
+        if platform == 'twitter':
+            if not client.is_logged_in():
+                return jsonify({'error': 'Twitter giris yapilmamis'})
+            tweets = client.get_user_tweets(username, count=50)
+            tweets_30 = [t for t in tweets if parse_ts(t) >= cutoff]
+            tweets_60 = [t for t in tweets if cutoff > parse_ts(t) >= prior_cutoff]
+
+            def freq(items): return round(len(items) / 30, 1)
+            def eng(items):
+                imp = sum(int(t.get('view_count', 0) or 0) for t in items) or 1
+                like = sum(t.get('favorite_count', 0) for t in items)
+                return round((like / imp) * 100, 2)
+
+            f30 = freq(tweets_30); f60 = freq(tweets_60)
+            e30 = eng(tweets_30); e60 = eng(tweets_60)
+            result['trends']['posting_frequency'] = {'current': f30, 'previous': f60, 'change': round(f30 - f60, 1)}
+            result['trends']['engagement'] = {'current': e30, 'previous': e60, 'change': round(e30 - e60, 2)}
+            if tweets_30:
+                dates = sorted(set(datetime.fromtimestamp(parse_ts(t)).strftime('%Y-%m-%d') for t in tweets_30 if parse_ts(t)))
+                result['trends']['active_days'] = len(dates)
+                result['trends']['daily_cadence'] = round(len(tweets_30) / max(1, len(dates)), 1)
+
+        elif platform == 'tiktok':
+            user = tiktok.get_user_info(username)
+            if 'error' in user:
+                return jsonify(user)
+            videos = tiktok.get_user_videos(username, count=200)
+            v30 = [v for v in videos if parse_ts(v) >= cutoff]
+            v60 = [v for v in videos if cutoff > parse_ts(v) >= prior_cutoff]
+
+            def freq_v(items): return round(len(items) / 30, 1)
+            def eng_v(items):
+                views = sum(v.get('play_count', 0) for v in items) or 1
+                likes = sum(v.get('like_count', 0) for v in items)
+                return round((likes / views) * 100, 2)
+            def avg_views(items):
+                return sum(v.get('play_count', 0) for v in items) // max(1, len(items))
+
+            f30 = freq_v(v30); f60 = freq_v(v60)
+            e30 = eng_v(v30); e60 = eng_v(v60)
+            av30 = avg_views(v30); av60 = avg_views(v60)
+            result['trends']['posting_frequency'] = {'current': f30, 'previous': f60, 'change': round(f30 - f60, 1)}
+            result['trends']['engagement'] = {'current': e30, 'previous': e60, 'change': round(e30 - e60, 2)}
+            result['trends']['avg_views'] = {'current': av30, 'previous': av60, 'change': round(av30 - av60, 1)}
+            if v30:
+                dates = sorted(set(datetime.fromtimestamp(parse_ts(v)).strftime('%Y-%m-%d') for v in v30 if parse_ts(v)))
+                result['trends']['active_days'] = len(dates)
+
+        elif platform == 'youtube':
+            ch = youtube.get_channel_info(username)
+            videos = youtube.get_uploads(username, count=200)
+            v30 = [v for v in videos if parse_ts(v) >= cutoff]
+            v60 = [v for v in videos if cutoff > parse_ts(v) >= prior_cutoff]
+
+            def freq_v(items): return round(len(items) / 30, 1)
+            def eng_v(items):
+                views = sum(v.get('view_count', 0) for v in items) or 1
+                likes = sum(v.get('like_count', 0) for v in items)
+                return round((likes / views) * 100, 2)
+
+            f30 = freq_v(v30); f60 = freq_v(v60)
+            e30 = eng_v(v30); e60 = eng_v(v60)
+            result['trends']['posting_frequency'] = {'current': f30, 'previous': f60, 'change': round(f30 - f60, 1)}
+            result['trends']['engagement'] = {'current': e30, 'previous': e60, 'change': round(e30 - e60, 2)}
+            if v30:
+                dates = sorted(set(datetime.fromtimestamp(parse_ts(v)).strftime('%Y-%m-%d') for v in v30 if parse_ts(v)))
+                result['trends']['active_days'] = len(dates)
+
+        elif platform == 'instagram':
+            info = instagram.get_user_info(username)
+            if 'error' in info:
+                return jsonify(info)
+            try:
+                analytics = instagram.get_analytics(username, count=100)
+                posts = analytics.get('posts', [])
+            except:
+                posts = instagram.get_user_posts(username, count=100) if instagram.is_logged_in() else []
+            p30 = [p for p in posts if parse_ts(p) >= cutoff]
+            p60 = [p for p in posts if cutoff > parse_ts(p) >= prior_cutoff]
+
+            def freq_p(items): return round(len(items) / 30, 1)
+            def eng_p(items):
+                likes = sum(p.get('likes', 0) for p in items)
+                return round(likes / max(1, len(items)), 1)
+
+            f30 = freq_p(p30); f60 = freq_p(p60)
+            e30 = eng_p(p30); e60 = eng_p(p60)
+            result['trends']['posting_frequency'] = {'current': f30, 'previous': f60, 'change': round(f30 - f60, 1)}
+            result['trends']['avg_likes'] = {'current': e30, 'previous': e60, 'change': round(e30 - e60, 1)}
+            if p30:
+                dates = sorted(set(datetime.fromtimestamp(parse_ts(p)).strftime('%Y-%m-%d') for p in p30 if parse_ts(p)))
+                result['trends']['active_days'] = len(dates)
+
+    except Exception as e:
+        return jsonify({'error': str(e)})
+
+    return jsonify(result)
+
+
 @app.route("/api/influencer/search")
 @login_required
 def api_influencer_search():
-    """Belirli bir konuda icerik ureten influencer'lari ara."""
+    """Belirli bir konuda icerik ureten influencer'lari ara - genis hashtag tabanli."""
     query = request.args.get('q', '').strip()
     if not query:
         return jsonify({'error': 'Arama terimi gerekli'})
 
     results = {'query': query, 'influencers': []}
-    seen_usernames = set()  # Tekrarlari onle
+    seen_keys = set()
 
-    # Twitter - onceden taninmis finans hesaplarini ara + search dene
-    KNOWN_FINANCE_TWITTER = {
-        'borsa': ['infoyatirim', 'borsadabugun', 'borsa_gunluk', 'forex_borsa', 'yatirimteknik', 'borsa_yatirimci', 'traborsa'],
-        'yatirim': ['infoyatirim', 'bigaborsa', 'burak_kc', 'yatirimciakademi', 'yatirimteknik'],
-        'hisse senedi': ['infoyatirim', 'borsadabugun', 'borsa_gunluk', 'hisse_yorum', 'borsaanalizci'],
-        'ekonomi': ['infoyatirim', 'bloombegthd', 'ekonomi_sektoru', 'dunyaekonomi', 'piyasalar_gunluk'],
-        'finans': ['infoyatirim', 'bigaborsa', 'finans_sektoru', 'bankaborsa', 'yatirimciakademi'],
-        'kripto': ['kriptoakademi', 'bitlocom', 'kriptopara_tr', 'kripto_borsa', 'cryptotr'],
-        'forex': ['infoyatirim', 'forexbilgi', 'forexpiyasa', 'forex_trader', 'forex_yatirim'],
-        'viop': ['infoyatirim', 'viopsyorum', 'borsa_viop', 'vadeliislemler'],
-        'bist': ['infoyatirim', 'borsadabugun', 'borsa_gunluk', 'bist_yatirim', 'xu100'],
-        'altin': ['infoyatirim', 'altin_fiyatlari', 'altin_yorum', 'ceyrek_altin', 'gram_altin'],
-        'dolar': ['infoyatirim', 'dolar_tl', 'kur_yorum', 'doviz_analiz', 'usdtry'],
-        'fintech': ['infoyatirim', 'finansal_teknoloji', 'fintech_tr', 'dijital_bankacilik'],
-    }
+    def add_inf(key, name, platforms, source):
+        k = key.lower().strip()
+        if k in seen_keys: return False
+        seen_keys.add(k)
+        total_followers = 0
+        for p in platforms.values():
+            total_followers += p.get('followers', 0) or p.get('subscribers', 0) or 0
+        results['influencers'].append({
+            'username': key,
+            'name': name or key,
+            'platforms': platforms,
+            'source': source,
+            'total_followers': total_followers,
+        })
+        return True
 
+    # ========== TUM HASHTAGLAR ==========
+    ALL_HASHTAGS = [
+        '#borsa', '#yatirim', '#hisse', '#hissesenedi', '#bist', '#bist100',
+        '#abdborasalari', '#wallstreet', '#s&p500', '#nasdaq', '#dowjones',
+        '#yatirimfonu', '#temettu', '#portfoy', '#teknikanaliz', '#trade',
+        '#forex', '#kripto', '#altin', '#dolar', '#ekonomi', '#finans',
+        '#fon', '#broker', '#komisyon', '#viop', '#vadeli', '#swap',
+        '#emeklilikfonu', '#bireyselemeklilik', '#bes', '#endeks',
+        '#faiz', '#enflasyon', '#merkezbankasi', '#fed', '#tcmb',
+        '#karlilik', '#buysell', '#al-sat', '#gunlukborsa',
+        '#finansalokuryazarlik', '#borsaistanbul',
+        '#abdpiyasaları', '#usamarkets', '#investing',
+    ]
+
+    # Kullanicinin aradigi kelimeyle ilgili hashtaglari bul
     query_lower = query.lower()
-    search_usernames = set()
-    for tag, usernames in KNOWN_FINANCE_TWITTER.items():
-        if tag in query_lower or any(word in query_lower for word in tag.split()):
-            search_usernames.update(usernames)
+    query_words = set(query_lower.split())
+    selected_tags = [t for t in ALL_HASHTAGS if any(w in t.lower() for w in query_words)]
+    if not selected_tags:
+        selected_tags = ALL_HASHTAGS[:20]
 
-    # Eger eslesme yoksa genel arama yap
-    if not search_usernames:
-        search_usernames = {'infoyatirim', 'borsadabugun', 'bigaborsa', 'yatirimciakademi', 'traborsa', 'borsa_gunluk'}
+    # ========== TWITTER DETAYLI ARAMA ==========
+    twitter_user_scores = {}  # username -> gorulme sikligi
+    twitter_user_info = {}    # username -> {name, followers}
 
-    # Twitter search ile ek kullanici bul
+    if client.is_logged_in():
+        # 1. Tum hashtag'lerde ara, kullanicilari topla
+        for tag in selected_tags:
+            try:
+                tweets = client.search_tweets(tag[1:], count=40)
+                for t in tweets:
+                    u = t.get('user')
+                    if u and u.get('username'):
+                        uname = u['username'].lower()
+                        twitter_user_scores[uname] = twitter_user_scores.get(uname, 0) + 1
+                        # Kullanici ismini tweet'ten al
+                        if uname not in twitter_user_info:
+                            twitter_user_info[uname] = {
+                                'username': u['username'],
+                                'name': u.get('name', u['username']),
+                                'followers': 0,
+                            }
+            except Exception:
+                pass
+
+        # 2. En cok gorulen 80 kullanicinin profilini cek
+        ranked = sorted(twitter_user_scores.items(), key=lambda x: -x[1])
+        fetched = 0
+        for uname_lower, score in ranked:
+            if fetched >= 80:
+                break
+            info = twitter_user_info.get(uname_lower, {})
+            username = info.get('username', uname_lower)
+            display_name = info.get('name', username)
+            try:
+                profile = client.get_user_info(username)
+                follower_count = profile.get('followers_count', 0)
+                twitter_user_info[uname_lower]['followers'] = follower_count
+                # Sadece 500+ takipcisi olanlari ekle
+                if follower_count >= 500:
+                    add_inf(username, profile.get('name', display_name), {
+                        'twitter': {
+                            'username': username,
+                            'followers': follower_count,
+                            'best_tweet': '',
+                            'total_views': 0,
+                            'total_likes': 0,
+                        }
+                    }, 'twitter')
+                    fetched += 1
+            except Exception:
+                # Rate limit vs - score'u dusuk olanlari atla
+                if score < 2:
+                    continue
+                # Rate limit vurduysa hic profile cekemeyenleri tweet bilgisiyle ekle
+                if score >= 3:
+                    add_inf(username, display_name, {
+                        'twitter': {
+                            'username': username,
+                            'followers': 0,
+                            'best_tweet': '',
+                            'total_views': 0,
+                            'total_likes': 0,
+                        }
+                    }, 'twitter')
+                    fetched += 1
+
+    # ========== YOUTUBE ARAMA ==========
     try:
-        if client.is_logged_in():
-            tweets = client.search_tweets(query, count=30)
-            for t in tweets:
-                u = t.get('user')
-                if u and u.get('username'):
-                    search_usernames.add(u['username'])
+        for yt_query in selected_tags[:8]:
+            try:
+                yt_channels = youtube.get_channel_search(yt_query[1:] if yt_query.startswith('#') else yt_query)
+                for ch in yt_channels[:10]:
+                    cid = ch.get('id', '')
+                    if not cid: continue
+                    try:
+                        ch_info = youtube.get_channel_info(cid)
+                        title = ch_info.get('title', '')
+                        subs = ch_info.get('subscribers', 0)
+                        if subs < 500:
+                            continue
+                        key = f"yt:{cid}"
+                        if add_inf(key, title, {
+                            'youtube': {
+                                'channel_id': cid,
+                                'title': title,
+                                'subscribers': subs,
+                                'thumbnail': ch_info.get('thumbnail', ''),
+                            }
+                        }, 'youtube'):
+                            pass
+                    except Exception:
+                        continue
+            except Exception:
+                continue
     except Exception:
         pass
 
-    # Her kullanici icin profil bilgisi cek
-    try:
-        if client.is_logged_in():
-            for username in list(search_usernames)[:15]:
-                if username.lower() in seen_usernames:
-                    continue
-                seen_usernames.add(username.lower())
-                try:
-                    profile = client.get_user_info(username)
-                    results['influencers'].append({
-                        'username': username,
-                        'name': profile.get('name', username),
-                        'platforms': {
-                            'twitter': {
-                                'username': username,
-                                'followers': profile.get('followers_count', 0),
-                                'best_tweet': '',
-                                'total_views': 0,
-                                'total_likes': 0,
-                            }
-                        },
-                        'source': 'twitter',
-                    })
-                except Exception:
-                    # Profil alinamazsa bile listeye ekle
-                    results['influencers'].append({
-                        'username': username,
-                        'name': username,
-                        'platforms': {
-                            'twitter': {
-                                'username': username,
-                                'followers': 0,
-                                'best_tweet': '',
-                                'total_views': 0,
-                                'total_likes': 0,
-                            }
-                        },
-                        'source': 'twitter',
-                    })
-    except Exception as e:
-        print(f"[INFLUENCER] Twitter arama hatasi: {e}")
+    # ========== INSTAGRAM ARAMA ==========
+    KNOWN_FINANCE_INSTAGRAM = {
+        'borsa': ['caglasekerc', 'borsa_ogreniyorum', 'borsa.egitim', 'borsa_uzmani', 'borsa.takip', 'borsaistanbul_', 'borsa_analiz', 'borsa_hisse', 'borsa_yatirim', 'hisse_senedi'],
+        'yatirim': ['caglasekerc', 'destinasaccilarli', 'temettuhocam', 'yatirimtavsiyem', 'yatirim_gunlugum', 'yatirimci_akademi', 'finans_yatirim', 'yatirim.firsatlari', 'yatirimportfoyu', 'yatirimtavsiyeleri'],
+        'temettu': ['temettuhocam', 'temettuyatirimi', 'temettuhisseleri', 'temettu_gunlugu', 'temettuportfoyu'],
+        'finans': ['finansdersleri', 'finansal_okuryazarlik', 'finans.ve.ekonomi', 'finans.egitim', 'kisiselfinans', 'finansrehberi'],
+        'ekonomi': ['ekonomianaliz', 'ekonomi_gunlugu', 'turkiyeekonomisi', 'ekonomi_takip', 'ekonomi.ve.finans'],
+        'hisse senedi': ['caglasekerc', 'hisse_senedi_analiz', 'hisseanaliz', 'hisseler', 'hissesenedi_yatirimi', 'temettuhocam'],
+        'portfoy': ['portfoyanaliz', 'portfoy_gunlugum', 'portfoyum', 'portfoy_takip'],
+        'kripto': ['kripto_paraanaliz', 'kriptopara_rehber', 'bitcoin_turkiye', 'kripto_gunluk'],
+        'altin': ['altinfiyatlari', 'altin_gunluk', 'altin_piyasa', 'gramaltin_analiz'],
+        'abd borsa': ['wallstreet_turk', 'abd_piyasalari', 'sp500_tr', 'nasdaq_turkiye', 'amerikanborsasi'],
+        'yatirim fonu': ['yatirimfonu_takip', 'fonanaliz', 'yatirimfonlari', 'emeklilikfonu'],
+        'viop': ['viop_analiz', 'viop_istanbul', 'vadeli_islemler'],
+        'dolar': ['dolarkuru_takip', 'dolar_analiz', 'kuranaliz', 'doviz_gunluk'],
+    }
 
-    # YouTube - kanal ara
-    try:
-        yt_channels = youtube.get_channel_search(query)
-        for ch in yt_channels[:10]:
-            cid = ch.get('id', '')
-            if not cid:
-                continue
+    ig_search_profiles = {}
+    ig_search_results = set()
+
+    # 1. Instagram API ile hashtag search (login gerektirir)
+    if instagram.is_logged_in():
+        for ig_tag in selected_tags[:15]:
             try:
-                ch_info = youtube.get_channel_info(cid)
-                username_key = ch_info['title'].lower().replace(' ', '')
-                if username_key in seen_usernames:
-                    continue
-                seen_usernames.add(username_key)
-
-                # Mevcut influencer ile eslestir mi?
-                matched = False
-                for inf in results['influencers']:
-                    inf_name = inf['name'].lower().replace(' ', '')
-                    if inf_name and (inf_name in ch_info['title'].lower() or ch_info['title'].lower() in inf_name):
-                        inf['platforms']['youtube'] = {
-                            'channel_id': cid,
-                            'title': ch_info['title'],
-                            'subscribers': ch_info['subscribers'],
-                            'thumbnail': ch_info['thumbnail'],
+                ig_users = instagram.search_users(ig_tag[1:], count=20)
+                for u in ig_users:
+                    uname = u.get('username', '').lower()
+                    if not uname: continue
+                    followers = u.get('followers', 0)
+                    ig_search_results.add(uname)
+                    if uname not in ig_search_profiles or followers > ig_search_profiles[uname].get('followers', 0):
+                        ig_search_profiles[uname] = {
+                            'username': uname,
+                            'name': u.get('full_name', uname),
+                            'followers': followers,
+                            'profile_pic_url': u.get('profile_pic_url', ''),
                         }
-                        matched = True
-                        break
-
-                if not matched:
-                    results['influencers'].append({
-                        'username': cid,
-                        'name': ch_info['title'],
-                        'platforms': {
-                            'youtube': {
-                                'channel_id': cid,
-                                'title': ch_info['title'],
-                                'subscribers': ch_info['subscribers'],
-                                'thumbnail': ch_info['thumbnail'],
-                            }
-                        },
-                        'source': 'youtube',
-                    })
             except Exception:
-                continue
-    except Exception as e:
-        print(f"[INFLUENCER] YouTube arama hatasi: {e}")
+                pass
 
-    # TikTok - bilinen finans hesaplarini dogrudan cek
+    # 2. Bilinen kullanicilari ekle (login olsa da olmasa da)
+    ig_direct_users = set()
+    for tag, users in KNOWN_FINANCE_INSTAGRAM.items():
+        if tag in query_lower or any(word in query_lower for word in tag.split()):
+            ig_direct_users.update(users)
+    if not ig_direct_users:
+        for users in KNOWN_FINANCE_INSTAGRAM.values():
+            ig_direct_users.update(users)
+    ig_direct_users = set(list(ig_direct_users)[:50])
+
+    for uname in ig_direct_users:
+        uname_lower = uname.lower().strip()
+        # Zaten search'ten geldiyse atla
+        if uname_lower in ig_search_profiles:
+            ig_search_results.add(uname_lower)
+            continue
+        ig_search_results.add(uname_lower)
+        # follower sayisini ogrenmek icin profile bak
+        followers = 0
+        profile_name = uname
+        if instagram.is_logged_in():
+            try:
+                info = instagram.get_user_info(uname)
+                if 'error' not in info:
+                    followers = info.get('followers', 0)
+                    profile_name = info.get('full_name', uname)
+            except Exception:
+                pass
+        ig_search_profiles[uname_lower] = {
+            'username': uname,
+            'name': profile_name,
+            'followers': followers,
+        }
+
+    for uname in ig_search_results:
+        if uname in seen_keys:
+            continue
+        profile = ig_search_profiles.get(uname, {})
+        followers = profile.get('followers', 0)
+        if followers >= 500:
+            add_inf(uname, profile.get('name', uname), {
+                'instagram': {
+                    'username': uname,
+                    'followers': followers,
+                    'total_posts': 0,
+                    'total_likes': 0,
+                }
+            }, 'instagram')
+        elif uname in {u.lower().strip() for u in ig_direct_users}:
+            add_inf(uname, profile.get('name', uname), {
+                'instagram': {
+                    'username': uname,
+                    'followers': followers,
+                    'total_posts': 0,
+                    'total_likes': 0,
+                }
+            }, 'instagram')
+
+    # ========== TIKTOK ARAMA ==========
     KNOWN_FINANCE_TIKTOK = {
-        'borsa': ['borsaefe', 'yatirimsepeti', 'borsailkAdimlar', 'borsaogren', 'borsayatirim', 'finansbank', 'borsa_gunluk', 'yatirimciakademi'],
-        'yatirim': ['yatirimsepeti', 'yatirimciadam', 'yatirimnedir', 'finansbank', 'borsaefe'],
+        'borsa': ['borsaefe', 'yatirimsepeti', 'borsailkAdimlar', 'borsaogren', 'borsayatirim', 'finansbank', 'borsa_gunluk', 'yatirimciakademi', 'borsaanaliz', 'hissebul'],
+        'yatirim': ['yatirimsepeti', 'yatirimciadam', 'yatirimnedir', 'finansbank', 'borsaefe', 'yatirim_rehberi', 'yatirim_tavsiye', 'parayatirimci'],
         'hisse senedi': ['borsaefe', 'hissebul', 'borsa_analiz', 'borsayatirim', 'yatirimciakademi'],
         'ekonomi': ['ekonomidogrular', 'piyasalar', 'dunyaekonomi', 'finansbank'],
-        'finans': ['finansbank', 'finansbank_tr', 'ziraatbankasi', 'borsaefe'],
-        'kripto': ['binance_tr', 'btcturk', 'kriptopara_tr', 'bitlocom'],
-        'altin': ['gramaltin', 'ceyrekaltin', 'altinfiyat', 'borsaefe'],
-        'dolar': ['dolarkuru', 'dovizkuru', 'usdtry', 'borsaefe'],
+        'finans': ['finansbank', 'finansbank_tr', 'ziraatbankasi', 'borsaefe', 'finans_analiz'],
+        'kripto': ['binance_tr', 'btcturk', 'kriptopara_tr', 'bitlocom', 'kriptoakademi'],
+        'altin': ['gramaltin', 'ceyrekaltin', 'altinfiyat', 'borsaefe', 'altin_piyasa'],
+        'dolar': ['dolarkuru', 'dovizkuru', 'usdtry', 'borsaefe', 'kur_analiz'],
+        'temettu': ['temettu_gunluk', 'temettu_ytd'],
+        'portfoy': ['portfoy_analiz', 'portfoy_izle'],
+        'abd borsa': ['sp500tr', 'wallstreetturk', 'abdborasalari', 'nasdaqtr'],
+        'yatirim fonu': ['fonanaliz', 'yatirimfonu', 'fonportfoy'],
     }
 
     tt_direct_users = set()
@@ -1121,72 +1822,35 @@ def api_influencer_search():
         if tag in query_lower or any(word in query_lower for word in tag.split()):
             tt_direct_users.update(users)
 
-    # Eger eslesme yoksa genel liste
     if not tt_direct_users:
-        tt_direct_users = {'borsaefe', 'yatirimsepeti', 'borsailkAdimlar', 'finansbank', 'yatirimciakademi'}
+        for users in KNOWN_FINANCE_TIKTOK.values():
+            tt_direct_users.update(users)
+    tt_direct_users = set(list(tt_direct_users)[:35])
 
-    # TikTok hesaplarini dogrudan cek
-    tt_users = {}
-    for username in list(tt_direct_users)[:12]:
-        if username.lower() in seen_usernames:
+    for username in tt_direct_users:
+        if username.lower() in seen_keys:
             continue
         try:
             info = tiktok.get_user_info(username)
             if 'error' not in info:
-                tt_users[username] = {
-                    'username': username,
-                    'nickname': info.get('nickname', ''),
-                    'followers': info.get('followers', 0),
-                    'hearts': info.get('hearts', 0),
-                    'videos': info.get('videos', 0),
-                    'avatar': info.get('avatar', ''),
-                    'verified': info.get('verified', False),
-                }
+                followers = info.get('followers', 0)
+                if followers >= 500:
+                    tiktok_platform = {
+                        'username': username,
+                        'nickname': info.get('nickname', ''),
+                        'followers': followers,
+                        'total_views': info.get('hearts', 0),
+                        'total_likes': 0,
+                        'best_video': '',
+                        'avatar': info.get('avatar', ''),
+                    }
+                    add_inf(username, info.get('nickname', username), {'tiktok': tiktok_platform}, 'tiktok')
         except Exception:
             pass
 
-    # TikTok kullanicilarini ekle
-    for username, ud in tt_users.items():
-        if username.lower() in seen_usernames:
-            continue
-        seen_usernames.add(username.lower())
-
-        # Mevcut influencer ile eslestir mi?
-        matched = False
-        for inf in results['influencers']:
-            inf_name = inf['name'].lower().replace(' ', '')
-            nick = ud.get('nickname', '').lower().replace(' ', '')
-            if inf_name and (inf_name in username.lower() or username.lower() in inf_name or (nick and inf_name in nick)):
-                inf['platforms']['tiktok'] = {
-                    'username': username,
-                    'nickname': ud.get('nickname', ''),
-                    'followers': ud.get('followers', 0),
-                    'total_views': ud.get('hearts', 0),
-                    'total_likes': 0,
-                    'best_video': '',
-                }
-                matched = True
-                break
-
-        if not matched:
-            results['influencers'].append({
-                'username': username,
-                'name': ud.get('nickname', '') or username,
-                'platforms': {
-                    'tiktok': {
-                        'username': username,
-                        'nickname': ud.get('nickname', ''),
-                        'followers': ud.get('followers', 0),
-                        'total_views': ud.get('hearts', 0),
-                        'total_likes': 0,
-                        'best_video': '',
-                    }
-                },
-                'source': 'tiktok',
-            })
-
-    # Siralama: cok platformlu olanlar ustte
-    results['influencers'].sort(key=lambda x: len(x.get('platforms', {})), reverse=True)
+    # ========== SIRALA VE FILTRELE ==========
+    results['influencers'].sort(key=lambda x: -x.get('total_followers', 0))
+    results['influencers'] = results['influencers'][:80]
 
     return jsonify(results)
 

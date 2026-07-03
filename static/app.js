@@ -34,13 +34,14 @@ function switchTab(tabName) {
     document.querySelectorAll('.tab-content').forEach(t => t.classList.add('hidden'));
     document.getElementById('tab-' + tabName).classList.remove('hidden');
     document.querySelectorAll('.nav-item').forEach(n => {
-        n.classList.remove('nav-active', 'text-[#1DA1F2]', 'text-sky-400', 'text-red-400', 'text-pink-400', 'text-emerald-400', 'text-amber-400', 'text-teal-400', 'text-blue-400', 'text-indigo-400');
+        n.classList.remove('nav-active', 'text-[#1DA1F2]', 'text-sky-400', 'text-red-400', 'text-pink-400', 'text-emerald-400', 'text-amber-400', 'text-teal-400', 'text-blue-400', 'text-indigo-400', 'text-yellow-400', 'text-orange-400', 'text-purple-400', 'text-rose-400');
         n.classList.add('text-on-surface-variant');
     });
     const navColors = {
         overview: 'text-indigo-400', twitter: 'text-sky-400', youtube: 'text-red-400',
         instagram: 'text-pink-400', tiktok: 'text-emerald-400', competitor: 'text-amber-400',
-        influencer: 'text-teal-400', linkedin: 'text-blue-400'
+        influencer: 'text-teal-400', linkedin: 'text-blue-400',
+        watchlist: 'text-yellow-400', compare: 'text-orange-400', hashtag: 'text-purple-400', reports: 'text-rose-400'
     };
     const activeNav = document.querySelector(`[data-tab="${tabName}"]`);
     if (activeNav) {
@@ -65,6 +66,12 @@ function switchTab(tabName) {
     if (tabName === 'instagram') {
         if (instagramData) setTimeout(() => renderInstagramAll(), 100);
         else loadInstagramData();
+    }
+    if (tabName === 'watchlist') {
+        loadWatchlist();
+    }
+    if (tabName === 'reports') {
+        // just show the form
     }
 }
 
@@ -694,6 +701,8 @@ function renderAnalytics() {
 }
 
 function fmt(n) { if (!n) return '0'; if (n >= 1000000) return (n / 1000000).toFixed(1) + 'M'; if (n >= 1000) return (n / 1000).toFixed(1) + 'K'; return n.toString(); }
+
+function esc(s) { if (!s) return ''; return s.replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;'); }
 
 function formatDate(dateStr) {
     if (!dateStr) return '';
@@ -2189,28 +2198,28 @@ function renderInfluencerResults(data) {
             platformBadges.push(`<span class="inline-flex items-center gap-1 text-[11px] px-2 py-0.5 rounded-full bg-[#00F2EA]/15 text-[#00F2EA] border border-[#00F2EA]/20"><span class="material-symbols-outlined text-[12px]">video_library</span>TikTok</span>`);
         }
 
-        // En buyuk takipci sayisini goster
-        let mainStat = '';
+        const total = inf.total_followers || 0;
+        let mainStat = `Toplam: ${fmt(total)} takipci`;
         if (platforms.twitter && platforms.twitter.followers) {
             mainStat = `Twitter: ${fmt(platforms.twitter.followers)} takipci`;
         } else if (platforms.youtube && platforms.youtube.subscribers) {
             mainStat = `YouTube: ${fmt(platforms.youtube.subscribers)} abone`;
         } else if (platforms.tiktok) {
-            mainStat = `TikTok: ${fmt(platforms.tiktok.followers || platforms.tiktok.total_views)} takipci`;
+            mainStat = `TikTok: ${fmt(platforms.tiktok.followers || 0)} takipci`;
         }
 
         return `
-            <div class="glass-card p-5 rounded-xl hover:bg-surface-bright/20 transition-all cursor-pointer" onclick="openInfluencerDetail(${idx})">
-                <div class="flex items-center gap-3 mb-3">
-                    <div class="w-12 h-12 rounded-full bg-primary-container flex items-center justify-center flex-shrink-0">
-                        <span class="material-symbols-outlined text-on-primary-container">person</span>
+            <div class="glass-card p-4 rounded-xl hover:bg-surface-bright/20 transition-all cursor-pointer" onclick="openInfluencerDetail(${idx})">
+                <div class="flex items-center gap-3 mb-2">
+                    <div class="w-10 h-10 rounded-full bg-primary-container flex items-center justify-center flex-shrink-0">
+                        <span class="material-symbols-outlined text-on-primary-container text-[18px]">person</span>
                     </div>
                     <div class="min-w-0 flex-1">
-                        <h3 class="font-body-sm font-semibold text-on-surface truncate">${inf.name || inf.username}</h3>
+                        <h3 class="font-body-sm font-semibold text-on-surface truncate">${esc(inf.name || inf.username)}</h3>
                         <p class="font-label-sm text-on-surface-variant truncate">@${inf.username}</p>
                     </div>
                 </div>
-                <p class="text-label-sm text-on-surface-variant mb-3">${mainStat}</p>
+                <p class="text-label-sm text-on-surface-variant mb-2">${mainStat}</p>
                 <div class="flex flex-wrap gap-1">${platformBadges.join('')}</div>
             </div>
         `;
@@ -2227,76 +2236,220 @@ function openInfluencerDetail(idx) {
     document.getElementById('influencer-detail-title').textContent = inf.name || inf.username;
 
     const content = document.getElementById('influencer-detail-content');
-    const platforms = inf.platforms || {};
-    let html = '<div class="space-y-6">';
+    content.innerHTML = '<div class="flex items-center justify-center py-16"><div class="loading-spinner"></div></div>';
 
-    // Platform bazli kartlar
-    html += '<div class="grid grid-cols-1 md:grid-cols-3 gap-5 mb-8">';
+    const platforms = inf.platforms || {};
+    let loaded = 0;
+    let total = Object.keys(platforms).length;
+    if (total === 0) {
+        content.innerHTML = '<div class="text-center text-on-surface-variant py-8">Platform bilgisi bulunamadi</div>';
+        return;
+    }
+
+    // Her platform icin competitor API'sinden veri cek
+    const sections = {};
+
+    function checkDone() {
+        loaded++;
+        if (loaded < total) return;
+        renderInfluencerDetail(sections);
+    }
 
     if (platforms.twitter) {
-        const tw = platforms.twitter;
-        html += `
-            <div class="glass-card p-5 rounded-xl platform-twitter relative overflow-hidden">
-                <div class="absolute top-0 left-0 w-full h-1 bg-[#1DA1F2]"></div>
-                <div class="flex items-center gap-2 mb-3">
-                    <span class="material-symbols-outlined text-[18px] text-[#1DA1F2]">chat_bubble</span>
-                    <span class="font-label-sm text-label-sm">TWITTER</span>
-                </div>
-                <h3 class="font-body-sm font-semibold text-on-surface mb-1">@${tw.username}</h3>
-                <p class="text-label-sm text-on-surface-variant mb-3">${fmt(tw.followers)} takipci</p>
-                ${tw.best_tweet ? `<p class="text-xs text-on-surface-variant line-clamp-2 mb-3">"${tw.best_tweet}"</p>` : ''}
-                <div class="flex gap-4 text-xs text-on-surface-variant">
-                    <span>Gosterim: ${fmt(tw.total_views)}</span>
-                    <span>Begeni: ${fmt(tw.total_likes)}</span>
-                </div>
-                <button onclick="window.open('https://x.com/${tw.username}','_blank')" class="mt-3 w-full py-2 bg-[#1DA1F2]/10 text-[#1DA1F2] rounded-lg text-label-sm hover:bg-[#1DA1F2]/20 transition-colors">Profili Ac</button>
-            </div>`;
-    }
+        const username = platforms.twitter.username;
+        fetch(`/api/competitor/twitter/${username}?days=30&_=${Date.now()}`)
+        .then(r => r.json()).then(data => {
+            if (data.error) { sections.twitter = { error: data.error }; checkDone(); return; }
+            const tw = platforms.twitter;
+            sections.twitter = {
+                profile: data.profile,
+                tweets: data.tweets || [],
+                analytics: data.analytics || {},
+                best_tweets: data.best_tweets || [],
+                username: tw.username,
+                followers: tw.followers,
+            };
+            checkDone();
+        }).catch(() => { sections.twitter = { error: 'Veri alinamadi' }; checkDone(); });
+    } else { checkDone(); }
 
     if (platforms.youtube) {
-        const yt = platforms.youtube;
-        html += `
-            <div class="glass-card p-5 rounded-xl platform-youtube relative overflow-hidden">
-                <div class="absolute top-0 left-0 w-full h-1 bg-[#FF0000]"></div>
-                <div class="flex items-center gap-2 mb-3">
-                    <span class="material-symbols-outlined text-[18px] text-[#FF0000]">play_circle</span>
-                    <span class="font-label-sm text-label-sm">YOUTUBE</span>
-                </div>
-                <div class="flex items-center gap-3 mb-2">
-                    ${yt.thumbnail ? `<img src="${yt.thumbnail}" class="w-10 h-10 rounded-full">` : ''}
-                    <div>
-                        <h3 class="font-body-sm font-semibold text-on-surface">${yt.title}</h3>
-                        <p class="text-label-sm text-on-surface-variant">${fmt(yt.subscribers)} abone</p>
-                    </div>
-                </div>
-                <button onclick="window.open('https://youtube.com/channel/${yt.channel_id}','_blank')" class="w-full py-2 bg-[#FF0000]/10 text-[#FF0000] rounded-lg text-label-sm hover:bg-[#FF0000]/20 transition-colors">Kanali Ac</button>
-            </div>`;
-    }
+        const cid = platforms.youtube.channel_id;
+        fetch(`/api/competitor/youtube/${cid}?days=30&_=${Date.now()}`)
+        .then(r => r.json()).then(data => {
+            if (data.error) { sections.youtube = { error: data.error }; checkDone(); return; }
+            sections.youtube = {
+                channel: data.channel,
+                videos: data.videos || [],
+                analytics: data.analytics || {},
+                best_videos: data.best_videos || [],
+                title: platforms.youtube.title,
+            };
+            checkDone();
+        }).catch(() => { sections.youtube = { error: 'Veri alinamadi' }; checkDone(); });
+    } else { checkDone(); }
 
     if (platforms.tiktok) {
-        const tt = platforms.tiktok;
-        html += `
-            <div class="glass-card p-5 rounded-xl platform-tiktok relative overflow-hidden">
-                <div class="absolute top-0 left-0 w-full h-1 bg-[#00F2EA]"></div>
-                <div class="flex items-center gap-2 mb-3">
-                    <span class="material-symbols-outlined text-[18px] text-[#00F2EA]">video_library</span>
-                    <span class="font-label-sm text-label-sm">TIKTOK</span>
-                </div>
-                <h3 class="font-body-sm font-semibold text-on-surface mb-1">@${tt.username}</h3>
-                <p class="text-label-sm text-on-surface-variant mb-3">${fmt(tt.followers || tt.total_views)} takipci</p>
-                ${tt.best_video ? `<p class="text-xs text-on-surface-variant line-clamp-2 mb-3">"${tt.best_video}"</p>` : ''}
-                <div class="flex gap-4 text-xs text-on-surface-variant">
-                    <span>Begeni: ${fmt(tt.total_likes)}</span>
-                </div>
-                <button onclick="window.open('https://tiktok.com/@${tt.username}','_blank')" class="mt-3 w-full py-2 bg-[#00F2EA]/10 text-[#00F2EA] rounded-lg text-label-sm hover:bg-[#00F2EA]/20 transition-colors">Profili Ac</button>
-            </div>`;
+        const username = platforms.tiktok.username;
+        fetch(`/api/competitor/tiktok/${username}?days=30&_=${Date.now()}`)
+        .then(r => r.json()).then(data => {
+            if (data.error) { sections.tiktok = { error: data.error }; checkDone(); return; }
+            sections.tiktok = {
+                profile: data.profile,
+                videos: data.videos || [],
+                analytics: data.analytics || {},
+                format_analysis: data.format_analysis || {},
+                best_videos: data.best_videos || [],
+                username: username,
+            };
+            checkDone();
+        }).catch(() => { sections.tiktok = { error: 'Veri alinamadi' }; checkDone(); });
+    } else { checkDone(); }
+}
+
+function renderInfluencerDetail(sections) {
+    const content = document.getElementById('influencer-detail-content');
+    let html = '<div class="space-y-6">';
+
+    // Platform ust kartlari
+    html += '<div class="grid grid-cols-1 md:grid-cols-3 gap-5 mb-6">';
+    for (const [platform, sec] of Object.entries(sections)) {
+        if (sec.error) {
+            html += `<div class="glass-card p-4 rounded-xl text-center text-on-surface-variant text-label-sm">${platform}: ${sec.error}</div>`;
+            continue;
+        }
+        if (platform === 'twitter') {
+            const a = sec.analytics;
+            html += `
+                <div class="glass-card p-5 rounded-xl platform-twitter relative overflow-hidden">
+                    <div class="absolute top-0 left-0 w-full h-1 bg-[#1DA1F2]"></div>
+                    <div class="flex items-center gap-2 mb-2">
+                        <span class="material-symbols-outlined text-[18px] text-[#1DA1F2]">chat_bubble</span>
+                        <span class="font-label-sm text-label-sm text-[#1DA1F2]">TWITTER</span>
+                    </div>
+                    <h3 class="font-body-sm font-semibold text-on-surface">@${sec.username}</h3>
+                    <p class="text-label-sm text-on-surface-variant mb-2">${fmt(sec.followers)} takipci</p>
+                    <div class="grid grid-cols-2 gap-2 text-xs">
+                        <div class="bg-surface-container rounded-lg p-2"><span class="text-primary">${fmt(a.total_impressions || 0)}</span><br>Gosterim</div>
+                        <div class="bg-surface-container rounded-lg p-2"><span class="text-primary">${fmt(a.total_likes || 0)}</span><br>Begeni</div>
+                        <div class="bg-surface-container rounded-lg p-2"><span class="text-primary">${fmt(a.total_retweets || 0)}</span><br>RT</div>
+                        <div class="bg-surface-container rounded-lg p-2"><span class="text-primary">${a.engagement_rate || 0}%</span><br>ET</div>
+                    </div>
+                </div>`;
+        } else if (platform === 'youtube') {
+            const a = sec.analytics;
+            html += `
+                <div class="glass-card p-5 rounded-xl platform-youtube relative overflow-hidden">
+                    <div class="absolute top-0 left-0 w-full h-1 bg-[#FF0000]"></div>
+                    <div class="flex items-center gap-2 mb-2">
+                        <span class="material-symbols-outlined text-[18px] text-[#FF0000]">play_circle</span>
+                        <span class="font-label-sm text-label-sm text-[#FF0000]">YOUTUBE</span>
+                    </div>
+                    <h3 class="font-body-sm font-semibold text-on-surface">${sec.title}</h3>
+                    <div class="grid grid-cols-2 gap-2 text-xs mt-2">
+                        <div class="bg-surface-container rounded-lg p-2"><span class="text-primary">${fmt(a.total_views || 0)}</span><br>Goruntulenme</div>
+                        <div class="bg-surface-container rounded-lg p-2"><span class="text-primary">${fmt(a.total_likes || 0)}</span><br>Begeni</div>
+                        <div class="bg-surface-container rounded-lg p-2"><span class="text-primary">${fmt(a.avg_views || 0)}</span><br>Ort. izlenme</div>
+                        <div class="bg-surface-container rounded-lg p-2"><span class="text-primary">${a.engagement_rate || 0}%</span><br>ET</div>
+                    </div>
+                </div>`;
+        } else if (platform === 'tiktok') {
+            const a = sec.analytics;
+            html += `
+                <div class="glass-card p-5 rounded-xl platform-tiktok relative overflow-hidden">
+                    <div class="absolute top-0 left-0 w-full h-1 bg-[#00F2EA]"></div>
+                    <div class="flex items-center gap-2 mb-2">
+                        <span class="material-symbols-outlined text-[18px] text-[#00F2EA]">video_library</span>
+                        <span class="font-label-sm text-label-sm text-[#00F2EA]">TIKTOK</span>
+                    </div>
+                    <h3 class="font-body-sm font-semibold text-on-surface">@${sec.username}</h3>
+                    <div class="grid grid-cols-2 gap-2 text-xs mt-2">
+                        <div class="bg-surface-container rounded-lg p-2"><span class="text-primary">${fmt(a.total_views || 0)}</span><br>Izlenme</div>
+                        <div class="bg-surface-container rounded-lg p-2"><span class="text-primary">${fmt(a.total_likes || 0)}</span><br>Begeni</div>
+                        <div class="bg-surface-container rounded-lg p-2"><span class="text-primary">${fmt(a.total_comments || 0)}</span><br>Yorum</div>
+                        <div class="bg-surface-container rounded-lg p-2"><span class="text-primary">${a.engagement_rate || 0}%</span><br>ET</div>
+                    </div>
+                </div>`;
+        }
+    }
+    html += '</div>';
+
+    // En iyi icerikler
+    for (const [platform, sec] of Object.entries(sections)) {
+        if (sec.error) continue;
+        if (platform === 'twitter' && sec.best_tweets && sec.best_tweets.length) {
+            html += '<h3 class="font-headline-sm text-headline-sm text-on-surface mb-3">En Iyi Tweetler</h3>';
+            html += '<div class="space-y-2 mb-6">';
+            sec.best_tweets.slice(0, 5).forEach(t => {
+                const text = t.text || '';
+                html += `
+                    <div class="glass-card p-4 rounded-xl">
+                        <p class="text-xs text-on-surface-variant line-clamp-3 mb-2">${esc(text)}</p>
+                        <div class="flex gap-3 text-[11px] text-on-surface-variant">
+                            <span>👁 ${fmt(t.view_count || 0)}</span>
+                            <span>❤️ ${fmt(t.favorite_count || 0)}</span>
+                            <span>🔄 ${fmt(t.retweet_count || 0)}</span>
+                        </div>
+                    </div>`;
+            });
+            html += '</div>';
+        }
+        if (platform === 'youtube' && sec.best_videos && sec.best_videos.length) {
+            html += '<h3 class="font-headline-sm text-headline-sm text-on-surface mb-3">En Iyi Videolar</h3>';
+            html += '<div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4 mb-6">';
+            sec.best_videos.slice(0, 6).forEach(v => {
+                const thumb = v.thumbnail || '';
+                html += `
+                    <div class="glass-card rounded-xl overflow-hidden">
+                        ${thumb ? `<img src="${thumb}" class="w-full h-32 object-cover">` : '<div class="w-full h-32 bg-surface-container flex items-center justify-center"><span class="material-symbols-outlined text-4xl text-on-surface-variant">play_circle</span></div>'}
+                        <div class="p-3">
+                            <p class="text-xs text-on-surface line-clamp-2 mb-2">${esc(v.title || '')}</p>
+                            <div class="flex gap-3 text-[11px] text-on-surface-variant">
+                                <span>👁 ${fmt(v.view_count || 0)}</span>
+                                <span>❤️ ${fmt(v.like_count || 0)}</span>
+                            </div>
+                        </div>
+                    </div>`;
+            });
+            html += '</div>';
+        }
+        if (platform === 'tiktok' && sec.best_videos && sec.best_videos.length) {
+            html += '<h3 class="font-headline-sm text-headline-sm text-on-surface mb-3">En Iyi Videolar</h3>';
+            html += '<div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4 mb-6">';
+            sec.best_videos.slice(0, 6).forEach(v => {
+                html += `
+                    <div class="glass-card p-4 rounded-xl">
+                        <p class="text-xs text-on-surface line-clamp-2 mb-2">${esc(v.desc || v.title || '')}</p>
+                        <div class="flex gap-3 text-[11px] text-on-surface-variant">
+                            <span>👁 ${fmt(v.play_count || 0)}</span>
+                            <span>❤️ ${fmt(v.like_count || 0)}</span>
+                            <span>💬 ${fmt(v.comment_count || 0)}</span>
+                        </div>
+                    </div>`;
+            });
+            html += '</div>';
+        }
+
+        // Format analizi (TikTok)
+        if (platform === 'tiktok' && sec.format_analysis) {
+            const fa = sec.format_analysis;
+            html += '<h3 class="font-headline-sm text-headline-sm text-on-surface mb-3">Icerik Formati</h3>';
+            html += '<div class="grid grid-cols-3 gap-3 mb-6">';
+            ['short', 'medium', 'long'].forEach(k => {
+                const f = fa[k] || {};
+                const labels = { short: 'Kisa (0-15sn)', medium: 'Orta (15-60sn)', long: 'Uzun (60+sn)' };
+                html += `
+                    <div class="glass-card p-4 rounded-xl text-center">
+                        <p class="text-label-sm text-on-surface-variant">${labels[k]}</p>
+                        <p class="font-headline-sm text-headline-sm text-primary">${f.count || 0}</p>
+                        <p class="text-xs text-on-surface-variant">${fmt(f.avg_views || 0)} ort. izlenme</p>
+                    </div>`;
+            });
+            html += '</div>';
+        }
     }
 
-    if (!platforms.twitter && !platforms.youtube && !platforms.tiktok) {
-        html += '<div class="col-span-3 text-center text-on-surface-variant py-8">Bu influencer icin platform bilgisi bulunamadi</div>';
-    }
-
-    html += '</div></div>';
+    html += '</div>';
     content.innerHTML = html;
 }
 
@@ -2375,5 +2528,563 @@ function renderYouTubeChart(videos) {
 
 function renderInstagramChart(posts) {
     createActivityChart('instagram-activity-chart', posts, 'Post', 'taken_at', '#E4405F');
+}
+
+// ==================== WATCHLIST ====================
+let _wlPlatform = '';
+let _wlUsername = '';
+
+function addCurrentToWatchlist() {
+    const badge = document.getElementById('competitor-detail-badge');
+    const title = document.getElementById('competitor-detail-title');
+    if (!badge.textContent || !title.textContent) return;
+    const plat = badge.textContent.split(' ')[0]?.toLowerCase() || 'twitter';
+    const user = title.textContent.replace('Detay Analiz', '').trim();
+    _wlPlatform = plat;
+    _wlUsername = user;
+    addToWatchlist(plat, user);
+}
+
+function addToWatchlist(platform, username, name) {
+    const displayName = name || username;
+    fetch('/api/watchlist', {
+        method: 'POST',
+        headers: {'Content-Type': 'application/json'},
+        body: JSON.stringify({platform, username, name: displayName})
+    })
+    .then(r => r.json())
+    .then(data => {
+        if (data.success) {
+            showToast('Watchlist eklendi: ' + displayName, 'success');
+            loadWatchlist();
+        } else {
+            showToast('Hata: ' + (data.error || 'Bilinmeyen hata'), 'error');
+        }
+    })
+    .catch(() => showToast('Baglanti hatasi', 'error'));
+}
+
+function removeFromWatchlist(itemId) {
+    fetch('/api/watchlist/' + itemId, {method: 'DELETE'})
+    .then(r => r.json())
+    .then(data => {
+        if (data.success) {
+            showToast('Watchlistten cikarildi', 'success');
+            loadWatchlist();
+        }
+    })
+    .catch(() => showToast('Baglanti hatasi', 'error'));
+}
+
+function loadWatchlist() {
+    const container = document.getElementById('watchlist-content');
+    container.innerHTML = '<div class="flex items-center justify-center py-20"><div class="loading-spinner"></div></div>';
+
+    fetch('/api/watchlist')
+    .then(r => r.json())
+    .then(data => {
+        const items = data.items || [];
+        if (items.length === 0) {
+            container.innerHTML = '<div class="flex flex-col items-center justify-center py-20">' +
+                '<span class="material-symbols-outlined text-5xl text-yellow-500/30 mb-4">bookmark</span>' +
+                '<h3 class="font-headline-md text-headline-md text-yellow-400 mb-2">Watchlist Bos</h3>' +
+                '<p class="text-yellow-300/60">Rakip analizi yaparken &#8220;Watchlist&#8221; butonuna tiklayarak hesap ekleyin.</p></div>';
+            return;
+        }
+
+        let html = '<div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-5">';
+        const platIcons = {twitter: 'chat_bubble', tiktok: 'video_library', youtube: 'play_circle', instagram: 'camera_alt'};
+        const platColors = {twitter: 'sky', tiktok: 'emerald', youtube: 'red', instagram: 'pink'};
+
+        items.forEach(item => {
+            const pc = platColors[item.platform] || 'gray';
+            html += '<div class="glass-card rounded-xl p-lg relative">' +
+                '<button onclick="removeFromWatchlist(\'' + item.id + '\')" class="absolute top-3 right-3 text-' + pc + '-400/50 hover:text-red-400 transition-colors cursor-pointer">' +
+                '<span class="material-symbols-outlined">close</span></button>' +
+                '<div class="flex items-center gap-3 mb-4">' +
+                '<span class="material-symbols-outlined text-' + pc + '-400">' + (platIcons[item.platform] || 'public') + '</span>' +
+                '<div><p class="font-label-md text-label-md text-on-surface">' + item.name + '</p>' +
+                '<p class="text-label-sm text-on-surface-variant">@' + item.username + ' on ' + item.platform + '</p></div></div>' +
+                '<div class="flex justify-between text-body-sm"><span class="text-on-surface-variant">Takipci</span>' +
+                '<span class="text-on-surface font-semibold">' + (item.last_follower_count ? numberFormat(item.last_follower_count) : '?') + '</span></div>' +
+                '<div class="flex justify-between text-body-sm mt-1"><span class="text-on-surface-variant">Eklenme</span>' +
+                '<span class="text-on-surface-variant">' + new Date(item.added_at).toLocaleDateString('tr-TR') + '</span></div>' +
+                '<button onclick="openWatchlistItem(\'' + item.platform + '\',\'' + item.username + '\')" class="mt-4 w-full py-2 bg-' + pc + '-500/10 text-' + pc + '-400 font-label-sm text-label-sm rounded-full border border-' + pc + '-500/20 hover:bg-' + pc + '-500/20 transition-all cursor-pointer">Detay Gor</button>' +
+                '</div>';
+        });
+        html += '</div>';
+        container.innerHTML = html;
+    })
+    .catch(() => {
+        container.innerHTML = '<div class="flex flex-col items-center justify-center py-20 text-red-400"><p>Veri yuklenemedi</p></div>';
+    });
+}
+
+function openWatchlistItem(platform, username) {
+    switchTab('competitor');
+    document.getElementById('competitor-search-input').value = username;
+    setTimeout(() => {
+        searchCompetitorDirect(platform, username);
+    }, 300);
+}
+
+function searchCompetitorDirect(platform, username) {
+    searchCompetitor();
+}
+
+// ==================== COMPARE ====================
+let compareEntities = [];
+
+function addCompareEntity() {
+    const platform = document.getElementById('cmp-platform').value;
+    const username = document.getElementById('cmp-username').value.trim();
+    if (!username) { showToast('Kullanici adi girin', 'error'); return; }
+    if (compareEntities.some(e => e.platform === platform && e.username === username)) {
+        showToast('Bu hesap zaten eklendi', 'error'); return;
+    }
+    compareEntities.push({platform, username});
+    renderCompareEntityList();
+    document.getElementById('cmp-username').value = '';
+    document.getElementById('cmp-run-btn').disabled = compareEntities.length < 2;
+}
+
+function removeCompareEntity(index) {
+    compareEntities.splice(index, 1);
+    renderCompareEntityList();
+    document.getElementById('cmp-run-btn').disabled = compareEntities.length < 2;
+}
+
+function renderCompareEntityList() {
+    const list = document.getElementById('cmp-entity-list');
+    if (compareEntities.length === 0) {
+        list.innerHTML = '<p class="text-on-surface-variant text-body-sm">Henuz hesap eklenmedi.</p>';
+        return;
+    }
+    const platIcons = {twitter: 'chat_bubble', tiktok: 'video_library', youtube: 'play_circle', instagram: 'camera_alt'};
+    const platColors = {twitter: 'sky', tiktok: 'emerald', youtube: 'red', instagram: 'pink'};
+    list.innerHTML = compareEntities.map((e, i) => {
+        const pc = platColors[e.platform] || 'gray';
+        return '<div class="flex items-center justify-between bg-surface-container-lowest rounded-xl px-4 py-2">' +
+            '<div class="flex items-center gap-2"><span class="material-symbols-outlined text-' + pc + '-400 text-[18px]">' + (platIcons[e.platform] || 'public') + '</span>' +
+            '<span class="text-body-sm text-on-surface">@' + e.username + '</span>' +
+            '<span class="text-label-sm text-on-surface-variant">(' + e.platform + ')</span></div>' +
+            '<button onclick="removeCompareEntity(' + i + ')" class="text-red-400/50 hover:text-red-400 cursor-pointer"><span class="material-symbols-outlined text-[18px]">close</span></button></div>';
+    }).join('');
+}
+
+function runCompare() {
+    if (compareEntities.length < 2) return;
+    const resultsDiv = document.getElementById('cmp-results');
+    resultsDiv.innerHTML = '<div class="flex items-center justify-center py-12"><div class="loading-spinner"></div></div>';
+
+    fetch('/api/competitor/compare', {
+        method: 'POST',
+        headers: {'Content-Type': 'application/json'},
+        body: JSON.stringify({entities: compareEntities})
+    })
+    .then(r => r.json())
+    .then(data => {
+        const list = data.comparison || [];
+        if (list.length === 0) {
+            resultsDiv.innerHTML = '<div class="glass-card rounded-xl p-xl text-center text-red-400">Veri alinamadi</div>';
+            return;
+        }
+
+        // -- Profile cards at top --
+        let profileHtml = '<div class="grid grid-cols-1 md:grid-cols-' + Math.min(list.length, 4) + ' gap-4 mb-5">';
+        const platColors = {twitter: '#1DA1F2', tiktok: '#00F2EA', youtube: '#FF0000', instagram: '#E4405F'};
+        const platIcons = {twitter: 'chat_bubble', tiktok: 'video_library', youtube: 'play_circle', instagram: 'camera_alt'};
+        list.forEach(item => {
+            const pc = platColors[item.platform] || '#818cf8';
+            const pi = platIcons[item.platform] || 'public';
+            const avatar = item.profile_image || item.avatar || item.thumbnail || item.profile_pic || '';
+            const name = item.name || item.nickname || item.username;
+            profileHtml += '<div class="glass-card rounded-xl p-4 flex items-center gap-3" style="border-left: 3px solid ' + pc + '">' +
+                (avatar ? '<img src="' + avatar + '" class="w-12 h-12 rounded-full object-cover" onerror="this.style.display=\'none\'">' : '<div class="w-12 h-12 rounded-full flex items-center justify-center" style="background:' + pc + '20"><span class="material-symbols-outlined" style="color:' + pc + '">' + pi + '</span></div>') +
+                '<div><p class="font-label-md text-label-md text-on-surface">' + name + '</p>' +
+                '<p class="text-label-sm text-on-surface-variant">@' + item.username + ' · ' + item.platform + '</p></div></div>';
+        });
+        profileHtml += '</div>';
+
+        // -- Summary metric cards --
+        const metrics = [
+            {key: 'followers', label: 'Takipci', fmt: 'number'},
+            {key: 'engagement_rate', label: 'E.R. (%)', fmt: 'decimal'},
+            {key: 'total_likes', label: 'Toplam Begeni', fmt: 'number'},
+            {key: 'total_views', label: 'Toplam Goruntulenme', fmt: 'number'},
+        ];
+
+        let summaryHtml = '<div class="grid grid-cols-1 md:grid-cols-2 gap-4 mb-5">';
+        const cmpColors = ['#818cf8', '#34d399', '#fbbf24', '#f87171', '#a78bfa', '#22d3ee'];
+
+        metrics.forEach((metric, mi) => {
+            const vals = list.map(e => e[metric.key] ?? 0);
+            const maxVal = Math.max(...vals, 1);
+            const maxIdx = vals.indexOf(Math.max(...vals));
+
+            summaryHtml += '<div class="glass-card rounded-xl p-4">' +
+                '<p class="stat-label mb-3" style="color:' + cmpColors[mi] + '">' + metric.label + '</p>';
+
+            // Horizontal stacked bars
+            list.forEach((item, ii) => {
+                const val = item[metric.key] ?? 0;
+                const pct = (val / maxVal) * 100;
+                const display = metric.fmt === 'decimal' ? (val || 0).toFixed(2) : numberFormat(val || 0);
+                const isWinner = ii === maxIdx;
+                const barColor = cmpColors[ii % cmpColors.length];
+                summaryHtml += '<div class="flex items-center gap-2 mb-1">' +
+                    '<span class="text-label-sm text-on-surface-variant w-20 truncate text-right" title="' + item.username + '">@' + item.username + '</span>' +
+                    '<div class="flex-1 bg-surface-container-lowest rounded-full h-5 overflow-hidden relative">' +
+                    '<div class="h-full rounded-full transition-all duration-500" style="width:' + Math.max(pct, 2) + '%;background:' + barColor + (isWinner ? ';box-shadow:0 0 8px ' + barColor : '') + '"></div></div>' +
+                    '<span class="text-label-sm ' + (isWinner ? 'text-white font-bold' : 'text-on-surface-variant') + ' w-20 text-right">' + display + (isWinner ? ' 👑' : '') + '</span></div>';
+            });
+            summaryHtml += '</div>';
+        });
+        summaryHtml += '</div>';
+
+        // -- Detail table --
+        let tableHtml = '<div class="glass-card rounded-xl overflow-hidden"><div class="overflow-x-auto"><table class="w-full text-left border-collapse">' +
+            '<thead><tr class="bg-gradient-to-r from-orange-500/10 via-red-500/5 to-transparent">' +
+            '<th class="px-4 py-3 font-label-sm text-label-sm text-orange-300 uppercase tracking-widest">Metrik</th>';
+
+        list.forEach(item => {
+            tableHtml += '<th class="px-4 py-3 font-label-sm text-label-sm text-orange-300 uppercase tracking-widest text-right">@' + item.username + '</th>';
+        });
+        tableHtml += '</tr></thead><tbody class="divide-y divide-outline-variant/20">';
+
+        // Extra detail metrics (not in summary cards)
+        const detailMetrics = [
+            {key: 'followers', label: 'Takipci'},
+            {key: 'engagement_rate', label: 'E.R. (%)'},
+            {key: 'total_likes', label: 'Toplam Begeni'},
+            {key: 'total_views', label: 'Toplam Goruntulenme'},
+            {key: 'following', label: 'Takip Edilen'},
+            {key: 'hearts', label: 'Kalp'},
+            {key: 'videos', label: 'Video'},
+            {key: 'tweets', label: 'Tweet'},
+            {key: 'posts', label: 'Post'},
+            {key: 'subscribers', label: 'Abone'},
+        ];
+
+        detailMetrics.forEach(metric => {
+            const hasAny = list.some(e => e[metric.key] !== undefined && e[metric.key] !== null);
+            if (!hasAny) return;
+            tableHtml += '<tr class="hover:bg-surface-container-highest/20"><td class="px-4 py-3 text-body-sm text-on-surface-variant font-medium">' + metric.label + '</td>';
+            list.forEach(item => {
+                const val = item[metric.key];
+                const display = val !== undefined && val !== null ? (typeof val === 'number' ? (val > 1000 ? numberFormat(val) : val.toFixed(2)) : val) : '-';
+                tableHtml += '<td class="px-4 py-3 text-body-sm text-on-surface text-right font-semibold">' + display + '</td>';
+            });
+            tableHtml += '</tr>';
+        });
+
+        const hasErrors = list.some(e => e.error);
+        if (hasErrors) {
+            tableHtml += '<tr class="bg-red-500/5"><td class="px-4 py-3 text-body-sm text-red-400">Hata</td>';
+            list.forEach(item => {
+                tableHtml += '<td class="px-4 py-3 text-body-sm text-red-400 text-right">' + (item.error || '-') + '</td>';
+            });
+            tableHtml += '</tr>';
+        }
+        tableHtml += '</tbody></table></div></div>';
+
+        resultsDiv.innerHTML = profileHtml + summaryHtml + tableHtml;
+    })
+    .catch(err => {
+        resultsDiv.innerHTML = '<div class="glass-card rounded-xl p-xl text-center text-red-400">Hata: ' + err.message + '</div>';
+    });
+}
+
+// ==================== HASHTAG ANALYTICS ====================
+function loadHashtagAnalytics() {
+    const username = document.getElementById('ht-username').value.trim();
+    const platform = document.getElementById('ht-platform').value;
+    if (!username) { showToast('Kullanici adi girin', 'error'); return; }
+
+    const statusEl = document.getElementById('ht-status');
+    const resultsDiv = document.getElementById('ht-results');
+    statusEl.textContent = 'Analiz ediliyor...';
+    resultsDiv.innerHTML = '<div class="flex items-center justify-center py-12"><div class="loading-spinner"></div></div>';
+
+    fetch('/api/hashtag/analytics?q=' + encodeURIComponent(username) + '&platform=' + platform)
+    .then(r => r.json())
+    .then(data => {
+        statusEl.textContent = 'Tamam';
+        if (!data.analytics || data.analytics.length === 0) {
+            resultsDiv.innerHTML = '<div class="flex flex-col items-center justify-center py-20">' +
+                '<span class="material-symbols-outlined text-5xl text-purple-500/30 mb-4">tag</span>' +
+                '<p class="text-on-surface-variant">' + (data.note || 'Hashtag verisi bulunamadi') + '</p></div>';
+            return;
+        }
+
+        // Format numbers
+        const raw = data.analytics;
+        const top10 = raw.slice(0, 10);
+
+        // Stats cards
+        let html = '<div class="grid grid-cols-2 md:grid-cols-4 gap-4 mb-5">';
+        html += '<div class="glass-card rounded-xl p-4 text-center"><p class="stat-label">Toplam Hashtag</p><p class="font-headline-sm text-headline-sm metric-value mt-1">' + raw.length + '</p></div>';
+        html += '<div class="glass-card rounded-xl p-4 text-center"><p class="stat-label">Toplam Goruntuleme</p><p class="font-headline-sm text-headline-sm metric-value mt-1">' + numberFormat(top10.reduce((s, h) => s + (h.total_views || 0), 0)) + '</p></div>';
+        html += '<div class="glass-card rounded-xl p-4 text-center"><p class="stat-label">Ort. Etkilesim</p><p class="font-headline-sm text-headline-sm metric-value-warm mt-1">' + numberFormat(Math.round(top10.reduce((s, h) => s + (h.avg_engagement || 0), 0) / top10.length)) + '</p></div>';
+        html += '<div class="glass-card rounded-xl p-4 text-center"><p class="stat-label">En Aktif Hashtag</p><p class="font-headline-sm text-headline-sm metric-value-vivid mt-1">#' + top10[0].tag + '</p></div>';
+        html += '</div>';
+
+        // Chart
+        const chartId = 'ht-chart-' + Date.now();
+        html += '<div class="glass-card rounded-xl p-lg mb-5"><canvas id="' + chartId + '" height="200"></canvas></div>';
+
+        // Table
+        html += '<div class="glass-card rounded-xl overflow-hidden"><div class="overflow-x-auto"><table class="w-full text-left border-collapse">' +
+            '<thead><tr class="bg-gradient-to-r from-purple-500/10 via-violet-500/5 to-transparent">' +
+            '<th class="px-4 py-3 font-label-sm text-label-sm text-purple-300 uppercase">Hashtag</th>' +
+            '<th class="px-4 py-3 font-label-sm text-label-sm text-purple-300 uppercase text-right">Frekans</th>' +
+            '<th class="px-4 py-3 font-label-sm text-label-sm text-purple-300 uppercase text-right">Goruntuleme</th>' +
+            '<th class="px-4 py-3 font-label-sm text-label-sm text-purple-300 uppercase text-right">Begeni</th>' +
+            '<th class="px-4 py-3 font-label-sm text-label-sm text-purple-300 uppercase text-right">Ort. Etkilesim</th></tr></thead>' +
+            '<tbody class="divide-y divide-outline-variant/20">';
+
+        top10.forEach(h => {
+            html += '<tr class="hover:bg-surface-container-highest/20">' +
+                '<td class="px-4 py-3 text-body-sm text-purple-400 font-medium">#' + h.tag + '</td>' +
+                '<td class="px-4 py-3 text-body-sm text-on-surface text-right">' + h.frequency + 'x</td>' +
+                '<td class="px-4 py-3 text-body-sm text-on-surface text-right">' + numberFormat(h.total_views || 0) + '</td>' +
+                '<td class="px-4 py-3 text-body-sm text-on-surface text-right">' + numberFormat(h.total_likes || 0) + '</td>' +
+                '<td class="px-4 py-3 text-body-sm text-on-surface text-right">' + numberFormat(Math.round(h.avg_engagement || 0)) + '</td></tr>';
+        });
+        html += '</tbody></table></div></div>';
+
+        resultsDiv.innerHTML = html;
+
+        // Bar chart
+        setTimeout(() => {
+            const ctx = document.getElementById(chartId)?.getContext('2d');
+            if (!ctx) return;
+            new Chart(ctx, {
+                type: 'bar',
+                data: {
+                    labels: top10.map(h => '#' + h.tag),
+                    datasets: [{
+                        label: 'Goruntuleme',
+                        data: top10.map(h => h.total_views || 0),
+                        backgroundColor: 'rgba(167, 139, 250, 0.5)',
+                        borderColor: 'rgba(167, 139, 250, 0.8)',
+                        borderWidth: 1,
+                        borderRadius: 4,
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    plugins: {
+                        legend: {labels: {color: '#e2e8f0'}}
+                    },
+                    scales: {
+                        x: {ticks: {color: '#94a3b8', maxRotation: 45}, grid: {color: 'rgba(255,255,255,0.05)'}},
+                        y: {ticks: {color: '#94a3b8', callback: v => numberFormat(v)}, grid: {color: 'rgba(255,255,255,0.05)'}}
+                    }
+                }
+            });
+        }, 100);
+    })
+    .catch(err => {
+        statusEl.textContent = 'Hata';
+        resultsDiv.innerHTML = '<div class="text-red-400 text-center py-12">Hata: ' + err.message + '</div>';
+    });
+}
+
+// ==================== CSV EXPORT ====================
+function exportCSV(platform) {
+    const inputMap = {
+        twitter: 'rpt-twitter-user',
+        tiktok: 'rpt-tiktok-user',
+        youtube: 'rpt-youtube-user',
+        instagram: 'rpt-instagram-user'
+    };
+    const username = document.getElementById(inputMap[platform]).value.trim();
+    if (!username) { showToast('Kullanici adi girin', 'error'); return; }
+
+    showToast('CSV hazirlaniyor...', 'success');
+    const url = '/api/competitor/' + platform + '/' + encodeURIComponent(username) + '/export';
+    window.open(url, '_blank');
+}
+
+// ==================== FOLLOWER HISTORY ====================
+function loadHistory() {
+    const platform = document.getElementById('rpt-history-platform').value;
+    const username = document.getElementById('rpt-history-username').value.trim();
+    if (!username) { showToast('Kullanici adi girin', 'error'); return; }
+
+    const container = document.getElementById('rpt-history-chart-container');
+    const chartId = 'rpt-history-chart';
+
+    fetch('/api/history/' + platform + '/' + encodeURIComponent(username))
+    .then(r => r.json())
+    .then(data => {
+        const history = data.history || [];
+        if (history.length === 0) {
+            container.classList.add('hidden');
+            if (data.error === 'canli_veri_yok') {
+                showToast('Platforma baglanti kurulamadi. Once detay sayfasinda hesabi goruntuleyin.', 'error');
+            } else {
+                showToast('Henuz takipci gecmisi yok. Detay goruntuleyerek kayit olusturun.', 'error');
+            }
+            return;
+        }
+        container.classList.remove('hidden');
+
+        // Destroy old chart
+        const oldChart = Chart.getChart(chartId);
+        if (oldChart) oldChart.destroy();
+
+        const ctx = document.getElementById(chartId).getContext('2d');
+        const dates = history.map(h => new Date(h.date).toLocaleDateString('tr-TR'));
+        const followers = history.map(h => h.followers);
+
+        new Chart(ctx, {
+            type: 'line',
+            data: {
+                labels: dates,
+                datasets: [{
+                    label: '@' + username + ' Takipci',
+                    data: followers,
+                    borderColor: '#f43f5e',
+                    backgroundColor: 'rgba(244, 63, 94, 0.1)',
+                    fill: true,
+                    tension: 0.3,
+                    pointRadius: 2,
+                    borderWidth: 2,
+                }]
+            },
+            options: {
+                responsive: true,
+                plugins: {
+                    legend: {labels: {color: '#e2e8f0'}}
+                },
+                scales: {
+                    x: {ticks: {color: '#94a3b8', maxTicksLimit: 10}, grid: {color: 'rgba(255,255,255,0.05)'}},
+                    y: {ticks: {color: '#94a3b8', callback: v => numberFormat(v)}, grid: {color: 'rgba(255,255,255,0.05)'},
+                        min: Math.min(...followers) * 0.998}
+                }
+            }
+        });
+    })
+    .catch(err => {
+        container.classList.add('hidden');
+        showToast('Hata: ' + err.message, 'error');
+    });
+}
+
+
+// ==================== 30-DAY TREND ANALYSIS ====================
+function loadTrend() {
+    const platform = document.getElementById('rpt-trend-platform').value;
+    const username = document.getElementById('rpt-trend-username').value.trim();
+    if (!username) { showToast('Kullanici adi girin', 'error'); return; }
+
+    const container = document.getElementById('rpt-trend-results');
+    container.classList.remove('hidden');
+    container.innerHTML = '<div class="text-center py-6"><div class="animate-spin w-8 h-8 border-2 border-emerald-400 border-t-transparent rounded-full mx-auto mb-2"></div><p class="text-body-sm text-on-surface-variant">Trend analizi yapiliyor...</p></div>';
+
+    fetch('/api/trend/' + platform + '/' + encodeURIComponent(username))
+    .then(r => r.json())
+    .then(data => {
+        if (data.error) {
+            container.innerHTML = '<div class="text-red-400 text-body-sm py-4">Hata: ' + data.error + '</div>';
+            showToast('Trend alinamadi: ' + data.error, 'error');
+            return;
+        }
+        const t = data.trends || {};
+        const trendKeys = Object.keys(t);
+        if (trendKeys.length === 0) {
+            container.innerHTML = '<div class="text-on-surface-variant text-body-sm py-4 text-center">Son 30 gunde yeterli veri bulunamadi.</div>';
+            return;
+        }
+
+        let html = '<div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4 mt-4">';
+        const labels = {
+            posting_frequency: {label: 'Paylasim Sikligi', unit: ' / gun', good: 'up', icon: 'edit_note'},
+            engagement: {label: 'Etkilesim Orani', unit: '%', good: 'up', icon: 'favorite'},
+            avg_views: {label: 'Ort. Goruntulenme', unit: '', good: 'up', icon: 'visibility'},
+            avg_likes: {label: 'Ort. Begeni', unit: '', good: 'up', icon: 'thumb_up'},
+            active_days: {label: 'Aktif Gun', unit: '', good: 'up', icon: 'calendar_month'},
+            daily_cadence: {label: 'Gunluk Paylasim', unit: '', good: 'up', icon: 'pace'},
+        };
+
+        for (const [key, val] of Object.entries(t)) {
+            const meta = labels[key] || {label: key, unit: '', good: 'up', icon: 'trending_up'};
+            if (key === 'active_days' || key === 'daily_cadence') {
+                html += '<div class="glass-card rounded-xl p-4 text-center border border-emerald-500/10">' +
+                    '<div class="flex items-center justify-center gap-2 mb-1">' +
+                    '<span class="material-symbols-outlined text-emerald-400 text-[20px]">' + meta.icon + '</span>' +
+                    '<p class="text-body-xs text-on-surface-variant">' + meta.label + '</p></div>' +
+                    '<p class="font-headline-lg text-headline-lg font-bold text-white">' + val + '</p></div>';
+                continue;
+            }
+            const current = val.current !== undefined ? val.current : 0;
+            const previous = val.previous !== undefined ? val.previous : 0;
+            const change = val.change !== undefined ? val.change : 0;
+            const isUp = change >= 0;
+            const isGood = (meta.good === 'up' && isUp) || (meta.good === 'down' && !isUp);
+            const arrow = isUp ? '&#9650;' : '&#9660;';
+            const arrowColor = isGood ? 'text-green-400' : 'text-red-400';
+            const fmtCur = Number.isInteger(current) && meta.unit === '' ? numberFormat(current) :
+                (typeof current === 'number' ? current.toFixed(meta.unit === '%' ? 2 : 1) : '0');
+            html += '<div class="glass-card rounded-xl p-4 border ' + (isGood ? 'border-green-500/10' : 'border-red-500/10') + '">' +
+                '<div class="flex items-center justify-between mb-2">' +
+                '<div class="flex items-center gap-2"><span class="material-symbols-outlined text-emerald-400 text-[20px]">' + meta.icon + '</span>' +
+                '<p class="text-body-xs text-on-surface-variant">' + meta.label + '</p></div>' +
+                '<span class="text-body-sm ' + arrowColor + '">' + arrow + ' ' + (change >= 0 ? '+' : '') + change.toFixed(meta.unit === '%' ? 2 : 1) + meta.unit + '</span></div>' +
+                '<p class="font-headline-lg text-headline-lg font-bold text-white mt-1">' + fmtCur + meta.unit + '</p>' +
+                '<p class="text-body-xs text-on-surface-variant mt-1">Onceki: ' + (typeof previous === 'number' ? (Number.isInteger(previous) && meta.unit === '' ? numberFormat(previous) : previous.toFixed(meta.unit === '%' ? 2 : 1)) : '0') + meta.unit + '</p></div>';
+        }
+        html += '</div>';
+
+        // mini summary
+        const freq = t.posting_frequency;
+        const eng = t.engagement || t.avg_likes;
+        let summary = '';
+        if (freq) {
+            const fUp = freq.change >= 0;
+            summary += (fUp ? '&#9650;' : '&#9660;') + ' Paylasim sikligi ' + (fUp ? 'artiyor' : 'azaliyor') + ' (gunluk ' + freq.current.toFixed(1) + ' -> ' + freq.previous.toFixed(1) + '). ';
+        }
+        if (eng) {
+            const eUp = eng.change >= 0;
+            summary += (eUp ? '&#9650;' : '&#9660;') + ' Etkilesim ' + (eUp ? 'ykseliyor' : 'dusuyor') + ' (son: ' + eng.current + ', onceki: ' + eng.previous + '). ';
+        }
+        if (t.active_days) {
+            summary += 'Ayda ' + t.active_days + ' gun aktif.';
+        }
+
+        html = '<div class="text-body-sm text-on-surface-variant mb-3">' + summary + '</div>' + html;
+        container.innerHTML = html;
+    })
+    .catch(err => {
+        container.innerHTML = '<div class="text-red-400 text-body-sm py-4">Baglanti hatasi: ' + err.message + '</div>';
+        showToast('Trend hatasi: ' + err.message, 'error');
+    });
+}
+
+// ==================== TOAST ====================
+function showToast(message, type) {
+    const existing = document.querySelector('.toast-container');
+    let container = existing;
+    if (!container) {
+        container = document.createElement('div');
+        container.className = 'toast-container fixed bottom-6 right-6 z-50 flex flex-col gap-2';
+        document.body.appendChild(container);
+    }
+    const toast = document.createElement('div');
+    const isSuccess = type === 'success';
+    toast.className = 'glass-card px-5 py-3 rounded-xl text-body-sm font-medium animate-fadeIn ' +
+        (isSuccess ? 'text-green-400 border-green-500/20' : 'text-red-400 border-red-500/20');
+    toast.innerHTML = (isSuccess ? '<span class="material-symbols-outlined text-[16px] mr-2 align-middle">check_circle</span>' : '<span class="material-symbols-outlined text-[16px] mr-2 align-middle">error</span>') + message;
+    container.appendChild(toast);
+    setTimeout(() => { toast.style.opacity = '0'; toast.style.transition = 'opacity 0.3s'; setTimeout(() => toast.remove(), 300); }, 2500);
+}
+
+function numberFormat(num) {
+    if (!num) return '0';
+    if (num >= 1000000) return (num / 1000000).toFixed(1) + 'M';
+    if (num >= 1000) return (num / 1000).toFixed(1) + 'K';
+    return num.toString();
 }
 

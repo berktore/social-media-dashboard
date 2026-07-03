@@ -19,3 +19,5 @@ test_*.py
 test_out/
 cookies_vercel.txt
 cookies.txt
+.vercel
+.env*

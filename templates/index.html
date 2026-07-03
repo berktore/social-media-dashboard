@@ -488,6 +488,23 @@
                         <span class="material-symbols-outlined text-cyan-400">person_search</span>
                         Influencer Bulucu
                     </a>
+                    <div class="border-t border-outline-variant/15 mx-4 my-2"></div>
+                    <a onclick="switchTab('watchlist')" class="nav-item flex items-center gap-4 text-on-surface-variant hover:text-yellow-400 hover:bg-yellow-500/10 py-3 px-4 transition-all font-label-md text-label-md cursor-pointer rounded-xl" data-tab="watchlist">
+                        <span class="material-symbols-outlined text-yellow-400">bookmark</span>
+                        Watchlist
+                    </a>
+                    <a onclick="switchTab('compare')" class="nav-item flex items-center gap-4 text-on-surface-variant hover:text-orange-400 hover:bg-orange-500/10 py-3 px-4 transition-all font-label-md text-label-md cursor-pointer rounded-xl" data-tab="compare">
+                        <span class="material-symbols-outlined text-orange-400">stacked_bar_chart</span>
+                        Karsilastirma
+                    </a>
+                    <a onclick="switchTab('hashtag')" class="nav-item flex items-center gap-4 text-on-surface-variant hover:text-purple-400 hover:bg-purple-500/10 py-3 px-4 transition-all font-label-md text-label-md cursor-pointer rounded-xl" data-tab="hashtag">
+                        <span class="material-symbols-outlined text-purple-400">tag</span>
+                        Hashtag Analizi
+                    </a>
+                    <a onclick="switchTab('reports')" class="nav-item flex items-center gap-4 text-on-surface-variant hover:text-rose-400 hover:bg-rose-500/10 py-3 px-4 transition-all font-label-md text-label-md cursor-pointer rounded-xl" data-tab="reports">
+                        <span class="material-symbols-outlined text-rose-400">assignment</span>
+                        Raporlar
+                    </a>
                 </nav>
                 <div class="p-6 border-t border-outline-variant/15">
                     <button onclick="logout()" class="w-full bg-gradient-to-r from-[#4f46e5] to-[#6d28d9] text-white font-label-md text-label-md py-3 rounded-full hover:brightness-110 active:scale-95 transition-all mb-4 shadow-lg shadow-indigo-500/20">
@@ -514,8 +531,8 @@
                     <div id="tab-overview" class="tab-content">
                         <header class="mb-xl flex justify-between items-end">
                             <div>
-                                <h1 class="font-display-lg text-display-lg mb-2 tracking-tight" style="background: linear-gradient(135deg, #e2e8f0, #818cf8, #a78bfa); -webkit-background-clip: text; -webkit-text-fill-color: transparent;">Ecosystem Intelligence</h1>
-                                <p class="font-body-md text-body-md text-on-surface-variant">Real-time performance metrics across all connected social infrastructure.</p>
+                                <h1 class="font-display-lg text-display-lg mb-2 tracking-tight" style="background: linear-gradient(135deg, #e2e8f0, #818cf8, #a78bfa); -webkit-background-clip: text; -webkit-text-fill-color: transparent;">Ekosistem Zekasi</h1>
+                                <p class="font-body-md text-body-md text-on-surface-variant">Bagli tum sosyal altyapilarin anlik performans metrikleri</p>
                             </div>
                             <div class="flex gap-4 items-center">
                                 <button onclick="loadOverview()" class="flex items-center gap-2 px-4 py-2 bg-gradient-to-r from-[#4f46e5] to-[#6d28d9] text-white font-label-md text-label-md rounded-xl hover:brightness-110 active:scale-95 transition-all shadow-lg shadow-indigo-500/20">
@@ -1043,6 +1060,9 @@
                                 </button>
                                 <h2 class="font-headline-md text-headline-md text-on-surface" id="competitor-detail-title">Detay Analiz</h2>
                                 <span class="text-label-sm font-label-sm px-md py-xs rounded-full border" id="competitor-detail-badge"></span>
+                                <button onclick="addCurrentToWatchlist()" class="flex items-center gap-1 px-3 py-1 bg-yellow-500/10 text-yellow-400 font-label-sm text-label-sm rounded-full border border-yellow-500/20 hover:bg-yellow-500/20 transition-all cursor-pointer">
+                                    <span class="material-symbols-outlined text-[16px]">bookmark_add</span> Watchlist
+                                </button>
                                 <div class="ml-auto flex bg-surface-container rounded-xl p-1 border border-outline-variant/30" id="competitor-days-group">
                                     <button onclick="setCompetitorDays(7)" class="cmp-days-btn px-3 py-1 text-label-sm rounded-lg text-on-surface-variant hover:text-primary hover:bg-primary/10 transition-all" data-days="7">7G</button>
                                     <button onclick="setCompetitorDays(15)" class="cmp-days-btn px-3 py-1 text-label-sm rounded-lg text-on-surface-variant hover:text-primary hover:bg-primary/10 transition-all" data-days="15">15G</button>
@@ -1118,18 +1138,21 @@
 
                         <!-- Hizli Tag Butonlari -->
                         <div class="flex flex-wrap gap-2 mb-xl">
-                            <button onclick="searchInfluencerTag('borsa')" class="px-4 py-2 bg-gradient-to-r from-emerald-600/40 to-emerald-600/20 text-emerald-300 font-label-sm text-label-sm rounded-full hover:brightness-125 active:scale-95 transition-all border border-emerald-500/20">borsa</button>
-                            <button onclick="searchInfluencerTag('hisse senedi')" class="px-4 py-2 bg-gradient-to-r from-blue-600/40 to-blue-600/20 text-blue-300 font-label-sm text-label-sm rounded-full hover:brightness-125 active:scale-95 transition-all border border-blue-500/20">hisse senedi</button>
-                            <button onclick="searchInfluencerTag('yatirim')" class="px-4 py-2 bg-gradient-to-r from-purple-600/40 to-purple-600/20 text-purple-300 font-label-sm text-label-sm rounded-full hover:brightness-125 active:scale-95 transition-all border border-purple-500/20">yatirim</button>
-                            <button onclick="searchInfluencerTag('ekonomi')" class="px-4 py-2 bg-gradient-to-r from-sky-600/40 to-sky-600/20 text-sky-300 font-label-sm text-label-sm rounded-full hover:brightness-125 active:scale-95 transition-all border border-sky-500/20">ekonomi</button>
-                            <button onclick="searchInfluencerTag('finans')" class="px-4 py-2 bg-gradient-to-r from-indigo-600/40 to-indigo-600/20 text-indigo-300 font-label-sm text-label-sm rounded-full hover:brightness-125 active:scale-95 transition-all border border-indigo-500/20">finans</button>
-                            <button onclick="searchInfluencerTag('kripto para')" class="px-4 py-2 bg-gradient-to-r from-amber-600/40 to-amber-600/20 text-amber-300 font-label-sm text-label-sm rounded-full hover:brightness-125 active:scale-95 transition-all border border-amber-500/20">kripto para</button>
-                            <button onclick="searchInfluencerTag('forex')" class="px-4 py-2 bg-gradient-to-r from-cyan-600/40 to-cyan-600/20 text-cyan-300 font-label-sm text-label-sm rounded-full hover:brightness-125 active:scale-95 transition-all border border-cyan-500/20">forex</button>
-                            <button onclick="searchInfluencerTag('viop')" class="px-4 py-2 bg-gradient-to-r from-violet-600/40 to-violet-600/20 text-violet-300 font-label-sm text-label-sm rounded-full hover:brightness-125 active:scale-95 transition-all border border-violet-500/20">viop</button>
-                            <button onclick="searchInfluencerTag('bist')" class="px-4 py-2 bg-gradient-to-r from-rose-600/40 to-rose-600/20 text-rose-300 font-label-sm text-label-sm rounded-full hover:brightness-125 active:scale-95 transition-all border border-rose-500/20">bist</button>
-                            <button onclick="searchInfluencerTag('altin')" class="px-4 py-2 bg-gradient-to-r from-yellow-600/40 to-yellow-600/20 text-yellow-300 font-label-sm text-label-sm rounded-full hover:brightness-125 active:scale-95 transition-all border border-yellow-500/20">altin</button>
-                            <button onclick="searchInfluencerTag('dolar')" class="px-4 py-2 bg-gradient-to-r from-green-600/40 to-green-600/20 text-green-300 font-label-sm text-label-sm rounded-full hover:brightness-125 active:scale-95 transition-all border border-green-500/20">dolar</button>
-                            <button onclick="searchInfluencerTag('fintech')" class="px-4 py-2 bg-gradient-to-r from-teal-600/40 to-teal-600/20 text-teal-300 font-label-sm text-label-sm rounded-full hover:brightness-125 active:scale-95 transition-all border border-teal-500/20">fintech</button>
+                            <button onclick="searchInfluencerTag('borsa')" class="px-4 py-2 bg-gradient-to-r from-emerald-600/40 to-emerald-600/20 text-emerald-300 font-label-sm text-label-sm rounded-full hover:brightness-125 active:scale-95 transition-all border border-emerald-500/20">#borsa</button>
+                            <button onclick="searchInfluencerTag('hisse senedi')" class="px-4 py-2 bg-gradient-to-r from-blue-600/40 to-blue-600/20 text-blue-300 font-label-sm text-label-sm rounded-full hover:brightness-125 active:scale-95 transition-all border border-blue-500/20">#hisse</button>
+                            <button onclick="searchInfluencerTag('yatirim')" class="px-4 py-2 bg-gradient-to-r from-purple-600/40 to-purple-600/20 text-purple-300 font-label-sm text-label-sm rounded-full hover:brightness-125 active:scale-95 transition-all border border-purple-500/20">#yatirim</button>
+                            <button onclick="searchInfluencerTag('temettu')" class="px-4 py-2 bg-gradient-to-r from-pink-600/40 to-pink-600/20 text-pink-300 font-label-sm text-label-sm rounded-full hover:brightness-125 active:scale-95 transition-all border border-pink-500/20">#temettu</button>
+                            <button onclick="searchInfluencerTag('portfoy')" class="px-4 py-2 bg-gradient-to-r from-orange-600/40 to-orange-600/20 text-orange-300 font-label-sm text-label-sm rounded-full hover:brightness-125 active:scale-95 transition-all border border-orange-500/20">#portfoy</button>
+                            <button onclick="searchInfluencerTag('ekonomi')" class="px-4 py-2 bg-gradient-to-r from-sky-600/40 to-sky-600/20 text-sky-300 font-label-sm text-label-sm rounded-full hover:brightness-125 active:scale-95 transition-all border border-sky-500/20">#ekonomi</button>
+                            <button onclick="searchInfluencerTag('finans')" class="px-4 py-2 bg-gradient-to-r from-indigo-600/40 to-indigo-600/20 text-indigo-300 font-label-sm text-label-sm rounded-full hover:brightness-125 active:scale-95 transition-all border border-indigo-500/20">#finans</button>
+                            <button onclick="searchInfluencerTag('kripto para')" class="px-4 py-2 bg-gradient-to-r from-amber-600/40 to-amber-600/20 text-amber-300 font-label-sm text-label-sm rounded-full hover:brightness-125 active:scale-95 transition-all border border-amber-500/20">#kripto</button>
+                            <button onclick="searchInfluencerTag('forex')" class="px-4 py-2 bg-gradient-to-r from-cyan-600/40 to-cyan-600/20 text-cyan-300 font-label-sm text-label-sm rounded-full hover:brightness-125 active:scale-95 transition-all border border-cyan-500/20">#forex</button>
+                            <button onclick="searchInfluencerTag('viop')" class="px-4 py-2 bg-gradient-to-r from-violet-600/40 to-violet-600/20 text-violet-300 font-label-sm text-label-sm rounded-full hover:brightness-125 active:scale-95 transition-all border border-violet-500/20">#viop</button>
+                            <button onclick="searchInfluencerTag('bist')" class="px-4 py-2 bg-gradient-to-r from-rose-600/40 to-rose-600/20 text-rose-300 font-label-sm text-label-sm rounded-full hover:brightness-125 active:scale-95 transition-all border border-rose-500/20">#bist</button>
+                            <button onclick="searchInfluencerTag('altin')" class="px-4 py-2 bg-gradient-to-r from-yellow-600/40 to-yellow-600/20 text-yellow-300 font-label-sm text-label-sm rounded-full hover:brightness-125 active:scale-95 transition-all border border-yellow-500/20">#altin</button>
+                            <button onclick="searchInfluencerTag('dolar')" class="px-4 py-2 bg-gradient-to-r from-green-600/40 to-green-600/20 text-green-300 font-label-sm text-label-sm rounded-full hover:brightness-125 active:scale-95 transition-all border border-green-500/20">#dolar</button>
+                            <button onclick="searchInfluencerTag('teknik analiz')" class="px-4 py-2 bg-gradient-to-r from-stone-600/40 to-stone-600/20 text-stone-300 font-label-sm text-label-sm rounded-full hover:brightness-125 active:scale-95 transition-all border border-stone-500/20">#teknikanaliz</button>
+                            <button onclick="searchInfluencerTag('fintech')" class="px-4 py-2 bg-gradient-to-r from-teal-600/40 to-teal-600/20 text-teal-300 font-label-sm text-label-sm rounded-full hover:brightness-125 active:scale-95 transition-all border border-teal-500/20">#fintech</button>
                         </div>
 
                         <!-- Arama Sonuclari -->
@@ -1154,7 +1177,7 @@
                         <div id="influencer-empty" class="flex flex-col items-center justify-center py-20">
                             <span class="material-symbols-outlined text-7xl text-teal-500/30 mb-6">person_search</span>
                             <h3 class="font-headline-md text-headline-md text-teal-400 mb-2">Influencer Kesfedin</h3>
-                            <p class="text-teal-300/60 text-center max-w-md">Borsa, yatirim ve finans konularinda icerik ureten influencer'lari bulmak icin yukardaki tag'lara tiklayin veya anahtar kelime girin.</p>
+                            <p class="text-teal-300/60 text-center max-w-md">Borsa, yatirim ve finans konularinda icerik ureten influencer'lari bulmak icin yukardaki #tag'lara tiklayin veya anahtar kelime girin. #yatirim #borsa #temettu #portfoy</p>
                         </div>
                     </div>
 
@@ -1167,6 +1190,178 @@
                             <span class="material-symbols-outlined text-6xl text-blue-500/30 mb-4">corporate_fare</span>
                             <h3 class="font-headline-md text-headline-md text-blue-400 mb-2">Yakinda</h3>
                             <p class="text-blue-300/60">LinkedIn API entegrasyonu tamamlaniyor.</p>
+                        </div>
+                    </div>
+
+                    <!-- WATCHLIST TAB -->
+                    <div id="tab-watchlist" class="tab-content hidden">
+                        <header class="mb-xl flex justify-between items-end">
+                            <div>
+                                <h1 class="font-headline-lg text-headline-lg mb-2" style="background: linear-gradient(135deg, #fbbf24, #f59e0b); -webkit-background-clip: text; -webkit-text-fill-color: transparent;">Watchlist</h1>
+                                <p class="font-body-md text-on-surface-variant">Takip ettiginiz hesaplarin durumu</p>
+                            </div>
+                            <button onclick="loadWatchlist()" class="flex items-center gap-2 px-4 py-2 bg-gradient-to-r from-yellow-500 to-yellow-600 text-white font-label-md text-label-md rounded-full hover:brightness-110 active:scale-95 transition-all shadow-lg shadow-yellow-500/20">
+                                <span class="material-symbols-outlined text-[18px]">refresh</span> Yenile
+                            </button>
+                        </header>
+
+                        <div id="watchlist-content">
+                            <div class="flex items-center justify-center py-20">
+                                <div class="loading-spinner"></div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- COMPARE TAB -->
+                    <div id="tab-compare" class="tab-content hidden">
+                        <header class="mb-xl">
+                            <h1 class="font-headline-lg text-headline-lg mb-2" style="background: linear-gradient(135deg, #f97316, #ef4444); -webkit-background-clip: text; -webkit-text-fill-color: transparent;">Karsilastirma</h1>
+                            <p class="font-body-md text-on-surface-variant">Birden fazla hesabi yan yana karsilastirin</p>
+                        </header>
+
+                        <div class="grid grid-cols-12 gap-5 mb-xl">
+                            <div class="col-span-12 lg:col-span-4">
+                                <div class="glass-card rounded-xl p-lg">
+                                    <h3 class="font-headline-sm text-headline-sm mb-4 text-on-surface">Hesap Ekle</h3>
+                                    <div class="space-y-3">
+                                        <select id="cmp-platform" class="w-full bg-surface-container-lowest border border-outline-variant rounded-xl text-body-sm px-4 py-3 focus:ring-primary focus:border-primary focus:outline-none">
+                                            <option value="tiktok">TikTok</option>
+                                            <option value="twitter">Twitter</option>
+                                            <option value="youtube">YouTube</option>
+                                            <option value="instagram">Instagram</option>
+                                        </select>
+                                        <input type="text" id="cmp-username" placeholder="Kullanici adi" class="w-full bg-surface-container-lowest border border-outline-variant rounded-xl text-body-sm px-4 py-3 focus:ring-primary focus:border-primary focus:outline-none"/>
+                                        <button onclick="addCompareEntity()" class="w-full py-3 bg-primary-container text-on-primary-container font-label-md rounded-xl hover:brightness-110 active:scale-95 transition-all">Ekle</button>
+                                    </div>
+                                    <div id="cmp-entity-list" class="mt-4 space-y-2">
+                                        <p class="text-on-surface-variant text-body-sm">Henuz hesap eklenmedi.</p>
+                                    </div>
+                                    <button onclick="runCompare()" class="w-full mt-4 py-3 bg-gradient-to-r from-orange-500 to-red-500 text-white font-label-md rounded-xl hover:brightness-110 active:scale-95 transition-all shadow-lg shadow-orange-500/20 disabled:opacity-40" id="cmp-run-btn" disabled>
+                                        Karsilastir
+                                    </button>
+                                </div>
+                            </div>
+                            <div class="col-span-12 lg:col-span-8">
+                                <div id="cmp-results">
+                                    <div class="glass-card rounded-xl p-xl text-center">
+                                        <span class="material-symbols-outlined text-5xl text-orange-500/30 mb-4">stacked_bar_chart</span>
+                                        <p class="text-on-surface-variant">Karsilastirmak icin sol taraftan hesap ekleyin.</p>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- HASHTAG TAB -->
+                    <div id="tab-hashtag" class="tab-content hidden">
+                        <header class="mb-xl flex flex-col md:flex-row md:items-end justify-between gap-lg">
+                            <div>
+                                <h1 class="font-headline-lg text-headline-lg mb-2" style="background: linear-gradient(135deg, #a78bfa, #7c3aed); -webkit-background-clip: text; -webkit-text-fill-color: transparent;">Hashtag Analizi</h1>
+                                <p class="font-body-md text-on-surface-variant">Bir kullanicinin kullandigi hashtagleri analiz edin</p>
+                            </div>
+                            <div class="flex items-center gap-3">
+                                <select id="ht-platform" class="bg-surface-container-lowest border border-outline-variant rounded-xl text-body-sm px-4 py-2 focus:ring-primary focus:border-primary focus:outline-none">
+                                    <option value="tiktok">TikTok</option>
+                                    <option value="instagram">Instagram</option>
+                                    <option value="twitter">Twitter</option>
+                                </select>
+                                <div class="flex items-center bg-surface-container-lowest px-4 py-2 rounded-full border border-outline-variant/20 focus-within:border-primary transition-all">
+                                    <span class="material-symbols-outlined text-on-surface-variant mr-2">tag</span>
+                                    <input type="text" id="ht-username" placeholder="Kullanici adi" class="bg-transparent border-none focus:ring-0 text-body-sm w-48 p-0 placeholder-on-surface-variant" onkeypress="if(event.key==='Enter')loadHashtagAnalytics()"/>
+                                </div>
+                                <button onclick="loadHashtagAnalytics()" class="px-6 py-2 bg-gradient-to-r from-purple-500 to-purple-600 text-white font-label-md text-label-md rounded-full hover:brightness-110 active:scale-95 transition-all shadow-lg shadow-purple-500/20">Analiz Et</button>
+                                <span class="text-label-sm font-label-sm text-purple-300 bg-purple-500/10 px-md py-xs rounded-full border border-purple-500/20" id="ht-status">Hazir</span>
+                            </div>
+                        </header>
+
+                        <div id="ht-results">
+                            <div class="flex flex-col items-center justify-center py-20">
+                                <span class="material-symbols-outlined text-5xl text-purple-500/30 mb-4">tag</span>
+                                <p class="text-on-surface-variant">Analiz etmek icin bir kullanici adi girin.</p>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- REPORTS TAB -->
+                    <div id="tab-reports" class="tab-content hidden">
+                        <header class="mb-xl">
+                            <h1 class="font-headline-lg text-headline-lg mb-2" style="background: linear-gradient(135deg, #f43f5e, #e11d48); -webkit-background-clip: text; -webkit-text-fill-color: transparent;">Raporlar</h1>
+                            <p class="font-body-md text-on-surface-variant">Verileri CSV formatinda disa aktarin</p>
+                        </header>
+
+                        <div class="grid grid-cols-1 md:grid-cols-2 gap-5 mb-xl">
+                            <div class="glass-card rounded-xl p-lg">
+                                <h3 class="font-headline-sm text-headline-sm mb-2" style="background: linear-gradient(135deg, #38bdf8, #818cf8); -webkit-background-clip: text; -webkit-text-fill-color: transparent;">Twitter Disa Aktar</h3>
+                                <p class="text-body-sm text-on-surface-variant mb-4">Bir Twitter kullanicisinin tweetlerini CSV olarak indirin.</p>
+                                <div class="flex gap-3">
+                                    <input type="text" id="rpt-twitter-user" placeholder="@kullaniciadi" class="flex-1 bg-surface-container-lowest border border-outline-variant rounded-xl text-body-sm px-4 py-2 focus:ring-primary focus:border-primary focus:outline-none"/>
+                                    <button onclick="exportCSV('twitter')" class="px-4 py-2 bg-gradient-to-r from-sky-500 to-sky-600 text-white font-label-md rounded-xl hover:brightness-110 active:scale-95 transition-all shadow-lg shadow-sky-500/20">Indir</button>
+                                </div>
+                            </div>
+                            <div class="glass-card rounded-xl p-lg">
+                                <h3 class="font-headline-sm text-headline-sm mb-2" style="background: linear-gradient(135deg, #00f2ea, #4ade80); -webkit-background-clip: text; -webkit-text-fill-color: transparent;">TikTok Disa Aktar</h3>
+                                <p class="text-body-sm text-on-surface-variant mb-4">TikTok kullanicisinin videolarini CSV olarak indirin.</p>
+                                <div class="flex gap-3">
+                                    <input type="text" id="rpt-tiktok-user" placeholder="@kullaniciadi" class="flex-1 bg-surface-container-lowest border border-outline-variant rounded-xl text-body-sm px-4 py-2 focus:ring-primary focus:border-primary focus:outline-none"/>
+                                    <button onclick="exportCSV('tiktok')" class="px-4 py-2 bg-gradient-to-r from-emerald-500 to-emerald-600 text-white font-label-md rounded-xl hover:brightness-110 active:scale-95 transition-all shadow-lg shadow-emerald-500/20">Indir</button>
+                                </div>
+                            </div>
+                            <div class="glass-card rounded-xl p-lg">
+                                <h3 class="font-headline-sm text-headline-sm mb-2" style="background: linear-gradient(135deg, #ff4444, #f97316); -webkit-background-clip: text; -webkit-text-fill-color: transparent;">YouTube Disa Aktar</h3>
+                                <p class="text-body-sm text-on-surface-variant mb-4">YouTube kanalinin videolarini CSV olarak indirin.</p>
+                                <div class="flex gap-3">
+                                    <input type="text" id="rpt-youtube-user" placeholder="Kanal ID" class="flex-1 bg-surface-container-lowest border border-outline-variant rounded-xl text-body-sm px-4 py-2 focus:ring-primary focus:border-primary focus:outline-none"/>
+                                    <button onclick="exportCSV('youtube')" class="px-4 py-2 bg-gradient-to-r from-red-500 to-red-600 text-white font-label-md rounded-xl hover:brightness-110 active:scale-95 transition-all shadow-lg shadow-red-500/20">Indir</button>
+                                </div>
+                            </div>
+                            <div class="glass-card rounded-xl p-lg">
+                                <h3 class="font-headline-sm text-headline-sm mb-2" style="background: linear-gradient(135deg, #e4405f, #f97316); -webkit-background-clip: text; -webkit-text-fill-color: transparent;">Instagram Disa Aktar</h3>
+                                <p class="text-body-sm text-on-surface-variant mb-4">Instagram kullanicisinin postlarini CSV olarak indirin.</p>
+                                <div class="flex gap-3">
+                                    <input type="text" id="rpt-instagram-user" placeholder="@kullaniciadi" class="flex-1 bg-surface-container-lowest border border-outline-variant rounded-xl text-body-sm px-4 py-2 focus:ring-primary focus:border-primary focus:outline-none"/>
+                                    <button onclick="exportCSV('instagram')" class="px-4 py-2 bg-gradient-to-r from-pink-500 to-pink-600 text-white font-label-md rounded-xl hover:brightness-110 active:scale-95 transition-all shadow-lg shadow-pink-500/20">Indir</button>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="glass-card rounded-xl p-lg">
+                            <div class="flex items-center gap-3 mb-4">
+                                <span class="material-symbols-outlined text-rose-400">history</span>
+                                <h3 class="font-headline-sm text-headline-sm" style="background: linear-gradient(135deg, #f43f5e, #e11d48); -webkit-background-clip: text; -webkit-text-fill-color: transparent;">Takipci Gecmisi</h3>
+                            </div>
+                            <p class="text-body-sm text-on-surface-variant mb-4">Daha once goruntulediginiz hesaplarin takipci degisim grafigi.</p>
+                            <div class="flex gap-3">
+                                <select id="rpt-history-platform" class="bg-surface-container-lowest border border-outline-variant rounded-xl text-body-sm px-4 py-2 focus:ring-primary focus:border-primary focus:outline-none">
+                                    <option value="twitter">Twitter</option>
+                                    <option value="tiktok">TikTok</option>
+                                    <option value="youtube">YouTube</option>
+                                    <option value="instagram">Instagram</option>
+                                </select>
+                                <input type="text" id="rpt-history-username" placeholder="Kullanici adi" class="flex-1 bg-surface-container-lowest border border-outline-variant rounded-xl text-body-sm px-4 py-2 focus:ring-primary focus:border-primary focus:outline-none"/>
+                                <button onclick="loadHistory()" class="px-4 py-2 bg-gradient-to-r from-rose-500 to-rose-600 text-white font-label-md rounded-xl hover:brightness-110 active:scale-95 transition-all shadow-lg shadow-rose-500/20">Goruntule</button>
+                            </div>
+                            <div id="rpt-history-chart-container" class="mt-6 hidden">
+                                <canvas id="rpt-history-chart" height="200"></canvas>
+                            </div>
+                        </div>
+
+                        <div class="glass-card rounded-xl p-lg mt-5">
+                            <div class="flex items-center gap-3 mb-4">
+                                <span class="material-symbols-outlined text-emerald-400">trending_up</span>
+                                <h3 class="font-headline-sm text-headline-sm" style="background: linear-gradient(135deg, #34d399, #10b981); -webkit-background-clip: text; -webkit-text-fill-color: transparent;">30 Gunluk Trend Analizi</h3>
+                            </div>
+                            <p class="text-body-sm text-on-surface-variant mb-4">Son 30 gunun paylasim sikligi, etkilesim ve buyume trendleri.</p>
+                            <div class="flex gap-3">
+                                <select id="rpt-trend-platform" class="bg-surface-container-lowest border border-outline-variant rounded-xl text-body-sm px-4 py-2 focus:ring-primary focus:border-primary focus:outline-none">
+                                    <option value="twitter">Twitter</option>
+                                    <option value="tiktok">TikTok</option>
+                                    <option value="youtube">YouTube</option>
+                                    <option value="instagram">Instagram</option>
+                                </select>
+                                <input type="text" id="rpt-trend-username" placeholder="Kullanici adi" class="flex-1 bg-surface-container-lowest border border-outline-variant rounded-xl text-body-sm px-4 py-2 focus:ring-primary focus:border-primary focus:outline-none"/>
+                                <button onclick="loadTrend()" class="px-4 py-2 bg-gradient-to-r from-emerald-500 to-green-600 text-white font-label-md rounded-xl hover:brightness-110 active:scale-95 transition-all shadow-lg shadow-emerald-500/20">Analiz Et</button>
+                            </div>
+                            <div id="rpt-trend-results" class="mt-6 hidden"></div>
                         </div>
                     </div>
 
