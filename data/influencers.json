@@ -15,6 +15,18 @@
         }
       },
       {
+        "username": "borsayatirim",
+        "name": "Borsa İle Araba Alıyorum",
+        "source": "tiktok",
+        "platforms": {
+          "tiktok": {
+            "username": "borsayatirim",
+            "followers": 0,
+            "nickname": "Borsa İle Araba Alıyorum"
+          }
+        }
+      },
+      {
         "username": "finansbank",
         "name": "finansbank",
         "source": "tiktok",
