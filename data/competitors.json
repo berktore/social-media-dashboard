@@ -1,7 +1,14 @@
 {
   "borsa": {
     "query": "borsa",
-    "platforms": {}
+    "platforms": {
+      "tiktok_yatirimsepeti": {
+        "username": "yatirimsepeti",
+        "nickname": "💰Yatırım Sepeti🛒",
+        "followers": 6,
+        "avatar": "https://p16-common-sign.tiktokcdn-us.com/tos-alisg-avt-0068/b2158304a7f6867ace1ed033f0224bed~tplv-tiktokx-cropcenter:100:100.jpeg?dr=9640&refresh_token=553dbf5a&x-expires=1787691600&x-signature=JEiag4OkH76Z309HDZv4H2Losr8%3D&t=4d5b0474&ps=13740610&shp=a5d48078&shcp=81f88b70&idc=useast5"
+      }
+    }
   },
   "yatirim": {
     "query": "yatirim",
@@ -10,19 +17,19 @@
         "username": "yatirimsepeti",
         "nickname": "💰Yatırım Sepeti🛒",
         "followers": 6,
-        "avatar": "https://p16-common-sign.tiktokcdn-us.com/tos-alisg-avt-0068/b2158304a7f6867ace1ed033f0224bed~tplv-tiktokx-cropcenter:100:100.jpeg?dr=9640&refresh_token=93461427&x-expires=1787688000&x-signature=gPhkGjkySIZUYWhm3PwK5prZ%2FYU%3D&t=4d5b0474&ps=13740610&shp=a5d48078&shcp=81f88b70&idc=useast5"
+        "avatar": "https://p16-common-sign.tiktokcdn-us.com/tos-alisg-avt-0068/b2158304a7f6867ace1ed033f0224bed~tplv-tiktokx-cropcenter:100:100.jpeg?dr=9640&refresh_token=553dbf5a&x-expires=1787691600&x-signature=JEiag4OkH76Z309HDZv4H2Losr8%3D&t=4d5b0474&ps=13740610&shp=a5d48078&shcp=81f88b70&idc=useast5"
       },
       "tiktok_yatirimciadam": {
         "username": "yatirimciadam",
         "nickname": "Yatırımcı Adam",
         "followers": 1145,
-        "avatar": "https://p16-common-sign.tiktokcdn-us.com/tos-useast5-avt-0068-tx/7352859731699957806~tplv-tiktokx-cropcenter:100:100.jpeg?dr=9640&refresh_token=1794a00b&x-expires=1787688000&x-signature=2PCMLkyrZZ%2BoBShj5LDEAyv8rdo%3D&t=4d5b0474&ps=13740610&shp=a5d48078&shcp=81f88b70&idc=useast5"
+        "avatar": "https://p16-common-sign.tiktokcdn-us.com/tos-useast5-avt-0068-tx/7352859731699957806~tplv-tiktokx-cropcenter:100:100.jpeg?dr=9640&refresh_token=aed3af1f&x-expires=1787691600&x-signature=bcdHJ47HkuT7w33HFT8B5a4MYwo%3D&t=4d5b0474&ps=13740610&shp=a5d48078&shcp=81f88b70&idc=useast5"
       },
       "tiktok_yatirimnedir": {
         "username": "yatirimnedir",
         "nickname": "YatırımNedir¿",
         "followers": 834,
-        "avatar": "https://p16-common-sign.tiktokcdn-us.com/tos-alisg-avt-0068/78b4e35bbc47f55e384e65e1f35dc7e3~tplv-tiktokx-cropcenter:100:100.jpeg?dr=9640&refresh_token=cfc123d1&x-expires=1787688000&x-signature=TVLVOcyaW11GhOU9RRJ1NLReAuI%3D&t=4d5b0474&ps=13740610&shp=a5d48078&shcp=81f88b70&idc=useast5"
+        "avatar": "https://p19-common-sign.tiktokcdn-us.com/tos-alisg-avt-0068/78b4e35bbc47f55e384e65e1f35dc7e3~tplv-tiktokx-cropcenter:100:100.jpeg?dr=9640&refresh_token=bcaae140&x-expires=1787691600&x-signature=X2RjxYIvp0A8DzlGIv%2B6KBabn0g%3D&t=4d5b0474&ps=13740610&shp=a5d48078&shcp=81f88b70&idc=useast5"
       }
     }
   },
@@ -33,7 +40,7 @@
         "username": "piyasalar",
         "nickname": "user052494",
         "followers": 5,
-        "avatar": "https://p16-common-sign.tiktokcdn-us.com/musically-maliva-obj/1594805258216454~tplv-tiktokx-cropcenter:100:100.jpeg?dr=9640&refresh_token=c9b0d64d&x-expires=1787688000&x-signature=Qzj%2BJnNL4GNwTlacg%2F1YpbZYqGI%3D&t=4d5b0474&ps=13740610&shp=a5d48078&shcp=81f88b70&idc=useast5"
+        "avatar": "https://p16-common-sign.tiktokcdn-us.com/musically-maliva-obj/1594805258216454~tplv-tiktokx-cropcenter:100:100.jpeg?dr=9640&refresh_token=0c12d254&x-expires=1787691600&x-signature=TO%2Bw6fiU9SuvaTphAdKlsB5cScg%3D&t=4d5b0474&ps=13740610&shp=a5d48078&shcp=81f88b70&idc=useast5"
       }
     }
   },
@@ -44,13 +51,13 @@
         "username": "finansbank",
         "nickname": "finansbank",
         "followers": 108,
-        "avatar": "https://p16-common-sign.tiktokcdn-us.com/tos-maliva-avt-0068/5388808747d0be7bc7f8b190f7a69519~tplv-tiktokx-cropcenter:100:100.jpeg?dr=9640&refresh_token=0a8d9ecd&x-expires=1787688000&x-signature=aFotjz7ihGP7TxVhtppwmYree4s%3D&t=4d5b0474&ps=13740610&shp=a5d48078&shcp=81f88b70&idc=useast5"
+        "avatar": "https://p19-common-sign.tiktokcdn-us.com/tos-maliva-avt-0068/5388808747d0be7bc7f8b190f7a69519~tplv-tiktokx-cropcenter:100:100.jpeg?dr=9640&refresh_token=e7da6e8b&x-expires=1787691600&x-signature=kgTZRE7rB1aBMu%2BmR3TdTCb8UhI%3D&t=4d5b0474&ps=13740610&shp=a5d48078&shcp=81f88b70&idc=useast5"
       },
       "tiktok_ziraatbankasi": {
         "username": "ziraatbankasi",
         "nickname": "Ziraworld-consulting.com",
         "followers": 17,
-        "avatar": "https://p16-common-sign.tiktokcdn-us.com/tos-maliva-avt-0068/4ab69ae659f4a3eceba6caa61582a3d0~tplv-tiktokx-cropcenter:100:100.jpeg?dr=9640&refresh_token=db8942ac&x-expires=1787688000&x-signature=FbpYKrf8c1pLITU3XudoFR%2FpcMY%3D&t=4d5b0474&ps=13740610&shp=a5d48078&shcp=81f88b70&idc=useast5"
+        "avatar": "https://p16-common-sign.tiktokcdn-us.com/tos-maliva-avt-0068/4ab69ae659f4a3eceba6caa61582a3d0~tplv-tiktokx-cropcenter:100:100.jpeg?dr=9640&refresh_token=72a542e9&x-expires=1787691600&x-signature=1sc%2FPHqzMLZnZ1NTN331IhFoWrQ%3D&t=4d5b0474&ps=13740610&shp=a5d48078&shcp=81f88b70&idc=useast5"
       }
     }
   }
