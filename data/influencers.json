@@ -15,18 +15,6 @@
         }
       },
       {
-        "username": "borsayatirim",
-        "name": "Borsa İle Araba Alıyorum",
-        "source": "tiktok",
-        "platforms": {
-          "tiktok": {
-            "username": "borsayatirim",
-            "followers": 13,
-            "nickname": "Borsa İle Araba Alıyorum"
-          }
-        }
-      },
-      {
         "username": "finansbank",
         "name": "finansbank",
         "source": "tiktok",
@@ -134,18 +122,6 @@
             "username": "finansbank",
             "followers": 108,
             "nickname": "finansbank"
-          }
-        }
-      },
-      {
-        "username": "ziraatbankasi",
-        "name": "Ziraworld-consulting.com",
-        "source": "tiktok",
-        "platforms": {
-          "tiktok": {
-            "username": "ziraatbankasi",
-            "followers": 17,
-            "nickname": "Ziraworld-consulting.com"
           }
         }
       }
