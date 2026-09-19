@@ -1,84 +1,11 @@
 {
   "borsa": {
     "query": "borsa",
-    "influencers": [
-      {
-        "username": "yatirimsepeti",
-        "name": "💰Yatırım Sepeti🛒",
-        "source": "tiktok",
-        "platforms": {
-          "tiktok": {
-            "username": "yatirimsepeti",
-            "followers": 6,
-            "nickname": "💰Yatırım Sepeti🛒"
-          }
-        }
-      },
-      {
-        "username": "borsayatirim",
-        "name": "Borsa İle Araba Alıyorum",
-        "source": "tiktok",
-        "platforms": {
-          "tiktok": {
-            "username": "borsayatirim",
-            "followers": 12,
-            "nickname": "Borsa İle Araba Alıyorum"
-          }
-        }
-      },
-      {
-        "username": "finansbank",
-        "name": "finansbank",
-        "source": "tiktok",
-        "platforms": {
-          "tiktok": {
-            "username": "finansbank",
-            "followers": 108,
-            "nickname": "finansbank"
-          }
-        }
-      }
-    ]
+    "influencers": []
   },
   "yatirim": {
     "query": "yatirim",
     "influencers": [
-      {
-        "username": "yatirimsepeti",
-        "name": "💰Yatırım Sepeti🛒",
-        "source": "tiktok",
-        "platforms": {
-          "tiktok": {
-            "username": "yatirimsepeti",
-            "followers": 6,
-            "nickname": "💰Yatırım Sepeti🛒"
-          }
-        }
-      },
-      {
-        "username": "yatirimciadam",
-        "name": "Yatırımcı Adam",
-        "source": "tiktok",
-        "platforms": {
-          "tiktok": {
-            "username": "yatirimciadam",
-            "followers": 1145,
-            "nickname": "Yatırımcı Adam"
-          }
-        }
-      },
-      {
-        "username": "yatirimnedir",
-        "name": "YatırımNedir¿",
-        "source": "tiktok",
-        "platforms": {
-          "tiktok": {
-            "username": "yatirimnedir",
-            "followers": 833,
-            "nickname": "YatırımNedir¿"
-          }
-        }
-      },
       {
         "username": "finansbank",
         "name": "finansbank",
@@ -95,48 +22,11 @@
   },
   "ekonomi": {
     "query": "ekonomi",
-    "influencers": [
-      {
-        "username": "piyasalar",
-        "name": "user052494",
-        "source": "tiktok",
-        "platforms": {
-          "tiktok": {
-            "username": "piyasalar",
-            "followers": 5,
-            "nickname": "user052494"
-          }
-        }
-      },
-      {
-        "username": "finansbank",
-        "name": "finansbank",
-        "source": "tiktok",
-        "platforms": {
-          "tiktok": {
-            "username": "finansbank",
-            "followers": 108,
-            "nickname": "finansbank"
-          }
-        }
-      }
-    ]
+    "influencers": []
   },
   "finans": {
     "query": "finans",
     "influencers": [
-      {
-        "username": "finansbank",
-        "name": "finansbank",
-        "source": "tiktok",
-        "platforms": {
-          "tiktok": {
-            "username": "finansbank",
-            "followers": 108,
-            "nickname": "finansbank"
-          }
-        }
-      },
       {
         "username": "ziraatbankasi",
         "name": "Ziraworld-consulting.com",
