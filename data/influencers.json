@@ -136,18 +136,6 @@
             "nickname": "finansbank"
           }
         }
-      },
-      {
-        "username": "ziraatbankasi",
-        "name": "Ziraworld-consulting.com",
-        "source": "tiktok",
-        "platforms": {
-          "tiktok": {
-            "username": "ziraatbankasi",
-            "followers": 18,
-            "nickname": "Ziraworld-consulting.com"
-          }
-        }
       }
     ]
   }
