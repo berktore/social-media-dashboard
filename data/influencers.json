@@ -136,6 +136,18 @@
             "nickname": "finansbank"
           }
         }
+      },
+      {
+        "username": "ziraatbankasi",
+        "name": "alya",
+        "source": "tiktok",
+        "platforms": {
+          "tiktok": {
+            "username": "ziraatbankasi",
+            "followers": 1,
+            "nickname": "alya"
+          }
+        }
       }
     ]
   }
